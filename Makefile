@@ -1,20 +1,18 @@
 NAME			=	ircserv
 
-CXX				=	c++
+CXX			=	c++
 CXXFLAGS		=	-Wall -Wextra -Werror -std=c++98
 
 SRC_DIR			=	src/
 SRCS			=	${wildcard ${SRC_DIR}*.cpp}
+#SRCS			=	${wildcard *.cpp}
 
 OBJ_DIR			=	obj/
-OBJS			=	${addprefix ${OBJ_DIR}, ${SRCS:.cpp=.o}}
-
-#vpath %.cpp ${SRC_DIR}
-#vpath %.o ${OBJ_DIR}
+OBJS			=	$(patsubst $(SRC_DIR)%.cpp,$(OBJ_DIR)%.o,$(SRCS))
 
 INCLUDE			=	-I./includes
 
-RM				=	rm -rf	
+RM			=	rm -rf	
 MKDIR			=	mkdir -p
 
 all		:	${NAME}
@@ -22,7 +20,7 @@ all		:	${NAME}
 ${NAME}: ${OBJS}
 	${CXX} ${CXXFLAGS} -o $@ ${OBJS}
 
-${OBJ_DIR}%.o : %.cpp
+${OBJ_DIR}%.o : ${SRC_DIR}%.cpp
 	${MKDIR} ${OBJ_DIR}
 	${CXX} ${CXXFLAGS} ${INCLUDE} -o $@ -c $<
 

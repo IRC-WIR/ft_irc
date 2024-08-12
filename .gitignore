@@ -1,0 +1,16 @@
+#Ignore the following files
+
+#Object files
+*.o
+
+#Executables
+ircserv
+
+#Swap files
+*.swp
+
+#Undo files
+*.un~
+
+#.DS_STORE
+.DS_STORE
