@@ -32,11 +32,9 @@ void	IrcServer::set_port_no(std::string port_no)
 		if (!isdigit(entry))
 			throw (IrcException(kPortErrMsg));
 	}
-	//ポート番号は1024~65535の範囲
-	if (port_no.length() > 5)
-		throw (IrcException(kPortErrMsg));
 	std::stringstream port_ss(port_no);
 	int port_int;	port_ss >> port_int;
+	//ポート番号は1024~65535の範囲
 	if (port_int < 1024 || port_int > 65535)
 		throw (IrcException(kPortErrMsg));
 	port_no_ = port_no;
