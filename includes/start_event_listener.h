@@ -7,6 +7,7 @@
 class StartEventListener: public EventListener{
 	public:
 		StartEventListener();
+		StartEventListener(IrcServer& ircServer);
 		~StartEventListener();
 		std::map<int, std::string> Pass(Event event);
 		std::map<int, std::string> Nick(Event event);
