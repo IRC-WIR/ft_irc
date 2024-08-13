@@ -24,7 +24,7 @@ int	main(int argc, char **argv)
 
 	EventHandler	event_handler(start_event_listener, end_event_listener);
 
-	event_handler.executePoll();
+	event_handler.ExecutePoll();
 
 	return 0;
 }

@@ -7,7 +7,7 @@
 class Event {
 	public:
 		Event();
-		Event(bool is_listening_socket, int fd, int event_type, std::vector<std::string>	command_params);
+		Event(bool is_listening_socket, int fd, int event_type);
 		~Event();
 		bool	get_is_listening_socket();
 		int	get_fd();

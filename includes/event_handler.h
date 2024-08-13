@@ -10,8 +10,7 @@
 
 class EventHandler{
 	public:
-		EventHandler();
-		EventHandler(EventListener& start_event_listener, EventListener& end_event_listener);
+		EventHandler(EventListener& start_event_listener, EventListener& end_event_listener, std::string port_no);
 		~EventHandler();
 		bool	IsListeningSocket();
 		void	ExecutePoll();
@@ -25,11 +24,11 @@ class EventHandler{
 		std::vector<EventListener *>	event_listeners_;
 		EventListener& start_event_listener_;
 		EventListener& end_event_listener_;
-		std::vector<struct poll_fd>	poll_fd_;
+		std::vector<struct pollfd>	poll_fd_;
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
-		const int	queue_limit_ = 10;
+		static const int	kQueueLimit;
 };
 
 #endif
