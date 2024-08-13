@@ -7,7 +7,7 @@
 class EndEventListener: public EventListener{
 	public:
 		EndEventListener();
-		EndEventListener(EndEventListener &endEventListener);
+		EndEventListener(IrcServer& ircServer);
 		~EndEventListener();
 		std::map<int, std::string> Pass(Event event);
 		std::map<int, std::string> Nick(Event event);

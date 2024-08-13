@@ -18,7 +18,7 @@ class Channel: public EventListener{
 		std::map<int, std::string> Prvmsg(Event event);
 		std::map<int, std::string> Quit(Event event);
 		std::map<int, std::string> Mode(Event event);
-			
+
 	private:
 		std::vector<User>	users_;
 		std::string	topic_;

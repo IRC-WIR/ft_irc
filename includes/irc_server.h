@@ -6,11 +6,11 @@
 #include "channel.h"
 #include "start_event_listener.h"
 #include "end_event_listener.h"
+#include <sstream>
 
 class IrcServer{
 	public:
 		IrcServer();
-		IrcServer(std::string port, std::string password);
 		~IrcServer();
 
 		std::string	get_password();
@@ -23,6 +23,22 @@ class IrcServer{
 
 		bool	ValidPort(std::string port);
 		bool	ValidPassword(std::string password);
+		void	set_password(std::string password);
+		void	set_port_no(std::string port_no);
+
+		//例外処理のネストクラス
+		class IrcException : public std::exception
+		{
+			public:
+				IrcException(std::string msg);
+				~IrcException();
+				const char* what() const noexcept;
+
+			private:
+				std::string msg_;
+		};
+
+
 	private:
 		std::vector<User>	users_;
 		std::vector<Channel>	channels_;
@@ -31,6 +47,10 @@ class IrcServer{
 		EventHandler	event_handler_;
 		std::string	password_;
 		std::string	port_no_;
+
+		//エラーメッセージ定数
+		static const std::string kPortErrMsg;
+		static const std::string kPasswordErrMsg;
 };
 
 #endif

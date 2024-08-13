@@ -1,39 +1,51 @@
 #include "irc_server.h"
 
+const std::string IrcServer::kPortErrMsg = "Input the port number between 1024~65535";
+const std::string IrcServer::kPasswordErrMsg = "Input the password in printable ASCII code 33~126 and at least 8 characters";
+
 IrcServer::IrcServer()
 {
 	return ;
 }
 
-IrcServer::IrcServer(std::string port, std::string password)
+void	IrcServer::set_password(std::string password)
 {
-	
-
-	if (ValidPort(port) || ValidPassword(password))
-		exit 1;
-
-	this->password_ = validPassword;
-	this->port_no_ = validPort;
+	//printable ASCII code 33~126, at least 8 characters
+	const char* input_chr_ptr = password.c_str();
+	int i = 0;
+	while (!input_chr_ptr)
+	{
+		if (*input_chr_ptr < 33 || *input_chr_ptr > 126)
+			throw(IrcException(kPasswordErrMsg));
+		input_chr_ptr ++;
+		i ++;
+	}
+	if (i < 8)
+		throw(IrcException(kPasswordErrMsg));
+	password_ = password;
 }
 
-//portのバリデーションチェック
-bool IrcServer::ValidPort(std::string port)
+void	IrcServer::set_port_no(std::string port_no)
 {
-	for (char entry : port)
+	for (char entry : port_no)
 	{
 		if (!isdigit(entry))
-			return true;
+			throw (IrcException(kPortErrMsg));
 	}
-	//1024~65535
-	if (port.length() > 5)
-		return true;
-	int	port_int = atoi(port.c_str());
+	//ポート番号は1024~65535の範囲
+	if (port_no.length() > 5)
+		throw (IrcException(kPortErrMsg));
+	std::stringstream port_ss(port_no);
+	int port_int;	port_ss >> port_int;
 	if (port_int < 1024 || port_int > 65535)
-		return true;
-	return false;
+		throw (IrcException(kPortErrMsg));
+	port_no_ = port_no;
 }
-bool IrcServer::ValidPassword(std::string input)
-{
-	
 
+//IrcServerの例外処理
+IrcServer::IrcException::IrcException(std::string msg) : msg_(msg) {}
+IrcServer::IrcException::~IrcException() {}
+const char* IrcServer::IrcException::what() const noexcept
+{
+	return msg_.c_str();
 }
