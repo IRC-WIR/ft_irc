@@ -10,6 +10,7 @@
 
 class EventHandler{
 	public:
+		EventHandler();
 		EventHandler(EventListener& start_event_listener, EventListener& end_event_listener, std::string port_no);
 		~EventHandler();
 		bool	IsListeningSocket();

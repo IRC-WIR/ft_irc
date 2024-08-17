@@ -1,7 +1,7 @@
 #ifndef IRC_SERVER_H_
  #define IRC_SERVER_H_
 
-#include "Event_handler.h"
+#include "event_handler.h"
 #include "user.h"
 #include "channel.h"
 #include "start_event_listener.h"
@@ -19,7 +19,7 @@ class IrcServer{
 		void	add_channel(Channel channel);
 		void	remove_channel(std::string name);
 		void	add_user(User user);
-		void	remove_channel(std::string nickname);
+		void	remove_user(std::string nickname);
 
 		bool	ValidPort(std::string port);
 		bool	ValidPassword(std::string password);
@@ -27,16 +27,16 @@ class IrcServer{
 		void	set_port_no(std::string port_no);
 
 		//例外処理のネストクラス
-		class IrcException : public std::exception
-		{
-			public:
-				IrcException(std::string msg);
-				~IrcException();
-				const char* what() const noexcept;
-
-			private:
-				std::string msg_;
-		};
+//		class IrcException : public std::exception
+//		{
+//			public:
+//				IrcException(std::string msg);
+//				~IrcException();
+//				const char* what() const noexcept;
+//
+//			private:
+//				std::string msg_;
+//		};
 
 
 	private:

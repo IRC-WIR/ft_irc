@@ -45,7 +45,6 @@ void	EventHandler::ExecutePoll()
 			int event_listener_size = this->event_listeners_.size();
 			for (int j = 0; j < event_listener_size; j++)
 			{
-				EventListener *eventListener = this->event_listeners_[j];
 				if (this->Accept(event) == 0)
 				{
 					fd_size++;

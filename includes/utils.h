@@ -8,9 +8,9 @@ namespace utils{
 
 	int	ft_stoi(std::string num_str)
 	{
-		for (char entry : num_str)
+		for (int i = 0; i < (int)num_str.length(); i++)
 		{
-			if (!isdigit(entry))
+			if (!isdigit(num_str[i]))
 			{
 				//数字で構成されていない例外を投げる
 				//throw (IrcException(kPortErrMsg));
