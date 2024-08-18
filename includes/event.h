@@ -6,8 +6,7 @@
 
 class Event {
 	public:
-		Event();
-		Event(bool is_listening_socket, int fd, int event_type);
+		Event(int fd, int event_type);
 		~Event();
 		bool	get_is_listening_socket();
 		int	get_fd();
@@ -15,7 +14,6 @@ class Event {
 		std::vector<std::string>	get_command_params();
 
 	private:
-		const bool	is_listening_socket_;
 		const int	fd_;
 		const int	event_type_;
 		std::vector<std::string>	command_params_;

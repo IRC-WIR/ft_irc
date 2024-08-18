@@ -3,7 +3,17 @@
 
 const	int	EventHandler::kQueueLimit = 10;
 
-EventHandler::EventHandler(EventListener& start_event_listener, EventListener& end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
+EventHandler::EventHandler()
+{
+	return ;
+}
+
+EventHandler::~EventHandler()
+{
+	return ;
+}
+
+EventHandler::EventHandler(EventListener* start_event_listener, EventListener* end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
 {
 	this->listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 	this->server_address_.sin_family = AF_INET;
@@ -41,11 +51,11 @@ void	EventHandler::ExecutePoll()
 			is_listening_socket = false;
 		if (entry.revents& (POLLIN))
 		{
-			Event event = Event(is_listening_socket, entry.fd, entry.revents);
+			Event event = Event(entry.fd, entry.revents);
 			int event_listener_size = this->event_listeners_.size();
 			for (int j = 0; j < event_listener_size; j++)
 			{
-				if (this->Accept(event) == 0)
+				if (this->Accept(event, is_listening_socket) == 0)
 				{
 					fd_size++;
 				}
@@ -71,3 +81,28 @@ void	EventHandler::WaitMillSecond(int ms)
 	}
 };
 
+int	EventHandler::Accept(Event event, bool is_listening_socket)
+{
+	(void)event;
+	(void)is_listening_socket;
+	return 0;
+}
+
+
+std::string	EventHandler::Receive(Event event)
+{
+	(void)event;
+	return NULL;
+}
+
+void	EventHandler::Send(Event event)	
+{
+	(void)event;
+	return ;
+}
+
+void	EventHandler::Detach(Event event)
+{
+	(void)event;
+	return ;
+}

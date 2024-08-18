@@ -2,11 +2,16 @@
  #define IRC_SERVER_H_
 
 #include "event_handler.h"
+#include "event_listener.h"
 #include "user.h"
 #include "channel.h"
 #include "start_event_listener.h"
 #include "end_event_listener.h"
 #include <sstream>
+
+class StartEventListener;
+
+class EndEventListener;
 
 class IrcServer{
 	public:
@@ -25,6 +30,7 @@ class IrcServer{
 		bool	ValidPassword(std::string password);
 		void	set_password(std::string password);
 		void	set_port_no(std::string port_no);
+		std::string	get_port_no();
 
 		//例外処理のネストクラス
 //		class IrcException : public std::exception

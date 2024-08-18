@@ -3,12 +3,13 @@
 
 int	main(int argc, char **argv)
 {
+	(void)argv;
 	if (argc != 3)
 	{
 		std::cerr << "Please execute as follows: ./ircserv <port> <password>" << std::endl;
 		return 1;
 	}
-//	IrcServer	irc_server;
+	IrcServer	irc_server;
 //	try
 //	{
 //		irc_server.set_port_no(argv[1]);
@@ -22,7 +23,7 @@ int	main(int argc, char **argv)
 	StartEventListener	start_event_listener = StartEventListener(irc_server);
 	EndEventListener	end_event_listener = EndEventListener(irc_server);
 
-	EventHandler	event_handler(start_event_listener, end_event_listener);
+	EventHandler	event_handler(&start_event_listener, &end_event_listener, irc_server.get_port_no());
 
 	event_handler.ExecutePoll();
 

@@ -4,9 +4,10 @@
 #include "event_listener.h"
 #include "irc_server.h"
 
+class IrcServer;
+
 class EndEventListener: public EventListener{
 	public:
-		EndEventListener();
 		EndEventListener(IrcServer& ircServer);
 		~EndEventListener();
 		std::map<int, std::string> Pass(Event event);

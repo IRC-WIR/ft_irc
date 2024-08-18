@@ -8,6 +8,11 @@ IrcServer::IrcServer()
 	return ;
 }
 
+IrcServer::~IrcServer()
+{
+	return ;
+}
+
 void	IrcServer::set_password(std::string password)
 {
 	//printable ASCII code 33~126, at least 8 characters
@@ -38,6 +43,11 @@ void	IrcServer::set_port_no(std::string port_no)
 //	if (port_int < 1024 || port_int > 65535)
 //		throw (IrcException(kPortErrMsg));
 	port_no_ = port_no;
+}
+
+std::string	IrcServer::get_port_no()
+{
+	return port_no_;
 }
 
 //IrcServerの例外処理
