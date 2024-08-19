@@ -22,10 +22,10 @@ int	main(int argc, char **argv)
 //	}
 	StartEventListener	start_event_listener = StartEventListener(irc_server);
 	EndEventListener	end_event_listener = EndEventListener(irc_server);
-
 	EventHandler	event_handler(&start_event_listener, &end_event_listener, irc_server.get_port_no());
 
-	event_handler.ExecutePoll();
+	irc_server.set_event_handler(event_handler);
+	irc_server.Run();
 
 	return 0;
 }

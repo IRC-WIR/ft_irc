@@ -15,15 +15,23 @@ EventHandler::~EventHandler()
 
 EventHandler::EventHandler(EventListener* start_event_listener, EventListener* end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
 {
-	this->listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-	this->server_address_.sin_family = AF_INET;
+	//only for now
+	//reason: exception does not work at the time, and cannot set port_no
+	port_no = "8080";
 
-	this->server_address_.sin_port = htons(utils::ft_stoi(port_no));
-	this->server_address_.sin_addr.s_addr = INADDR_ANY;
+	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
-	bind(this->listening_socket_, (struct sockaddr*)&(this->server_address_), sizeof(this->server_address_));
+	struct pollfd listening_pollfd;
+	listening_pollfd.fd = listening_socket_;
+	listening_pollfd.events = POLLIN;
+	poll_fd_.push_back(listening_pollfd);
+
+	server_address_.sin_family = AF_INET;
+	server_address_.sin_port = htons(utils::ft_stoi(port_no));
+	server_address_.sin_addr.s_addr = INADDR_ANY;
+	bind(listening_socket_, (struct sockaddr*)&(server_address_), sizeof(server_address_));
 	//第２引数をメンバ変数に定数追加　適切な数は？
-	listen(this->listening_socket_, this->kQueueLimit);
+	listen(listening_socket_, kQueueLimit);
 
 	return;	
 }
@@ -41,25 +49,29 @@ void	EventHandler::ExecutePoll()
 		return;
 	}
 	bool is_listening_socket;
-	int fd_size = this->poll_fd_.size();
+	int fd_size = poll_fd_.size();
+	std::cout << "out of for " << std::endl;
 	for (int i = 0; i < fd_size; i++)
 	{	
-		pollfd entry = this->poll_fd_[i];
+		pollfd entry = poll_fd_[i];
 		if (entry.fd == listening_socket_)
 			is_listening_socket = true;
 		else
 			is_listening_socket = false;
 		if (entry.revents& (POLLIN))
 		{
+			std::cout << "caught POLLIN event " << entry.fd << std::endl;
 			Event event = Event(entry.fd, entry.revents);
-			int event_listener_size = this->event_listeners_.size();
+			int event_listener_size = event_listeners_.size();
+			if (event_listener_size == 0)
+				Accept(event, is_listening_socket);
 			for (int j = 0; j < event_listener_size; j++)
 			{
-				if (this->Accept(event, is_listening_socket) == 0)
+				if (Accept(event, is_listening_socket) == 0)
 				{
 					fd_size++;
 				}
-				this->Receive(event);
+				Receive(event);
 			}
 		}
 		is_listening_socket = false;
@@ -83,6 +95,11 @@ void	EventHandler::WaitMillSecond(int ms)
 
 int	EventHandler::Accept(Event event, bool is_listening_socket)
 {
+	std::cout << "Accept is called" << std::endl;
+	if (is_listening_socket)
+		std::cout << "is listening socket" << std::endl;
+	else
+		std::cout << "is NOT listening socket" << std::endl;
 	(void)event;
 	(void)is_listening_socket;
 	return 0;
