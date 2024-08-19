@@ -30,7 +30,9 @@ class IrcServer{
 		bool	ValidPassword(std::string password);
 		void	set_password(std::string password);
 		void	set_port_no(std::string port_no);
+		void	set_event_handler(EventHandler event_handler);
 		std::string	get_port_no();
+		void	Run();
 
 		//例外処理のネストクラス
 		class IrcException : public std::exception

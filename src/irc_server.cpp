@@ -45,10 +45,26 @@ void	IrcServer::set_port_no(std::string port_no)
 	port_no_ = port_no;
 }
 
+void	IrcServer::set_event_handler(EventHandler event_handler)
+{
+	event_handler_ = event_handler;
+}
+
 std::string	IrcServer::get_port_no()
 {
 	return port_no_;
 }
+
+void	IrcServer::Run()
+{
+	while (1)
+	{
+		event_handler_.ExecutePoll();
+		event_handler_.WaitMillSecond(800);
+	}
+	return ;
+}
+
 
 //IrcServerの例外処理
 IrcServer::IrcException::IrcException(std::string msg) : msg_(msg) {}
