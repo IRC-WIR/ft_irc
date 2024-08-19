@@ -1,5 +1,6 @@
 #include "event_handler.h"
 #include "utils.h"
+#include "irc_server.h"
 
 const	int	EventHandler::kQueueLimit = 10;
 
@@ -25,16 +26,14 @@ EventHandler::EventHandler(EventListener* start_event_listener, EventListener* e
 	//第２引数をメンバ変数に定数追加　適切な数は？
 	listen(this->listening_socket_, this->kQueueLimit);
 
-	return;	
+	return;
 }
 
 void	EventHandler::ExecutePoll()
 {
 	int	pollResult = poll(poll_fd_.data(), poll_fd_.size(), 1000);
-	if (pollResult < 0) {
-		perror("poll failed");
-		return;
- 	}
+	if (pollResult < 0)
+		throw (IrcServer::IrcException("poll failed"));
 	if (pollResult == 0)
 	{
 		std::cout << "no event in 1000ms" << std::endl;
@@ -43,7 +42,7 @@ void	EventHandler::ExecutePoll()
 	bool is_listening_socket;
 	int fd_size = this->poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
-	{	
+	{
 		pollfd entry = this->poll_fd_[i];
 		if (entry.fd == listening_socket_)
 			is_listening_socket = true;
@@ -95,7 +94,7 @@ std::string	EventHandler::Receive(Event event)
 	return NULL;
 }
 
-void	EventHandler::Send(Event event)	
+void	EventHandler::Send(Event event)
 {
 	(void)event;
 	return ;

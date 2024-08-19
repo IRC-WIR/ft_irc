@@ -33,16 +33,16 @@ class IrcServer{
 		std::string	get_port_no();
 
 		//例外処理のネストクラス
-//		class IrcException : public std::exception
-//		{
-//			public:
-//				IrcException(std::string msg);
-//				~IrcException();
-//				const char* what() const noexcept;
-//
-//			private:
-//				std::string msg_;
-//		};
+		class IrcException : public std::exception
+		{
+			public:
+				IrcException(std::string msg);
+				~IrcException() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;;
+				const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
+
+			private:
+				std::string msg_;
+		};
 
 
 	private:
