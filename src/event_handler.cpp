@@ -47,33 +47,28 @@ void	EventHandler::ExecutePoll()
 		std::cout << "no event in 1000ms" << std::endl;
 		return;
 	}
-	bool is_listening_socket;
 	int fd_size = poll_fd_.size();
 	std::cout << "out of for " << std::endl;
+	//インデントが深くならないように
+	//POLLIN/POLLOUTハンドル用のメソッドに分ける？
 	for (int i = 0; i < fd_size; i++)
 	{
 		pollfd entry = this->poll_fd_[i];
-		if (entry.fd == listening_socket_)
-			is_listening_socket = true;
-		else
-			is_listening_socket = false;
 		if (entry.revents& (POLLIN))
 		{
 			std::cout << "caught POLLIN event " << entry.fd << std::endl;
+			if (entry.fd == listening_socket_)
+			{
+				Accept();
+				continue;
+			}
 			Event event = Event(entry.fd, entry.revents);
 			int event_listener_size = event_listeners_.size();
-			if (event_listener_size == 0)
-				Accept(event, is_listening_socket);
-			for (int j = 0; j < event_listener_size; j++)
+			for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
 			{
-				if (Accept(event, is_listening_socket) == 0)
-				{
-					fd_size++;
-				}
 				Receive(event);
 			}
 		}
-		is_listening_socket = false;
 	}
 	return ;
 }
@@ -90,20 +85,23 @@ void	EventHandler::WaitMillSecond(int ms)
 		if ((current.tv_sec - start.tv_sec) * 1000 + (current.tv_usec - start.tv_usec) / 1000 >= ms)
 			return ;
 	}
-};
-
-int	EventHandler::Accept(Event event, bool is_listening_socket)
-{
-	std::cout << "Accept is called" << std::endl;
-	if (is_listening_socket)
-		std::cout << "is listening socket" << std::endl;
-	else
-		std::cout << "is NOT listening socket" << std::endl;
-	(void)event;
-	(void)is_listening_socket;
-	return 0;
 }
 
+int	EventHandler::Accept()
+{
+	std::cout << "Accept is called" << std::endl;
+	socklen_t server_address_len = (socklen_t)sizeof(server_address_);
+	int connected_socket_ = accept(listening_socket_,
+			(struct sockaddr*)&(server_address_),
+			&server_address_len);
+	if (connected_socket_ == -1)
+		return -1;
+	// User newUser = User(connectedSocket,kACCEPTED,NULL);
+	// this->users_.push_back(newUser);
+	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
+	eventHandler_.add_event_socket(connected_socket_);
+	return 0;
+}
 
 std::string	EventHandler::Receive(Event event)
 {

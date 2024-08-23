@@ -15,11 +15,12 @@ class EventHandler{
 		~EventHandler();
 		bool	IsListeningSocket();
 		void	ExecutePoll();
-		int	Accept(Event event, bool is_listening_socket);
+		int	Accept();
 		std::string Receive(Event event);
 		void	Send(Event event);
 		void	Detach(Event event);
 		void	WaitMillSecond(int ms);
+		void	add_event_socket(int new_fd);
 
 	private:
 		std::vector<EventListener *>	event_listeners_;
