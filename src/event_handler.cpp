@@ -16,15 +16,13 @@ EventHandler::~EventHandler()
 
 EventHandler::EventHandler(EventListener* start_event_listener, EventListener* end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
 {
-	//only for now
-	//reason: exception does not work at the time, and cannot set port_no
-	port_no = "8080";
-
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
+	listening_pollfd.revents = 0;
+
 	poll_fd_.push_back(listening_pollfd);
 
 	server_address_.sin_family = AF_INET;
@@ -33,6 +31,8 @@ EventHandler::EventHandler(EventListener* start_event_listener, EventListener* e
 	bind(listening_socket_, (struct sockaddr*)&(server_address_), sizeof(server_address_));
 	//第２引数をメンバ変数に定数追加　適切な数は？
 	listen(listening_socket_, kQueueLimit);
+	std::cout << "listening socket: " << listening_socket_ << std::endl;
+	std::cout << "port no         : " << port_no << std::endl;
 
 	return;
 }
@@ -40,6 +40,13 @@ EventHandler::EventHandler(EventListener* start_event_listener, EventListener* e
 void	EventHandler::ExecutePoll()
 {
 	int	pollResult = poll(poll_fd_.data(), poll_fd_.size(), 1000);
+	//debug
+	std::cout << "-- pollfd --" << std::endl;
+	for (int i = 0; i < (int)poll_fd_.size(); i++)
+	{
+		std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
+	}
+	//////
 	if (pollResult < 0)
 		throw (IrcServer::IrcException("poll failed"));
 	if (pollResult == 0)
@@ -99,7 +106,7 @@ int	EventHandler::Accept()
 	// User newUser = User(connectedSocket,kACCEPTED,NULL);
 	// this->users_.push_back(newUser);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
-	eventHandler_.add_event_socket(connected_socket_);
+	add_event_socket(connected_socket_);
 	return 0;
 }
 
@@ -119,4 +126,13 @@ void	EventHandler::Detach(Event event)
 {
 	(void)event;
 	return ;
+}
+
+void	EventHandler::add_event_socket(int new_fd)
+{
+	pollfd new_pollfd;
+	new_pollfd.fd = new_fd;
+	new_pollfd.events = POLLIN;
+	new_pollfd.revents = 0;
+	poll_fd_.push_back(new_pollfd);
 }
