@@ -19,14 +19,18 @@ class EventHandler{
 		~EventHandler();
 		bool	IsListeningSocket();
 		void	ExecutePoll();
-		int	Accept();
-		std::string Receive(Event event);
-		void	Send(Event event);
-		void	Detach(Event event);
 		void	WaitMillSecond(int ms);
 		void	add_event_socket(int new_fd);
 
 	private:
+		int		Accept();
+		std::string	Receive(Event event);
+		void		Send(Event event);
+		void		Detach(pollfd entry);
+		void		HandlePollInEvent(pollfd entry);
+		void		HandlePollOutEvent(pollfd entry);
+		void		HandlePollHupEvent(pollfd entry);
+
 		std::vector<EventListener *>	event_listeners_;
 		StartEventListener* start_event_listener_;
 		EndEventListener* end_event_listener_;

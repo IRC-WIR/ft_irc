@@ -46,8 +46,8 @@ void	EventHandler::ExecutePoll()
 	{
 		std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
 	}
-	std::cout << "-- listener --" << std::endl;
-	std::cout << event_listeners_.size() << std::endl;
+//	std::cout << "-- listener --" << std::endl;
+//	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
 		throw (IrcServer::IrcException("poll failed"));
@@ -57,33 +57,67 @@ void	EventHandler::ExecutePoll()
 		return;
 	}
 	int fd_size = poll_fd_.size();
-	std::cout << "out of for " << std::endl;
 	//インデントが深くならないように
 	//POLLIN/POLLOUTハンドル用のメソッドに分ける？
 	for (int i = 0; i < fd_size; i++)
 	{
 		pollfd entry = this->poll_fd_[i];
-		if (entry.revents& (POLLIN))
-		{
-			if (entry.fd == listening_socket_)
-			{
-				Accept();
-				continue;
-			}
-			Event event = Event(entry.fd, entry.revents);
-
-			char buffer[1024] = { 0 };
-			//receive the message from the socket
-			recv(entry.fd, buffer, sizeof(buffer), 0);
-			std::cout << "Message from client: " << buffer << std::endl;
-
-//			int event_listener_size = event_listeners_.size();
-//			for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
-//			{
-//				Receive(event);
-//			}
-		}
+		HandlePollInEvent(entry);
+		HandlePollHupEvent(entry);
 	}
+	return ;
+}
+
+void	EventHandler::HandlePollInEvent(pollfd entry)
+{
+	if (entry.revents& (POLLIN))
+	{
+		if (entry.fd == listening_socket_)
+		{
+			Accept();
+			return ;
+		}
+		Event event = Event(entry.fd, entry.revents);
+
+		char buffer[1024] = { 0 };
+		//receive the message from the socket
+		recv(entry.fd, buffer, sizeof(buffer), 0);
+		if (buffer[0] == '\0')
+			Detach(entry);
+		std::cout << "[ "<< entry.fd << " ]Message from client: " << buffer << std::endl;
+
+//		int event_listener_size = event_listeners_.size();
+//		for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
+//		{
+//			Receive(event);
+//		}
+	}
+}
+
+void	EventHandler::HandlePollOutEvent(pollfd entry)
+{
+	(void)entry;
+	return ;
+}
+
+void	EventHandler::HandlePollHupEvent(pollfd entry)
+{
+	if (entry.revents& (POLLHUP))
+	{
+		std::cout << entry.fd << ">> disconnected" << std::endl;
+	}
+}
+
+void	EventHandler::Detach(pollfd event)
+{
+	std::cout << "connection hang up " << event.fd << std::endl;
+	int target_index = 0;
+	for (int i = 0; i < (int)poll_fd_.size(); i++)
+	{
+		if (poll_fd_[i].fd == event.fd)
+			target_index = i;
+	}
+	poll_fd_.erase(poll_fd_.begin() + target_index);
 	return ;
 }
 
@@ -125,12 +159,6 @@ std::string	EventHandler::Receive(Event event)
 }
 
 void	EventHandler::Send(Event event)
-{
-	(void)event;
-	return ;
-}
-
-void	EventHandler::Detach(Event event)
 {
 	(void)event;
 	return ;
