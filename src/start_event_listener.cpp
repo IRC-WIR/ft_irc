@@ -11,6 +11,13 @@ StartEventListener::~StartEventListener()
 	return ;
 }
 
+EventListener* StartEventListener::accept(int fd)
+{
+	User* new_user = new User(fd);
+	irc_server_.add_user(new_user);
+	return new_user;
+}
+
 std::map<int, std::string> StartEventListener::Pass(Event event)
 {
 	(void)event;

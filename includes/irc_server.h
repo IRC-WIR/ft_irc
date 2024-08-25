@@ -9,31 +9,24 @@
 #include "end_event_listener.h"
 #include <sstream>
 
-class StartEventListener;
-
-class EndEventListener;
-
 class IrcServer{
 	public:
 		IrcServer();
 		~IrcServer();
 
-		std::string	get_password();
-		std::vector<Channel>	get_channels();
-		std::vector<User>	get_users();
-		void	add_channel(Channel channel);
-		void	remove_channel(std::string name);
-		void	add_user(User user);
-		void	remove_user(std::string nickname);
-
-		bool	ValidPort(std::string port);
-		bool	ValidPassword(std::string password);
-		void	set_password(std::string password);
-		void	set_port_no(std::string port_no);
-		void	set_event_handler(EventHandler event_handler);
-		std::string	get_port_no();
 		void	Run();
 
+		std::string		get_password();
+		void			set_password(std::string password);
+		std::string		get_port_no();
+		void			set_port_no(std::string port_no);
+		std::vector<Channel>	get_channels();
+		std::vector<User>	get_users();
+		void	add_channel(Channel *channel);
+		void	remove_channel(std::string name);
+		void	add_user(User *user);
+		void	remove_user(std::string nickname);
+		void	set_event_handler(EventHandler event_handler);
 		//例外処理のネストクラス
 		class IrcException : public std::exception
 		{
@@ -48,10 +41,10 @@ class IrcServer{
 
 
 	private:
-		std::vector<User>	users_;
-		std::vector<Channel>	channels_;
-		StartEventListener*	start_event_listener_;
-		EndEventListener*	end_event_listener_;
+		std::vector<User*>	users_;
+		std::vector<Channel*>	channels_;
+		EventListener*	start_event_listener_;
+		EventListener*	end_event_listener_;
 		EventHandler	event_handler_;
 		std::string	password_;
 		std::string	port_no_;

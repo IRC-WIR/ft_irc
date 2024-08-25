@@ -8,6 +8,9 @@ class Channel;
 
 class User : public EventListener{
 	public:
+		User();
+		User(int fd);
+		~User();
 		std::map<int, std::string> Pass(Event event);
 		std::map<int, std::string> Nick(Event event);
 		std::map<int, std::string> Join(Event event);
@@ -20,6 +23,7 @@ class User : public EventListener{
 		std::map<int, std::string> Mode(Event event);
 	
 	private:
+		int	fd_;
 		bool	is_password_authenticated_;
 		std::string	nick_name_;
 		std::string	user_name_;

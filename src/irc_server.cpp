@@ -13,6 +13,20 @@ IrcServer::~IrcServer()
 	return ;
 }
 
+void	IrcServer::Run()
+{
+	while (1)
+	{
+		event_handler_.ExecutePoll();
+		event_handler_.WaitMillSecond(800);
+	}
+	return ;
+}
+
+std::string	IrcServer::get_password(){
+	return password_;
+}
+
 void	IrcServer::set_password(std::string password)
 {
 	//printable ASCII code 33~126, at least 8 characters
@@ -45,26 +59,25 @@ void	IrcServer::set_port_no(std::string port_no)
 	port_no_ = port_no;
 }
 
+std::string	IrcServer::get_port_no(){
+	return port_no_;
+}
+
 void	IrcServer::set_event_handler(EventHandler event_handler)
 {
 	event_handler_ = event_handler;
 }
 
-std::string	IrcServer::get_port_no()
+void	IrcServer::add_channel(Channel *channel)
 {
-	return port_no_;
+	channels_.push_back(channel);
 }
 
-void	IrcServer::Run()
-{
-	while (1)
-	{
-		event_handler_.ExecutePoll();
-		event_handler_.WaitMillSecond(800);
-	}
-	return ;
-}
 
+void	IrcServer::add_user(User *user)
+{
+	users_.push_back(user);
+}
 
 //IrcServerの例外処理
 IrcServer::IrcException::IrcException(std::string msg) : msg_(msg) {}

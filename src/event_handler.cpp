@@ -14,7 +14,7 @@ EventHandler::~EventHandler()
 	return ;
 }
 
-EventHandler::EventHandler(EventListener* start_event_listener, EventListener* end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
+EventHandler::EventHandler(StartEventListener* start_event_listener, EndEventListener* end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -46,6 +46,8 @@ void	EventHandler::ExecutePoll()
 	{
 		std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
 	}
+	std::cout << "-- listener --" << std::endl;
+	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
 		throw (IrcServer::IrcException("poll failed"));
@@ -63,18 +65,23 @@ void	EventHandler::ExecutePoll()
 		pollfd entry = this->poll_fd_[i];
 		if (entry.revents& (POLLIN))
 		{
-			std::cout << "caught POLLIN event " << entry.fd << std::endl;
 			if (entry.fd == listening_socket_)
 			{
 				Accept();
 				continue;
 			}
 			Event event = Event(entry.fd, entry.revents);
-			int event_listener_size = event_listeners_.size();
-			for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
-			{
-				Receive(event);
-			}
+
+			char buffer[1024] = { 0 };
+			//receive the message from the socket
+			recv(entry.fd, buffer, sizeof(buffer), 0);
+			std::cout << "Message from client: " << buffer << std::endl;
+
+//			int event_listener_size = event_listeners_.size();
+//			for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
+//			{
+//				Receive(event);
+//			}
 		}
 	}
 	return ;
@@ -96,17 +103,18 @@ void	EventHandler::WaitMillSecond(int ms)
 
 int	EventHandler::Accept()
 {
-	std::cout << "Accept is called" << std::endl;
 	socklen_t server_address_len = (socklen_t)sizeof(server_address_);
 	int connected_socket_ = accept(listening_socket_,
 			(struct sockaddr*)&(server_address_),
 			&server_address_len);
 	if (connected_socket_ == -1)
 		return -1;
-	// User newUser = User(connectedSocket,kACCEPTED,NULL);
-	// this->users_.push_back(newUser);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
+
+	EventListener* event_listener = start_event_listener_->accept(connected_socket_);	
+	if (event_listener)
+		event_listeners_.push_back(event_listener);
 	return 0;
 }
 

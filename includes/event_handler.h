@@ -8,9 +8,13 @@
 #include <sys/socket.h>
 #include "event_listener.h"
 
+class StartEventListener;
+
+class EndEventListener;
+
 class EventHandler{
 	public:
-		EventHandler(EventListener* start_event_listener, EventListener* end_event_listener, std::string port_no);
+		EventHandler(StartEventListener* start_event_listener, EndEventListener* end_event_listener, std::string port_no);
 		EventHandler();
 		~EventHandler();
 		bool	IsListeningSocket();
@@ -24,8 +28,8 @@ class EventHandler{
 
 	private:
 		std::vector<EventListener *>	event_listeners_;
-		EventListener* start_event_listener_;
-		EventListener* end_event_listener_;
+		StartEventListener* start_event_listener_;
+		EndEventListener* end_event_listener_;
 		std::vector<struct pollfd>	poll_fd_;
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;
