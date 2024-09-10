@@ -86,11 +86,13 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			Detach(entry);
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << buffer << std::endl;
 
-//		int event_listener_size = event_listeners_.size();
-//		for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
-//		{
-//			Receive(event);
-//		}
+		int event_listener_size = event_listeners_.size();
+		for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
+		{
+			//Receiveからparsing
+			std::string command = Receive(event);
+		}
+
 	}
 }
 
@@ -146,7 +148,7 @@ int	EventHandler::Accept()
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
 
-	EventListener* event_listener = start_event_listener_->accept(connected_socket_);	
+	EventListener* event_listener = start_event_listener_->accept(connected_socket_);
 	if (event_listener)
 		event_listeners_.push_back(event_listener);
 	return 0;
