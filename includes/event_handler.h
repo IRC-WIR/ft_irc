@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include "event_listener.h"
+#include "utils.h"
 
 class StartEventListener;
 
@@ -30,6 +31,7 @@ class EventHandler{
 		void		HandlePollInEvent(pollfd entry);
 		void		HandlePollOutEvent(pollfd entry);
 		void		HandlePollHupEvent(pollfd entry);
+		void		ParsingBuffer(const std::string& buffer);
 
 		std::vector<EventListener *>	event_listeners_;
 		StartEventListener* start_event_listener_;

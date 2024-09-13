@@ -68,6 +68,12 @@ void	EventHandler::ExecutePoll()
 	return ;
 }
 
+void	EventHandler::ParsingBuffer(const std::string& str_buffer)
+{
+	std::cout << "the buffer in ParsingBuffer: " << str_buffer << std::endl;
+
+}
+
 void	EventHandler::HandlePollInEvent(pollfd entry)
 {
 	if (entry.revents& (POLLIN))
@@ -85,13 +91,18 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		if (buffer[0] == '\0')
 			Detach(entry);
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << buffer << std::endl;
+		std::cout << "\n" << std::endl;
 
-		int event_listener_size = event_listeners_.size();
-		for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
-		{
-			//Receiveからparsing
-			std::string command = Receive(event);
-		}
+		//parsing from received buffer
+		std::string str_buffer(buffer);
+		ParsingBuffer(str_buffer);
+
+
+		// int event_listener_size = event_listeners_.size();
+		// for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
+		// {
+		// 	std::string command = Receive(event);
+		// }
 
 	}
 }
