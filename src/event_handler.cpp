@@ -1,5 +1,4 @@
 #include "event_handler.h"
-#include "utils.h"
 #include "irc_server.h"
 
 const	int	EventHandler::kQueueLimit = 10;
@@ -68,12 +67,6 @@ void	EventHandler::ExecutePoll()
 	return ;
 }
 
-void	EventHandler::ParsingBuffer(const std::string& str_buffer)
-{
-	std::cout << "the buffer in ParsingBuffer: " << str_buffer << std::endl;
-
-}
-
 void	EventHandler::HandlePollInEvent(pollfd entry)
 {
 	if (entry.revents& (POLLIN))
@@ -93,11 +86,9 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << buffer << std::endl;
 		std::cout << "\n" << std::endl;
 
-		//parsing from received buffer
 		std::string str_buffer(buffer);
-		ParsingBuffer(str_buffer);
-
-
+		//parsing from received buffer
+		message::MessageParser MessageParser(str_buffer);
 		// int event_listener_size = event_listeners_.size();
 		// for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
 		// {

@@ -1,8 +1,7 @@
 #ifndef EVENT_H_
 	#define EVENT_H_
 
-#include <vector>
-#include <string>
+#include "utils.h"
 
 class Event {
 	public:
