@@ -9,3 +9,7 @@ Event::~Event()
 {
 	return ;
 }
+
+int	Event::get_fd(){
+	return this->fd_;
+}

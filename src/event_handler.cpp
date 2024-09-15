@@ -57,8 +57,6 @@ void	EventHandler::ExecutePoll()
 		return;
 	}
 	int fd_size = poll_fd_.size();
-	//インデントが深くならないように
-	//POLLIN/POLLOUTハンドル用のメソッドに分ける？
 	for (int i = 0; i < fd_size; i++)
 	{
 		pollfd entry = this->poll_fd_[i];
@@ -78,20 +76,8 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			return ;
 		}
 		Event event = Event(entry.fd, entry.revents);
+		std::string command = Receive(event, entry);
 
-		char buffer[this->kBufferSize];
-		bzero(buffer, sizeof(char) * this->kBufferSize);
-		//receive the message from the socket
-		recv(entry.fd, buffer, sizeof(buffer), 0);
-		if (buffer[0] == '\0')
-			Detach(entry);
-		std::cout << "[ "<< entry.fd << " ]Message from client: " << buffer << std::endl;
-
-//		int event_listener_size = event_listeners_.size();
-//		for (int j = 0; event_listener_size == 0 || j < event_listener_size; j++)
-//		{
-//			Receive(event);
-//		}
 	}
 }
 
@@ -153,10 +139,21 @@ int	EventHandler::Accept()
 	return 0;
 }
 
-std::string	EventHandler::Receive(Event event)
-{
-	(void)event;
-	return NULL;
+std::string	EventHandler::Receive(Event event, pollfd entry){
+
+	char buffer[this->kBufferSize];
+	bzero(buffer, sizeof(char) * this->kBufferSize);
+
+	//receive the message from the socket
+	recv(event.get_fd(), buffer, sizeof(buffer), 0);
+	if (buffer[0] == '\0')
+		Detach(entry);
+	std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
+
+	// add parsing method here
+	// only for now
+	std::string command = "PASS";
+	return command;
 }
 
 void	EventHandler::Send(Event event)
