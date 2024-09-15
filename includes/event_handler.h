@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include "event_listener.h"
+#include <string.h>
 
 class StartEventListener;
 
@@ -39,6 +40,7 @@ class EventHandler{
 		int	listening_socket_;
 		sockaddr_in	server_address_;
 		static const int	kQueueLimit;
+		static const int	kBufferSize = 510;
 };
 
 #endif

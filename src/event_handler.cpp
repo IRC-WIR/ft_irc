@@ -79,7 +79,8 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		}
 		Event event = Event(entry.fd, entry.revents);
 
-		char buffer[1024] = { 0 };
+		char buffer[this->kBufferSize];
+		bzero(buffer, sizeof(char) * this->kBufferSize);
 		//receive the message from the socket
 		recv(entry.fd, buffer, sizeof(buffer), 0);
 		if (buffer[0] == '\0')
