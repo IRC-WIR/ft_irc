@@ -25,7 +25,8 @@ class EventHandler{
 
 	private:
 		int		Accept();
-		std::string	Receive(Event event, pollfd entry);
+		Command		Receive(Event event, pollfd entry);
+		void		ExecuteCommand(std::string command, Event event);
 		void		Send(Event event);
 		void		Detach(pollfd entry);
 		void		HandlePollInEvent(pollfd entry);

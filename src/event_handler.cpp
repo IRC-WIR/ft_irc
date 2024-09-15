@@ -76,8 +76,48 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			return ;
 		}
 		Event event = Event(entry.fd, entry.revents);
-		std::string command = Receive(event, entry);
+		Command command = Receive(event, entry);
+		ExecuteCommand(command, event);		
+	}
+}
 
+void	EventHandler::ExecuteCommand(Command command, Event event){
+
+	int listener_size = event_listeners_.size();
+	for (int i = 0; i < listener_size; i++)
+
+		switch (command){
+	
+			case kPass:
+				event_listeners_[i]->Pass(event);
+				break;
+			case kNick:
+				event_listeners_[i]->Nick(event);
+				break;
+			case kUser:
+				event_listeners_[i]->Quit(event);
+				break;
+			case kJoin:
+				event_listeners_[i]->Join(event);
+				break;
+			case kInvite:
+				event_listeners_[i]->Invite(event);
+				break;
+			case kKick:
+				event_listeners_[i]->Kick(event);
+				break;
+			case kTopic:
+				event_listeners_[i]->Topic(event);
+				break;
+			case kMode:
+				event_listeners_[i]->Mode(event);
+				break;
+			case kPrvmsg:
+				event_listeners_[i]->Prvmsg(event);
+				break;
+			default
+				return ;
+		}
 	}
 }
 
@@ -139,7 +179,7 @@ int	EventHandler::Accept()
 	return 0;
 }
 
-std::string	EventHandler::Receive(Event event, pollfd entry){
+Command	EventHandler::Receive(Event event, pollfd entry){
 
 	char buffer[this->kBufferSize];
 	bzero(buffer, sizeof(char) * this->kBufferSize);
@@ -150,10 +190,7 @@ std::string	EventHandler::Receive(Event event, pollfd entry){
 		Detach(entry);
 	std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
 
-	// add parsing method here
-	// only for now
-	std::string command = "PASS";
-	return command;
+	// add parsing method here and receive Command
 }
 
 void	EventHandler::Send(Event event)
@@ -170,3 +207,4 @@ void	EventHandler::add_event_socket(int new_fd)
 	new_pollfd.revents = 0;
 	poll_fd_.push_back(new_pollfd);
 }
+
