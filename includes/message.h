@@ -7,7 +7,7 @@ namespace message
 
 enum Command
 {
-	PASS,
+	PASS = 0,
 	NICK,
 	JOIN,
 	INVITE,
@@ -15,7 +15,8 @@ enum Command
 	TOPIC,
 	MODE,
 	PRVIMSG,
-	USER
+	USER,
+	NOT_FOUND
 };
 
 enum ParseState
@@ -32,19 +33,21 @@ class MessageParser
 	public:
 		MessageParser(const std::string& msg);
 		void 	ParsingMessage();
+		void	ParsingCommand(const std::string& command);
 		void	Init();
 		bool	IsEndOfMessage(const char& ch);
-		
 
 
 		//Command	get_command() const;
 
 
 	private:
+		std::string	message_;
 		Command	command_;
 		ParseState state_;
-		std::string	message_;
 		std::vector<std::string> command_params_;
+		static const std::map<std::string, Command> kCommandMap;
+		static std::map<std::string, message::Command> createCommandMap();
 };
 
 } // namespace message

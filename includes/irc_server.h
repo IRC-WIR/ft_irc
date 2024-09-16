@@ -29,15 +29,10 @@ class IrcServer{
 		void	remove_user(std::string nickname);
 		void	set_event_handler(EventHandler event_handler);
 		//例外処理のネストクラス
-		class IrcException : public std::exception
+		class IrcException : public std::invalid_argument
 		{
 			public:
-				IrcException(std::string msg);
-				~IrcException() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;;
-				const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
-
-			private:
-				std::string msg_;
+				IrcException(const std::string& msg);
 		};
 
 

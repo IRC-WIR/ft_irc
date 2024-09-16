@@ -21,7 +21,7 @@ class User : public EventListener{
 		std::map<int, std::string> Prvmsg(Event event);
 		std::map<int, std::string> Quit(Event event);
 		std::map<int, std::string> Mode(Event event);
-	
+
 	private:
 		int	fd_;
 		bool	is_password_authenticated_;

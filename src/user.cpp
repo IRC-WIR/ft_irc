@@ -4,6 +4,8 @@ User::User(){
 }
 
 User::User(int fd) : fd_(fd){
+	(void)fd_;
+	(void)is_password_authenticated_;
 }
 
 User::~User(){
