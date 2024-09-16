@@ -16,16 +16,16 @@ std::map<std::string, message::Command> message::MessageParser::createCommandMap
     return m;
 }
 
-message::MessageParser::MessageParser(const std::string& msg) : message_(msg)
+message::MessageParser::MessageParser(const std::string& msg)
 {
-	ParsingMessage();
+	ParsingMessage(msg);
 }
 
-void message::MessageParser::ParsingMessage()
+void message::MessageParser::ParsingMessage(const std::string& msg)
 {
+	Init(msg);
 	std::cout << message_ << std::endl;
 	std::cout << "the message in buffer: " << message_ << std::endl;
-	Init();
 	if (message_.empty())
 	{
 		state_ = PARSE_EMPTY;
@@ -40,6 +40,13 @@ void message::MessageParser::ParsingMessage()
 			case PARSE_COMMAND:
 				ParsingCommand(command);
 				break;
+
+			case PARSE_PARAM:
+				if (last_param != "")
+					command_params_.push_back(last_param);
+				state_ = PARSE_COMPLETE;
+				break;
+
 			default:
 				last_param = utils::ft_split_after(message_, ":");
 				if (last_param != "")
@@ -60,7 +67,9 @@ void message::MessageParser::ParsingCommand(const std::string& command)
 		this->command_params_.push_back(str);
 	}
 	const std::string command_str = this->command_params_[0];
+	std::cout << command_str << std::endl;
 	this->command_params_.erase(command_params_.begin());
+
 	std::map<std::string, message::Command>::const_iterator it = kCommandMap.find(command_str);
 
 	if (it == kCommandMap.end())
@@ -70,12 +79,14 @@ void message::MessageParser::ParsingCommand(const std::string& command)
 		return;
 	}
 	this->command_ = it->second;
-	state_ = PARSE_COMPLETE;
+	state_ = PARSE_PARAM;
 }
 
 
-void message::MessageParser::Init()
+void message::MessageParser::Init(const std::string& msg)
 {
+	state_ = message::PARSE_DEFAULT;
+	message_ = msg;
 	command_params_.clear();
 }
 
@@ -88,7 +99,16 @@ bool message::MessageParser::IsEndOfMessage(const char& ch)
 }
 
 
-// Command message::MessageParser::get_command() const
-// {
-// 	return command_;
-// }
+message::Command message::MessageParser::get_command() const
+{
+	return command_;
+}
+
+message::ParseState message::MessageParser::get_state() const{
+	return state_;
+}
+
+std::vector<std::string> message::MessageParser::get_params() const
+{
+	return command_params_;
+}

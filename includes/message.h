@@ -21,8 +21,9 @@ enum Command
 
 enum ParseState
 {
-	PARSE_SPACE = 0,
+	PARSE_DEFAULT = 0,
 	PARSE_COMMAND,
+	PARSE_PARAM,
 	PARSE_ERROR,
 	PARSE_EMPTY,
 	PARSE_COMPLETE
@@ -32,15 +33,14 @@ class MessageParser
 {
 	public:
 		MessageParser(const std::string& msg);
-		void 	ParsingMessage();
+		void 	ParsingMessage(const std::string& msg);
 		void	ParsingCommand(const std::string& command);
-		void	Init();
+		void	Init(const std::string& msg);
 		bool	IsEndOfMessage(const char& ch);
 
-
-		//Command	get_command() const;
-
-
+		Command	get_command() const;
+		ParseState get_state() const;
+		std::vector<std::string> get_params() const;
 	private:
 		std::string	message_;
 		Command	command_;

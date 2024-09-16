@@ -30,3 +30,14 @@ std::string utils::ft_split_after(const std::string& str, const std::string& del
 		return "";
 	return str.substr(n);
 }
+
+
+void utils::print_string_vector(const std::vector<std::string>& str_vec)
+{
+	for (std::vector<std::string>::const_iterator it = str_vec.begin();
+		it != str_vec.end();
+		it ++)
+	{
+		std::cout << *it << std::endl;
+	}
+}
