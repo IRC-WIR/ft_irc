@@ -1,6 +1,6 @@
 #include "message.h"
 
-message::MessageParser::MessageParser(const std::string& msg) : message_(msg), iterator_(0)
+message::MessageParser::MessageParser(const std::string& msg) : message_(msg)
 {
 	ParsingMessage();
 }
@@ -9,14 +9,42 @@ void message::MessageParser::ParsingMessage()
 {
 	std::cout << message_ << std::endl;
 	std::cout << "the message in buffer: " << message_ << std::endl;
-	while (!IsEndOfMessage(message_[iterator_]))
+	Init();
+	if (message_.empty())
 	{
-		if (message_[iterator_] == ' ')
-			command_ = message_.substr(0, iterator_ + 1);
-		iterator_++;
+		state_ = PARSE_EMPTY;
+		return;
 	}
-	std::cout << command_ << std::endl;
+	std::string last_param;
+	while (state_ != PARSE_COMPLETE)
+	{
+		switch (state_)
+		{
+			case PARSE_COMMAND:
+				switch(command_)
+
+
+
+				default:
+					break;
+
+				break;
+			default:
+				last_param = utils::ft_split_after(message_, ":");
+				if (last_param == "")
+					state_ = PARSE_COMMAND;
+				break;
+
+		}
+	}
+
 }
+
+void message::MessageParser::Init()
+{
+	command_params_.clear();
+}
+
 
 bool message::MessageParser::IsEndOfMessage(const char& ch)
 {
@@ -24,3 +52,9 @@ bool message::MessageParser::IsEndOfMessage(const char& ch)
 		return true;
 	return false;
 }
+
+
+// Command message::MessageParser::get_command() const
+// {
+// 	return command_;
+// }

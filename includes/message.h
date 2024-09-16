@@ -5,26 +5,46 @@
 namespace message
 {
 
+enum Command
+{
+	PASS,
+	NICK,
+	JOIN,
+	INVITE,
+	KICK,
+	TOPIC,
+	MODE,
+	PRVIMSG,
+	USER
+};
+
 enum ParseState
 {
-	PARSE_BEFORE = 0,
-	PARSE_ERROR
+	PARSE_SPACE = 0,
+	PARSE_COMMAND,
+	PARSE_ERROR,
+	PARSE_EMPTY,
+	PARSE_COMPLETE
 };
 
 class MessageParser
 {
 	public:
 		MessageParser(const std::string& msg);
-		void	ParsingMessage();
+		void 	ParsingMessage();
+		void	Init();
 		bool	IsEndOfMessage(const char& ch);
+		
+
+
+		//Command	get_command() const;
 
 
 	private:
+		Command	command_;
+		ParseState state_;
 		std::string	message_;
-		size_t iterator_;
-		std::string	command_;
 		std::vector<std::string> command_params_;
-
 };
 
 } // namespace message

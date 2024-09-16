@@ -40,11 +40,11 @@ void	EventHandler::ExecutePoll()
 {
 	int	pollResult = poll(poll_fd_.data(), poll_fd_.size(), 1000);
 	//debug
-	std::cout << "-- pollfd --" << std::endl;
-	for (int i = 0; i < (int)poll_fd_.size(); i++)
-	{
-		std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
-	}
+	// std::cout << "-- pollfd --" << std::endl;
+	// for (int i = 0; i < (int)poll_fd_.size(); i++)
+	// {
+	// 	std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
+	// }
 //	std::cout << "-- listener --" << std::endl;
 //	std::cout << event_listeners_.size() << std::endl;
 	//////
@@ -52,7 +52,8 @@ void	EventHandler::ExecutePoll()
 		throw (IrcServer::IrcException("poll failed"));
 	if (pollResult == 0)
 	{
-		std::cout << "no event in 1000ms" << std::endl;
+		//debug
+		//std::cout << "no event in 1000ms" << std::endl;
 		return;
 	}
 	int fd_size = poll_fd_.size();
