@@ -41,7 +41,7 @@ class EventHandler{
 		int	listening_socket_;
 		sockaddr_in	server_address_;
 		static const int	kQueueLimit;
-		static const int	kBufferSize = 510;
+		static const int	kBufferSize = 512;
 };
 
 #endif
