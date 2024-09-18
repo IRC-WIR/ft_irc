@@ -2,20 +2,22 @@
  # define CHANNEL_H_
 
 #include "event_listener.h"
-#include "user.h"
+
+class User;
 
 class Channel: public EventListener{
 	public:
-		std::map<int, std::string> Pass(Event event);
-		std::map<int, std::string> Nick(Event event);
-		std::map<int, std::string> Join(Event event);
-		std::map<int, std::string> Invite(Event event);
-		std::map<int, std::string> Kick(Event event);
-		std::map<int, std::string> Topic(Event event);
-		std::map<int, std::string> Part(Event event);
-		std::map<int, std::string> Prvmsg(Event event);
-		std::map<int, std::string> Quit(Event event);
-		std::map<int, std::string> Mode(Event event);
+		Channel();
+		~Channel();
+		std::map<int, std::string> PassCommand(Event event);
+		std::map<int, std::string> NickCommand(Event event);
+		std::map<int, std::string> UserCommand(Event event);
+		std::map<int, std::string> JoinCommand(Event event);
+		std::map<int, std::string> InviteCommand(Event event);
+		std::map<int, std::string> KickCommand(Event event);
+		std::map<int, std::string> TopicCommand(Event event);
+		std::map<int, std::string> ModeCommand(Event event);
+		std::map<int, std::string> PrivmsgCommand(Event event);
 
 	private:
 		std::vector<User>	users_;

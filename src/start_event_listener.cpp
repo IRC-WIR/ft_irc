@@ -18,70 +18,63 @@ EventListener* StartEventListener::accept(int fd)
 	return new_user;
 }
 
-std::map<int, std::string> StartEventListener::Pass(Event event)
+std::map<int, std::string> StartEventListener::PassCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Nick(Event event)
+std::map<int, std::string> StartEventListener::NickCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Join(Event event)
+std::map<int, std::string> StartEventListener::UserCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Invite(Event event)
+std::map<int, std::string> StartEventListener::JoinCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Kick(Event event)
+std::map<int, std::string> StartEventListener::InviteCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Topic(Event event)
+std::map<int, std::string> StartEventListener::KickCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Part(Event event)
+std::map<int, std::string> StartEventListener::TopicCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Prvmsg(Event event)
+std::map<int, std::string> StartEventListener::PrivmsgCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> StartEventListener::Quit(Event event)
-{
-	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
-}
-
-std::map<int, std::string> StartEventListener::Mode(Event event)
+std::map<int, std::string> StartEventListener::ModeCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;

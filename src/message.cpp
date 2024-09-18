@@ -24,8 +24,6 @@ message::MessageParser::MessageParser(const std::string& msg)
 void message::MessageParser::ParsingMessage(const std::string& msg)
 {
 	Init(msg);
-	std::cout << message_ << std::endl;
-	std::cout << "the message in buffer: " << message_ << std::endl;
 	if (message_.empty())
 	{
 		state_ = PARSE_EMPTY;

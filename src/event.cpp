@@ -10,6 +10,36 @@ Event::~Event()
 	return ;
 }
 
-int	Event::get_fd(){
-	return this->fd_;
+int Event::get_fd() const
+{
+	return fd_;
+}
+
+int Event::get_event_type() const
+{
+	return event_type_;
+}
+
+message::Command Event::get_command()
+{
+	return command_;
+}
+
+std::vector<std::string> Event::get_command_params()
+{
+	return command_params_;
+}
+
+void Event::set_command(const message::Command& command)
+{
+	command_ = command;
+}
+
+void Event::set_command_params(const std::vector<std::string>& commmand_params)
+{
+	for (std::vector<std::string>::const_iterator it = commmand_params.begin();
+		it != commmand_params.end(); it ++)
+	{
+		command_params_.push_back(*it);
+	}	
 }

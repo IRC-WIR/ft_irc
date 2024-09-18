@@ -9,13 +9,13 @@ enum Command
 {
 	PASS = 0,
 	NICK,
+	USER,
 	JOIN,
 	INVITE,
 	KICK,
 	TOPIC,
 	MODE,
 	PRIVMSG,
-	USER,
 	NOT_FOUND
 };
 

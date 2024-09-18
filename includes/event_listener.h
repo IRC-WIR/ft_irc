@@ -10,15 +10,15 @@ class EventListener
 	public:
 		EventListener();
 		virtual ~EventListener();
-		virtual std::map<int, std::string> Pass(Event event) = 0;
-		virtual std::map<int, std::string> Nick(Event event) = 0;
-		virtual std::map<int, std::string> User(Event event) = 0;
-		virtual std::map<int, std::string> Join(Event event) = 0;
-		virtual std::map<int, std::string> Invite(Event event) = 0;
-		virtual std::map<int, std::string> Kick(Event event) = 0;
-		virtual std::map<int, std::string> Topic(Event event) = 0;
-		virtual std::map<int, std::string> Mode(Event event) = 0;
-		virtual std::map<int, std::string> Privmsg(Event event) = 0;
+		virtual std::map<int, std::string> PassCommand(Event event) = 0;
+		virtual std::map<int, std::string> NickCommand(Event event) = 0;
+		virtual std::map<int, std::string> UserCommand(Event event) = 0;
+		virtual std::map<int, std::string> JoinCommand(Event event) = 0;
+		virtual std::map<int, std::string> InviteCommand(Event event) = 0;
+		virtual std::map<int, std::string> KickCommand(Event event) = 0;
+		virtual std::map<int, std::string> TopicCommand(Event event) = 0;
+		virtual std::map<int, std::string> ModeCommand(Event event) = 0;
+		virtual std::map<int, std::string> PrivmsgCommand(Event event) = 0;
 
 	private:
 

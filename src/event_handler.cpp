@@ -2,6 +2,7 @@
 #include "irc_server.h"
 
 const	int	EventHandler::kQueueLimit = 10;
+const	int EventHandler::kBufferSize = 512;
 
 EventHandler::EventHandler()
 {
@@ -76,46 +77,53 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			return ;
 		}
 		Event event = Event(entry.fd, entry.revents);
-		message::Command command = Receive(event, entry);
-		ExecuteCommand(command, event);
+	//	message::Command command = Receive(event, entry);
+	//	ExecuteCommand(command, event);
+		char *buffer = Receive(event);
+		if (buffer[0] == '\0')
+			Detach(entry);
+		//std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
+		if (Parse(buffer, event) != message::PARSE_COMPLETE)
+			return ;
+		ExecuteCommand(event);
 	}
 }
 
-void	EventHandler::ExecuteCommand(message::Command command, Event event){
+void	EventHandler::ExecuteCommand(Event event){
 
 	int listener_size = event_listeners_.size();
 	for (int i = 0; i < listener_size; i++)
 
-		switch (command){
+		switch (event.get_command()){
 
 			case message::PASS:
-				event_listeners_[i]->Pass(event);
+				event_listeners_[i]->PassCommand(event);
 				break;
 			case message::NICK:
-				event_listeners_[i]->Nick(event);
+				event_listeners_[i]->NickCommand(event);
 				break;
 			case message::USER:
-				event_listeners_[i]->User(event);
+				event_listeners_[i]->UserCommand(event);
 				break;
 			case message::JOIN:
-				event_listeners_[i]->Join(event);
+				event_listeners_[i]->JoinCommand(event);
 				break;
 			case message::INVITE:
-				event_listeners_[i]->Invite(event);
+				event_listeners_[i]->InviteCommand(event);
 				break;
 			case message::KICK:
-				event_listeners_[i]->Kick(event);
+				event_listeners_[i]->KickCommand(event);
 				break;
 			case message::TOPIC:
-				event_listeners_[i]->Topic(event);
+				event_listeners_[i]->TopicCommand(event);
 				break;
 			case message::MODE:
-				event_listeners_[i]->Mode(event);
+				event_listeners_[i]->ModeCommand(event);
 				break;
 			case message::PRIVMSG:
-				event_listeners_[i]->Privmsg(event);
+				event_listeners_[i]->PrivmsgCommand(event);
 				break;
-			default
+			default:
 				return ;
 		}
 }
@@ -140,7 +148,6 @@ void	EventHandler::Detach(pollfd event)
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
 	{
-B
 		if (poll_fd_[i].fd == event.fd)
 			target_index = i;
 	}
@@ -179,25 +186,31 @@ int	EventHandler::Accept()
 	return 0;
 }
 
-message::Command	EventHandler::Receive(Event event, pollfd entry){
+char	*EventHandler::Receive(Event event){
 
-	char buffer[this->kBufferSize];
+	char *buffer = (char *)malloc(sizeof(char) * this->kBufferSize);
+	//char buffer[this->kBufferSize];
 	bzero(buffer, sizeof(char) * this->kBufferSize);
-
 	//receive the message from the socket
 	recv(event.get_fd(), buffer, sizeof(buffer), 0);
-	if (buffer[0] == '\0')
-		Detach(entry);
-	std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
+	std::cout << "<Receive> " << buffer << std::endl; 
+	return buffer;
+}
 
+message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::string str_buffer(buffer);
 	message::MessageParser message_parser(str_buffer);
-	std::cout << "command enum: " << message_parser.get_command() << std::endl;
-	std::cout << "state enum: " << message_parser.get_state() << std::endl;
-	std::cout << "params: ";
+	std::cout << "<Parse> " << buffer <<", " << str_buffer << std::endl; 
+	//debug
+	std::cout << "------debug------" << std::endl;
+	std::cout << "state: " << message_parser.get_state();
+	std::cout << "command: " << message_parser.get_command();
 	utils::print_string_vector(message_parser.get_params());
-
-	return message_parser.get_command();
+	std::cout << "------debug------" << std::endl;
+	//
+	event.set_command(message_parser.get_command());
+	event.set_command_params(message_parser.get_params());
+	return message_parser.get_state();
 }
 
 void	EventHandler::Send(Event event)

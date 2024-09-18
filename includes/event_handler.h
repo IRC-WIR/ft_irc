@@ -25,8 +25,9 @@ class EventHandler{
 
 	private:
 		int				Accept();
-		message::Command		Receive(Event event, pollfd entry);
-		void				ExecuteCommand(message::Command command, Event event);
+		char		*Receive(Event event);
+		message::ParseState	Parse(const char *buffer, Event& event);
+		void				ExecuteCommand(Event event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
@@ -44,7 +45,7 @@ class EventHandler{
 
 		//定数
 		static const int	kQueueLimit;
-		static const int	kBufferSize = 512;
+		static const int	kBufferSize;
 };
 
 #endif

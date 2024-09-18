@@ -11,73 +11,65 @@ EndEventListener::~EndEventListener()
 	return ;
 }
 
-std::map<int, std::string> EndEventListener::Pass(Event event)
+std::map<int, std::string> EndEventListener::PassCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Nick(Event event)
+std::map<int, std::string> EndEventListener::NickCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Join(Event event)
+std::map<int, std::string> EndEventListener::UserCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Invite(Event event)
+std::map<int, std::string> EndEventListener::JoinCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Kick(Event event)
+std::map<int, std::string> EndEventListener::InviteCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Topic(Event event)
+std::map<int, std::string> EndEventListener::KickCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Part(Event event)
+std::map<int, std::string> EndEventListener::TopicCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Privmsg(Event event)
+std::map<int, std::string> EndEventListener::ModeCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Quit(Event event)
+std::map<int, std::string> EndEventListener::PrivmsgCommand(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;
 	return error_message;
 }
-
-std::map<int, std::string> EndEventListener::Mode(Event event)
-{
-	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
-}
-
