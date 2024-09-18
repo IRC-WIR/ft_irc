@@ -18,7 +18,7 @@ class EventListener
 		virtual std::map<int, std::string> Kick(Event event) = 0;
 		virtual std::map<int, std::string> Topic(Event event) = 0;
 		virtual std::map<int, std::string> Mode(Event event) = 0;
-		virtual std::map<int, std::string> Prvmsg(Event event) = 0;
+		virtual std::map<int, std::string> Privmsg(Event event) = 0;
 
 	private:
 

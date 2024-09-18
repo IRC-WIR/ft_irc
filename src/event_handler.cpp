@@ -76,8 +76,8 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			return ;
 		}
 		Event event = Event(entry.fd, entry.revents);
-		Command command = Receive(event, entry);
-		ExecuteCommand(command, event);		
+		message::Command command = Receive(event, entry);
+		ExecuteCommand(command, event);
 	}
 }
 
@@ -87,38 +87,37 @@ void	EventHandler::ExecuteCommand(message::Command command, Event event){
 	for (int i = 0; i < listener_size; i++)
 
 		switch (command){
-	
-			case PASS:
+
+			case message::PASS:
 				event_listeners_[i]->Pass(event);
 				break;
-			case NICK:
+			case message::NICK:
 				event_listeners_[i]->Nick(event);
 				break;
-			case USER:
-				event_listeners_[i]->Quit(event);
+			case message::USER:
+				event_listeners_[i]->User(event);
 				break;
-			case JOIN:
+			case message::JOIN:
 				event_listeners_[i]->Join(event);
 				break;
-			case INVITE:
+			case message::INVITE:
 				event_listeners_[i]->Invite(event);
 				break;
-			case KICK:
+			case message::KICK:
 				event_listeners_[i]->Kick(event);
 				break;
-			case TOPIC:
+			case message::TOPIC:
 				event_listeners_[i]->Topic(event);
 				break;
-			case MODE:
+			case message::MODE:
 				event_listeners_[i]->Mode(event);
 				break;
-			case PRVMSG:
-				event_listeners_[i]->Prvmsg(event);
+			case message::PRIVMSG:
+				event_listeners_[i]->Privmsg(event);
 				break;
 			default
 				return ;
 		}
-	}
 }
 
 void	EventHandler::HandlePollOutEvent(pollfd entry)

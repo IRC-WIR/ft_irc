@@ -60,7 +60,7 @@ std::map<int, std::string> EndEventListener::Part(Event event)
 	return error_message;
 }
 
-std::map<int, std::string> EndEventListener::Prvmsg(Event event)
+std::map<int, std::string> EndEventListener::Privmsg(Event event)
 {
 	(void)event;
 	std::map<int, std::string> error_message;

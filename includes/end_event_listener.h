@@ -17,7 +17,7 @@ class EndEventListener: public EventListener{
 		std::map<int, std::string> Kick(Event event);
 		std::map<int, std::string> Topic(Event event);
 		std::map<int, std::string> Part(Event event);
-		std::map<int, std::string> Prvmsg(Event event);
+		std::map<int, std::string> Privmsg(Event event);
 		std::map<int, std::string> Quit(Event event);
 		std::map<int, std::string> Mode(Event event);
 

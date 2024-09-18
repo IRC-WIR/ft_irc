@@ -14,7 +14,7 @@ enum Command
 	KICK,
 	TOPIC,
 	MODE,
-	PRVIMSG,
+	PRIVMSG,
 	USER,
 	NOT_FOUND
 };

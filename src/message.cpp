@@ -11,7 +11,7 @@ std::map<std::string, message::Command> message::MessageParser::createCommandMap
     m.insert(std::make_pair("KICK", message::KICK));
     m.insert(std::make_pair("TOPIC", message::TOPIC));
     m.insert(std::make_pair("MODE", message::MODE));
-    m.insert(std::make_pair("PRVIMSG", message::PRVIMSG));
+    m.insert(std::make_pair("PRIVMSG", message::PRIVMSG));
     m.insert(std::make_pair("USER", message::USER));
     return m;
 }
