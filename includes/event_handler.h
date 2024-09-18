@@ -1,13 +1,13 @@
 #ifndef EVENT_HANDLER_H_
 # define EVENT_HANDLER_H_
 
-#include <map>
 #include <poll.h>
 #include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/socket.h>
 #include "event_listener.h"
-#include <string.h>
+#include "utils.h"
+#include "message.h"
 
 class StartEventListener;
 
@@ -33,6 +33,7 @@ class EventHandler{
 		void		HandlePollOutEvent(pollfd entry);
 		void		HandlePollHupEvent(pollfd entry);
 
+
 		std::vector<EventListener *>	event_listeners_;
 		StartEventListener* start_event_listener_;
 		EndEventListener* end_event_listener_;
@@ -40,6 +41,8 @@ class EventHandler{
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
+
+		//定数
 		static const int	kQueueLimit;
 		static const int	kBufferSize = 512;
 };

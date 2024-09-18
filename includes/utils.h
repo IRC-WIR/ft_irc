@@ -1,27 +1,21 @@
 #ifndef UTILS_H_
  #define UTILS_H_
 
+
+#include <map>
+#include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 
 namespace utils{
 
-	int	ft_stoi(std::string num_str)
-	{
-		for (int i = 0; i < (int)num_str.length(); i++)
-		{
-			if (!isdigit(num_str[i]))
-			{
-				//数字で構成されていない例外を投げる
-				//throw (IrcException(kPortErrMsg));
-			}
-		}
-		std::stringstream ss(num_str);
-		int num_int;	ss >> num_int;
-		return (num_int);
-	}
-
+	int	ft_stoi(std::string num_str);
+	std::string ft_split_before(const std::string& str, const std::string& delim);
+	std::string ft_split_after(const std::string& str, const std::string& delim);
+	//debug
+	void print_string_vector(const std::vector<std::string>& str_vec);
 };
 
 #endif
- 
+

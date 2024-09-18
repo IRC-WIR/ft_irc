@@ -1,9 +1,9 @@
 #ifndef EVENT_LISTENER_H_
  #define EVENT_LISTENER_H_
 
-#include <map>
-#include <iostream>
+
 #include "event.h"
+#include "utils.h"
 
 class EventListener
 {

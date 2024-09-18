@@ -80,9 +80,4 @@ void	IrcServer::add_user(User *user)
 }
 
 //IrcServerの例外処理
-IrcServer::IrcException::IrcException(std::string msg) : msg_(msg) {}
-IrcServer::IrcException::~IrcException()_GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW {}
-const char* IrcServer::IrcException::what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW
-{
-	return msg_.c_str();
-}
+IrcServer::IrcException::IrcException(const std::string& msg) : std::invalid_argument(msg) {};

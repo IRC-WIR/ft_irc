@@ -1,5 +1,4 @@
 #include "event_handler.h"
-#include "utils.h"
 #include "irc_server.h"
 
 const	int	EventHandler::kQueueLimit = 10;
@@ -41,11 +40,11 @@ void	EventHandler::ExecutePoll()
 {
 	int	pollResult = poll(poll_fd_.data(), poll_fd_.size(), 1000);
 	//debug
-	std::cout << "-- pollfd --" << std::endl;
-	for (int i = 0; i < (int)poll_fd_.size(); i++)
-	{
-		std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
-	}
+	// std::cout << "-- pollfd --" << std::endl;
+	// for (int i = 0; i < (int)poll_fd_.size(); i++)
+	// {
+	// 	std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
+	// }
 //	std::cout << "-- listener --" << std::endl;
 //	std::cout << event_listeners_.size() << std::endl;
 	//////
@@ -53,7 +52,8 @@ void	EventHandler::ExecutePoll()
 		throw (IrcServer::IrcException("poll failed"));
 	if (pollResult == 0)
 	{
-		std::cout << "no event in 1000ms" << std::endl;
+		//debug
+		//std::cout << "no event in 1000ms" << std::endl;
 		return;
 	}
 	int fd_size = poll_fd_.size();
@@ -88,31 +88,31 @@ void	EventHandler::ExecuteCommand(Command command, Event event){
 
 		switch (command){
 	
-			case kPass:
+			case PASS:
 				event_listeners_[i]->Pass(event);
 				break;
-			case kNick:
+			case NICK:
 				event_listeners_[i]->Nick(event);
 				break;
-			case kUser:
+			case USER:
 				event_listeners_[i]->Quit(event);
 				break;
-			case kJoin:
+			case JOIN:
 				event_listeners_[i]->Join(event);
 				break;
-			case kInvite:
+			case INVITE:
 				event_listeners_[i]->Invite(event);
 				break;
-			case kKick:
+			case KICK:
 				event_listeners_[i]->Kick(event);
 				break;
-			case kTopic:
+			case TOPIC:
 				event_listeners_[i]->Topic(event);
 				break;
-			case kMode:
+			case MODE:
 				event_listeners_[i]->Mode(event);
 				break;
-			case kPrvmsg:
+			case PRVMSG:
 				event_listeners_[i]->Prvmsg(event);
 				break;
 			default
@@ -173,7 +173,7 @@ int	EventHandler::Accept()
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
 
-	EventListener* event_listener = start_event_listener_->accept(connected_socket_);	
+	EventListener* event_listener = start_event_listener_->accept(connected_socket_);
 	if (event_listener)
 		event_listeners_.push_back(event_listener);
 	return 0;
