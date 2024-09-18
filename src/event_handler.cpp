@@ -90,9 +90,9 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		std::string str_buffer(buffer);
 		//parsing from received buffer
 		message::MessageParser MessageParser(str_buffer);
-		std::cout << "command enum: : " << MessageParser.get_command() << std::endl;
-		std::cout << "state enum: : " << MessageParser.get_state() << std::endl;
-		std::cout << "params: : ";
+		std::cout << "command enum: " << MessageParser.get_command() << std::endl;
+		std::cout << "state enum: " << MessageParser.get_state() << std::endl;
+		std::cout << "params: ";
 		utils::print_string_vector(MessageParser.get_params());
 
 		// int event_listener_size = event_listeners_.size();
