@@ -81,7 +81,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 	}
 }
 
-void	EventHandler::ExecuteCommand(Command command, Event event){
+void	EventHandler::ExecuteCommand(message::Command command, Event event){
 
 	int listener_size = event_listeners_.size();
 	for (int i = 0; i < listener_size; i++)
@@ -141,6 +141,7 @@ void	EventHandler::Detach(pollfd event)
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
 	{
+B
 		if (poll_fd_[i].fd == event.fd)
 			target_index = i;
 	}
@@ -179,7 +180,7 @@ int	EventHandler::Accept()
 	return 0;
 }
 
-Command	EventHandler::Receive(Event event, pollfd entry){
+message::Command	EventHandler::Receive(Event event, pollfd entry){
 
 	char buffer[this->kBufferSize];
 	bzero(buffer, sizeof(char) * this->kBufferSize);
@@ -190,7 +191,14 @@ Command	EventHandler::Receive(Event event, pollfd entry){
 		Detach(entry);
 	std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
 
-	// add parsing method here and receive Command
+	std::string str_buffer(buffer);
+	message::MessageParser message_parser(str_buffer);
+	std::cout << "command enum: " << message_parser.get_command() << std::endl;
+	std::cout << "state enum: " << message_parser.get_state() << std::endl;
+	std::cout << "params: ";
+	utils::print_string_vector(message_parser.get_params());
+
+	return message_parser.get_command();
 }
 
 void	EventHandler::Send(Event event)

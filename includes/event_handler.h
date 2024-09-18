@@ -24,14 +24,14 @@ class EventHandler{
 		void	add_event_socket(int new_fd);
 
 	private:
-		int		Accept();
-		Command		Receive(Event event, pollfd entry);
-		void		ExecuteCommand(std::string command, Event event);
-		void		Send(Event event);
-		void		Detach(pollfd entry);
-		void		HandlePollInEvent(pollfd entry);
-		void		HandlePollOutEvent(pollfd entry);
-		void		HandlePollHupEvent(pollfd entry);
+		int				Accept();
+		message::Command		Receive(Event event, pollfd entry);
+		void				ExecuteCommand(std::string command, Event event);
+		void				Send(Event event);
+		void				Detach(pollfd entry);
+		void				HandlePollInEvent(pollfd entry);
+		void				HandlePollOutEvent(pollfd entry);
+		void				HandlePollHupEvent(pollfd entry);
 
 
 		std::vector<EventListener *>	event_listeners_;

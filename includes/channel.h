@@ -21,9 +21,9 @@ class Channel: public EventListener{
 
 	private:
 		std::vector<User>	users_;
-		std::string	topic_;
-		std::string	key_;
-		std::string	name_;
+		std::string		topic_;
+		std::string		key_;
+		std::string		name_;
 		std::vector<User>	operators_;
 		int	max_member_num_;
 		bool	i_mode;
