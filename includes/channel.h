@@ -4,8 +4,6 @@
 #include "event_listener.h"
 #include "user.h"
 
-class User;
-
 class Channel: public EventListener{
 	public:
 		std::map<int, std::string> Pass(Event event);

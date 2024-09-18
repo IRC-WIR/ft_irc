@@ -2,9 +2,8 @@
  #define USER_H_
 
 #include "event_listener.h"
-#include "channel.h"
 
-class Channel;
+class Cannel;
 
 class User : public EventListener{
 	public:
@@ -28,7 +27,6 @@ class User : public EventListener{
 		std::string	nick_name_;
 		std::string	user_name_;
 		std::vector<Channel>	channels_;
-
 };
 
 #endif
