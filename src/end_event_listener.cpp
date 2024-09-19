@@ -21,6 +21,7 @@ std::map<int, std::string> EndEventListener::PassCommand(Event event)
 std::map<int, std::string> EndEventListener::NickCommand(Event event)
 {
 	(void)event;
+	std::cout << "END" << std::endl;
 	std::map<int, std::string> error_message;
 	return error_message;
 }

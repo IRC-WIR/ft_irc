@@ -28,6 +28,8 @@ class EventHandler{
 		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
 		void				ExecuteCommand(Event event);
+		void				CallStartEventListener(Event event);
+		void				CallEndEventListener(Event event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
