@@ -102,31 +102,49 @@ void	EventHandler::ExecuteCommand(Event event){
 		switch (event.get_command()){
 
 			case message::PASS:
+				start_event_listener_->PassCommand(event);
 				event_listeners_[i]->PassCommand(event);
+				end_event_listener_->PassCommand(event);
 				break;
 			case message::NICK:
+				start_event_listener_->NickCommand(event);
 				event_listeners_[i]->NickCommand(event);
+				end_event_listener_->NickCommand(event);
 				break;
 			case message::USER:
+				start_event_listener_->UserCommand(event);
 				event_listeners_[i]->UserCommand(event);
+				end_event_listener_->UserCommand(event);
 				break;
 			case message::JOIN:
+				start_event_listener_->JoinCommand(event);
 				event_listeners_[i]->JoinCommand(event);
+				end_event_listener_->JoinCommand(event);
 				break;
 			case message::INVITE:
+				start_event_listener_->InviteCommand(event);
 				event_listeners_[i]->InviteCommand(event);
+				end_event_listener_->InviteCommand(event);
 				break;
 			case message::KICK:
+				start_event_listener_->KickCommand(event);
 				event_listeners_[i]->KickCommand(event);
+				end_event_listener_->KickCommand(event);
 				break;
 			case message::TOPIC:
+				start_event_listener_->TopicCommand(event);
 				event_listeners_[i]->TopicCommand(event);
+				end_event_listener_->TopicCommand(event);
 				break;
 			case message::MODE:
+				start_event_listener_->ModeCommand(event);
 				event_listeners_[i]->ModeCommand(event);
+				end_event_listener_->ModeCommand(event);
 				break;
 			case message::PRIVMSG:
+				start_event_listener_->PrivmsgCommand(event);
 				event_listeners_[i]->PrivmsgCommand(event);
+				end_event_listener_->PrivmsgCommand(event);
 				break;
 			default:
 				return ;
