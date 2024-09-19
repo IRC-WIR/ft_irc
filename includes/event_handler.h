@@ -18,14 +18,14 @@ class EventHandler{
 		EventHandler(StartEventListener* start_event_listener, EndEventListener* end_event_listener, std::string port_no);
 		EventHandler();
 		~EventHandler();
-		bool	IsListeningSocket();
-		void	ExecutePoll();
-		void	WaitMillSecond(int ms);
-		void	add_event_socket(int new_fd);
+		bool				IsListeningSocket();
+		void				ExecutePoll();
+		void				WaitMillSecond(int ms);
+		void				add_event_socket(int new_fd);
 
 	private:
-		int				Accept();
-		char		*Receive(Event event);
+		int					Accept();
+		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
 		void				ExecuteCommand(Event event);
 		void				Send(Event event);

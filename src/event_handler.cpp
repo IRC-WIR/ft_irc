@@ -61,7 +61,9 @@ void	EventHandler::ExecutePoll()
 	for (int i = 0; i < fd_size; i++)
 	{
 		pollfd entry = this->poll_fd_[i];
+		std::cout << "===start HandlePollInEvent, i :" << i << "  ===" << std::endl;
 		HandlePollInEvent(entry);
+		std::cout << "===finish HandlePollInEvent===" << std::endl;
 		HandlePollHupEvent(entry);
 	}
 	return ;
@@ -79,10 +81,13 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		Event event = Event(entry.fd, entry.revents);
 	//	message::Command command = Receive(event, entry);
 	//	ExecuteCommand(command, event);
-		char *buffer = Receive(event);
+		char buffer[kBufferSize + 1];
+		//null埋め
+		std::memset(buffer, 0, kBufferSize + 1);
+		Receive(event, buffer);
 		if (buffer[0] == '\0')
 			Detach(entry);
-		//std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
+		std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
 		if (Parse(buffer, event) != message::PARSE_COMPLETE)
 			return ;
 		ExecuteCommand(event);
@@ -186,25 +191,21 @@ int	EventHandler::Accept()
 	return 0;
 }
 
-char	*EventHandler::Receive(Event event){
-
-	char *buffer = (char *)malloc(sizeof(char) * this->kBufferSize);
-	//char buffer[this->kBufferSize];
-	bzero(buffer, sizeof(char) * this->kBufferSize);
+void	EventHandler::Receive(Event event, char* buffer)
+{
 	//receive the message from the socket
-	recv(event.get_fd(), buffer, sizeof(buffer), 0);
-	std::cout << "<Receive> " << buffer << std::endl; 
-	return buffer;
+	recv(event.get_fd(), buffer, kBufferSize, 0);
+	std::cout << "<Receive> " << buffer << std::endl;
 }
 
 message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::string str_buffer(buffer);
 	message::MessageParser message_parser(str_buffer);
-	std::cout << "<Parse> " << buffer <<", " << str_buffer << std::endl; 
 	//debug
+	std::cout << "<Parse> " << buffer <<", " << str_buffer << std::endl;
 	std::cout << "------debug------" << std::endl;
-	std::cout << "state: " << message_parser.get_state();
-	std::cout << "command: " << message_parser.get_command();
+	std::cout << "state: " << message_parser.get_state() << std::endl;
+	std::cout << "command: " << message_parser.get_command() << std::endl;
 	utils::print_string_vector(message_parser.get_params());
 	std::cout << "------debug------" << std::endl;
 	//

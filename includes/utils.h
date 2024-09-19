@@ -1,12 +1,12 @@
 #ifndef UTILS_H_
  #define UTILS_H_
 
-
 #include <map>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cstring> //for std::memset
 
 namespace utils{
 
