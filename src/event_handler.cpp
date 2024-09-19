@@ -79,8 +79,6 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			return ;
 		}
 		Event event = Event(entry.fd, entry.revents);
-	//	message::Command command = Receive(event, entry);
-	//	ExecuteCommand(command, event);
 		char buffer[kBufferSize + 1];
 		//null埋め
 		std::memset(buffer, 0, kBufferSize + 1);
@@ -97,12 +95,12 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 void	EventHandler::ExecuteCommand(Event event){
 
 	int listener_size = event_listeners_.size();
+
 	for (int i = 0; i < listener_size; i++)
 
 		switch (event.get_command()){
-
 			case message::PASS:
-				event_listeners_[i]->PassCommand(event);
+				utils::mergeMaps(response_map_, event_listeners_[i]->PassCommand(event));
 				break;
 			case message::NICK:
 				event_listeners_[i]->NickCommand(event);

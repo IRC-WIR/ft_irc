@@ -40,14 +40,14 @@ void message::MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			case PARSE_PARAM:
-				if (last_param != "")
+				if (!last_param.empty())
 					command_params_.push_back(last_param);
 				state_ = PARSE_COMPLETE;
 				break;
 
 			default:
 				last_param = utils::ft_split_after(message_, ":");
-				if (last_param != "")
+				if (!last_param.empty())
 					command = utils::ft_split_before(message_, ":");
 				state_ = PARSE_COMMAND;
 				break;
