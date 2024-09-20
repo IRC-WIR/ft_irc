@@ -25,6 +25,10 @@ namespace utils{
 	}
 	//debug
 	void print_string_vector(const std::vector<std::string>& str_vec);
+	bool is_same_string(const std::string& dest, const std::string& src);
+	//int count_space(const std::string& str);
+	void erase_space(std::string& str);
+
 };
 
 #endif

@@ -42,6 +42,13 @@ void message::MessageParser::ParsingMessage(const std::string& msg)
 			case PARSE_PARAM:
 				if (!last_param.empty())
 					command_params_.push_back(last_param);
+				if (command_params_.empty())
+				{
+					std::cout << "PARSE_EMPTY" << std::endl;
+					state_ = PARSE_EMPTY;
+					break;
+				}
+				utils::print_string_vector(command_params_);
 				state_ = PARSE_COMPLETE;
 				break;
 
@@ -62,6 +69,7 @@ void message::MessageParser::ParsingCommand(const std::string& command)
 	std::stringstream ss(command);
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
+		utils::erase_space(str);
 		this->command_params_.push_back(str);
 	}
 	const std::string command_str = this->command_params_[0];

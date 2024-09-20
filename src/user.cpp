@@ -29,24 +29,9 @@ std::map<int, std::string> User::PassCommand(Event event) {
 		ret_map.insert(ret_pair);
 		return ret_map;
 	}
-	//debug
 	std::cout << "Pass method called!" << std::endl;
-	std::vector<std::string> str_vec = event.get_command_params();
-	std::string str = *str_vec.begin();
-	std::string::size_type pos;
-	while((pos = str.find('\n')) != std::string::npos)
-	{
-		str.erase(pos, 1);
-	}
-	std::cout << "server_password_.compare(str) " << server_password_.compare(str) << std::endl;
-	//
-	if (server_password_.compare(str) == 0)
-	{
+	if (server_password_.compare(event.get_command_params()[0]) == 0)
 		is_password_authenticated_ = true;
-		//debug
-		std::cout << "【user PASSS command】is_password_authenticated: " << is_password_authenticated_ << std::endl;
-		//
-	}
 	return ret_map;
 }
 

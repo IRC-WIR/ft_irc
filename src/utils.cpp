@@ -37,6 +37,16 @@ void utils::print_string_vector(const std::vector<std::string>& str_vec)
 		it != str_vec.end();
 		it ++)
 	{
+		std::cout << "size: " << it->size() << std::endl;
 		std::cout << "\"" << *it << "\"" << std::endl;
+	}
+}
+
+void utils::erase_space(std::string& str)
+{
+	std::string::size_type pos;
+	while((pos = str.find('\n')) != std::string::npos)
+	{
+		str.erase(pos, 1);
 	}
 }
