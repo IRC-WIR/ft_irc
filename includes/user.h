@@ -23,6 +23,7 @@ class User : public EventListener{
 		void set_server_password(const std::string& password);
 		bool get_is_password_authenticated() const;
 		int get_fd() const;
+		std::string get_nick_name() const;
 
 	private:
 		int	fd_;

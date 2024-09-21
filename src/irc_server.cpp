@@ -87,5 +87,9 @@ void	IrcServer::add_user(User *user)
 	users_.push_back(user);
 }
 
+std::vector<User*>	IrcServer::get_users(){
+	return users_;
+}
+
 //IrcServerの例外処理
 IrcServer::IrcException::IrcException(const std::string& msg) : std::invalid_argument(msg) {};

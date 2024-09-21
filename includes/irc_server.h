@@ -22,7 +22,7 @@ class IrcServer{
 		std::string		get_port_no();
 		void			set_port_no(std::string port_no);
 		std::vector<Channel>	get_channels();
-		std::vector<User>	get_users();
+		std::vector<User*>	get_users();
 		void	add_channel(Channel *channel);
 		void	remove_channel(std::string name);
 		void	add_user(User *user);

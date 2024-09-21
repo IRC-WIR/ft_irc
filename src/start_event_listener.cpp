@@ -27,10 +27,20 @@ std::map<int, std::string> StartEventListener::PassCommand(Event event)
 
 std::map<int, std::string> StartEventListener::NickCommand(Event event)
 {
-	(void)event;
-	std::cout << "START" << std::endl;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::map<int, std::string>	message_map;
+	std::string new_nickname = event.get_command_params().at(0);
+	std::vector<User*> users = this->irc_server_.get_users();
+	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it ++)
+	{
+		if ((*it)->get_nick_name() == new_nickname)
+		{
+			event.set_start_listener_result(ERR_NICKNAMEINUSE);
+			std::cout << new_nickname << " :Nickname is already in use" << std::endl;
+			message_map.insert(std::make_pair(event.get_fd(), new_nickname + " :Nickname is already in use"));
+		}
+	}
+	std::cout << "INSIDE START :" << event.get_start_listener_result() << std::endl;
+	return message_map;
 }
 
 std::map<int, std::string> StartEventListener::UserCommand(Event event)

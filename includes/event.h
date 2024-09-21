@@ -4,6 +4,12 @@
 #include "utils.h"
 #include "message.h"
 
+enum StartListenerResult
+{
+	DEFAULT = 0,
+	ERR_NICKNAMEINUSE
+};
+
 class Event {
 	public:
 		Event(int fd, int event_type);
@@ -12,14 +18,17 @@ class Event {
 		int		get_event_type() const;
 		message::Command	get_command();
 		std::vector<std::string>	get_command_params();
+		StartListenerResult	get_start_listener_result();
 		void	set_command(const message::Command& command);
 		void	set_command_params(const std::vector<std::string>& commmand_params);
+		void	set_start_listener_result(const StartListenerResult start_listener_result);
 
 	private:
 		const int	fd_;
 		const int	event_type_;
 		message::Command command_;
 		std::vector<std::string>	command_params_;
+		StartListenerResult	start_listener_result_;
 };
 
 #endif

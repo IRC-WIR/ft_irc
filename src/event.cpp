@@ -1,6 +1,6 @@
 #include "event.h"
 
-Event::Event(int fd, int event_type) : fd_(fd), event_type_(event_type)
+Event::Event(int fd, int event_type) : fd_(fd), event_type_(event_type), start_listener_result_(DEFAULT)
 {
 	return ;
 }
@@ -42,4 +42,12 @@ void Event::set_command_params(const std::vector<std::string>& commmand_params)
 	{
 		command_params_.push_back(*it);
 	}
+}
+
+StartListenerResult	Event::get_start_listener_result(){
+	return start_listener_result_;
+}
+
+void	Event::set_start_listener_result(const StartListenerResult start_listener_result){
+	this->start_listener_result_ = start_listener_result;
 }

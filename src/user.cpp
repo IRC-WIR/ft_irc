@@ -41,10 +41,8 @@ std::map<int, std::string> User::NickCommand(Event event){
 
 	if (event.get_fd() != this->fd_)
 		return message_map;
-	//StartEventListenerでエラーがあった場合ここでリターンする仕組み作り
-
-
-
+	if (event.get_start_listener_result() != DEFAULT)
+		return message_map;
 	//パラメータが与えられない場合
 	if (event.get_command_params().empty()){
 		std::cout << ":No nickname given" << std::endl;
@@ -142,4 +140,9 @@ bool User::get_is_password_authenticated() const
 int User::get_fd() const
 {
 	return fd_;
+}
+
+std::string User::get_nick_name() const
+{
+	return nick_name_;
 }
