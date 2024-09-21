@@ -23,8 +23,8 @@ class User : public EventListener{
 	private:
 		int	fd_;
 		bool	is_password_authenticated_;
-		std::string	nick_name_;
-		std::string	user_name_;
+		std::string	nickname_;
+		std::string	username_;
 		std::vector<Channel>	channels_;
 };
 
