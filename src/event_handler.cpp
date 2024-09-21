@@ -95,7 +95,6 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 void	EventHandler::ExecuteCommand(Event event){
 
 	CallStartEventListener(event);
-	std::cout << "AFTER START :" << event.get_start_listener_result() << std::endl;
 
 	int listener_size = event_listeners_.size();
 

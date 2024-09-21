@@ -46,10 +46,6 @@ std::map<int, std::string> User::NickCommand(Event& event){
 	
 	//ニックネームが不適切な場合
 	//長さ超過
-	////only for now
-	if (event.get_command_params().size() < 1)
-		return message_map;
-	////
 	std::string new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9){
 		std::cout << new_nickname << ":Erroneus nickname" << std::endl;

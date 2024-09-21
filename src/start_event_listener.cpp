@@ -31,6 +31,7 @@ std::map<int, std::string> StartEventListener::NickCommand(Event& event)
 	std::map<int, std::string>	message_map;
 	//パラメータが与えられない場合
 	if (event.get_command_params().size() < 1){
+		event.set_start_listener_result(ERR_NONICKNAMEGIVEN);
 		std::cout << ":No nickname given" << std::endl;
 		message_map.insert(std::make_pair(event.get_fd(), ":No nickname given"));
 		return message_map;
@@ -46,7 +47,6 @@ std::map<int, std::string> StartEventListener::NickCommand(Event& event)
 			message_map.insert(std::make_pair(event.get_fd(), new_nickname + " :Nickname is already in use"));
 		}
 	}
-	std::cout << "INSIDE START :" << event.get_start_listener_result() << std::endl;
 	return message_map;
 }
 
