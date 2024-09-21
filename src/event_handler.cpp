@@ -100,7 +100,7 @@ void	EventHandler::ExecuteCommand(Event event){
 
 	int listener_size = event_listeners_.size();
 	for (int i = 0; i < listener_size; i++)
-
+	{
 		switch (event.get_command()){
 
 			case message::PASS:
@@ -133,7 +133,8 @@ void	EventHandler::ExecuteCommand(Event event){
 			default:
 				return ;
 		}
-		CallEndEventListener(event);
+	}
+	CallEndEventListener(event);
 }
 
 void	EventHandler::CallStartEventListener(Event event)
