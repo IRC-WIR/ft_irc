@@ -47,7 +47,6 @@ void message::MessageParser::ParsingMessage(const std::string& msg)
 					state_ = PARSE_EMPTY;
 					break;
 				}
-				utils::print_string_vector(command_params_);
 				state_ = PARSE_COMPLETE;
 				break;
 
@@ -58,7 +57,7 @@ void message::MessageParser::ParsingMessage(const std::string& msg)
 				state_ = PARSE_COMMAND;
 				break;
 		}
-		if (state_ == PARSE_ERROR)
+		if (state_ == PARSE_ERROR || state_ == PARSE_EMPTY)
 			break;
 	}
 }
