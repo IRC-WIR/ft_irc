@@ -86,7 +86,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			Detach(entry);
 		std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
 		message::ParseState parse_state = Parse(buffer, event);
-		if (! (parse_state == message::PARSE_COMPLETE || parse_state == message::PARSE_EMPTY))
+		if (parse_state == message::PARSE_ERROR)
 			return ;
 		ExecuteCommand(event);
 	}
@@ -281,7 +281,8 @@ message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::cout << "command: " << message_parser.get_command() << std::endl;
 	std::cout << "command params: ";
 	utils::print_string_vector(message_parser.get_params());
-	std::cout << "------debug------" << std::endl;
+
+	std::cout << "\n\n------debug------" << std::endl;
 	//
 	event.set_command(message_parser.get_command());
 	event.set_command_params(message_parser.get_params());
