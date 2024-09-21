@@ -54,16 +54,14 @@ void	EventHandler::ExecutePoll()
 	if (pollResult == 0)
 	{
 		//debug
-		//std::cout << "no event in 1000ms" << std::endl;
+		std::cout << "no event in 1000ms" << std::endl;
 		return;
 	}
 	int fd_size = poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
 	{
 		pollfd entry = this->poll_fd_[i];
-		std::cout << "===start HandlePollInEvent, i :" << i << "  ===" << std::endl;
 		HandlePollInEvent(entry);
-		std::cout << "===finish HandlePollInEvent===" << std::endl;
 		HandlePollHupEvent(entry);
 	}
 	return ;
@@ -78,15 +76,17 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			Accept();
 			return ;
 		}
+		//eventを作成
 		Event event = Event(entry.fd, entry.revents);
+		//bufferを作成し、null埋めする
 		char buffer[kBufferSize + 1];
-		//null埋め
 		std::memset(buffer, 0, kBufferSize + 1);
 		Receive(event, buffer);
 		if (buffer[0] == '\0')
 			Detach(entry);
 		std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
-		if (Parse(buffer, event) != message::PARSE_COMPLETE)
+		message::ParseState parse_state = Parse(buffer, event);
+		if (parse_state == message::PARSE_ERROR)
 			return ;
 		ExecuteCommand(event);
 	}
@@ -275,13 +275,15 @@ void	EventHandler::Receive(Event event, char* buffer)
 message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::string str_buffer(buffer);
 	message::MessageParser message_parser(str_buffer);
+
 	//debug
-	std::cout << "<Parse> " << buffer <<", " << str_buffer << std::endl;
 	std::cout << "------debug------" << std::endl;
 	std::cout << "state: " << message_parser.get_state() << std::endl;
 	std::cout << "command: " << message_parser.get_command() << std::endl;
+	std::cout << "command params: ";
 	utils::print_string_vector(message_parser.get_params());
-	std::cout << "------debug------" << std::endl;
+
+	std::cout << "\n\n------debug------" << std::endl;
 	//
 	event.set_command(message_parser.get_command());
 	event.set_command_params(message_parser.get_params());
