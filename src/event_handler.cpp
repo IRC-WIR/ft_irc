@@ -135,7 +135,7 @@ void	EventHandler::ExecuteCommand(Event event){
 	CallEndEventListener(event);
 }
 
-void	EventHandler::CallStartEventListener(Event event)
+void	EventHandler::CallStartEventListener(Event& event)
 {
 		switch (event.get_command()){
 
@@ -171,7 +171,7 @@ void	EventHandler::CallStartEventListener(Event event)
 		}
 }
 
-void	EventHandler::CallEndEventListener(Event event)
+void	EventHandler::CallEndEventListener(Event& event)
 {
 	switch (event.get_command()){
 		case message::PASS:

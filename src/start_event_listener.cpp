@@ -28,7 +28,7 @@ std::map<int, std::string> StartEventListener::PassCommand(Event& event)
 std::map<int, std::string> StartEventListener::NickCommand(Event& event)
 {
 	(void)event;
-	std::cout << "START" << std::endl;
+	event.set_command(message::PASS);
 	std::map<int, std::string> error_message;
 	return error_message;
 }
