@@ -27,7 +27,14 @@ std::map<int, std::string> StartEventListener::PassCommand(Event event)
 
 std::map<int, std::string> StartEventListener::NickCommand(Event event)
 {
+	
 	std::map<int, std::string>	message_map;
+	//パラメータが与えられない場合
+	if (event.get_command_params().size() < 1){
+		std::cout << ":No nickname given" << std::endl;
+		message_map.insert(std::make_pair(event.get_fd(), ":No nickname given"));
+		return message_map;
+	}
 	std::string new_nickname = event.get_command_params().at(0);
 	std::vector<User*> users = this->irc_server_.get_users();
 	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it ++)

@@ -43,14 +43,13 @@ std::map<int, std::string> User::NickCommand(Event event){
 		return message_map;
 	if (event.get_start_listener_result() != DEFAULT)
 		return message_map;
-	//パラメータが与えられない場合
-	if (event.get_command_params().empty()){
-		std::cout << ":No nickname given" << std::endl;
-		message_map.insert(std::make_pair(this->fd_, ":No nickname given"));
-		return message_map;
-	}
+	
 	//ニックネームが不適切な場合
 	//長さ超過
+	////only for now
+	if (event.get_command_params().size() < 1)
+		return message_map;
+	////
 	std::string new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9){
 		std::cout << new_nickname << ":Erroneus nickname" << std::endl;

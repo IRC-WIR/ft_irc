@@ -7,7 +7,8 @@
 enum StartListenerResult
 {
 	DEFAULT = 0,
-	ERR_NICKNAMEINUSE
+	ERR_NICKNAMEINUSE,
+	ERR_NONICKNAMEGIVEN
 };
 
 class Event {
