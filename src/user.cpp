@@ -41,6 +41,9 @@ std::map<int, std::string> User::NickCommand(Event event){
 
 	if (event.get_fd() != this->fd_)
 		return message_map;
+	//StartEventListenerでエラーがあった場合ここでリターンする仕組み作り
+
+
 
 	//パラメータが与えられない場合
 	if (event.get_command_params().empty()){
@@ -52,8 +55,8 @@ std::map<int, std::string> User::NickCommand(Event event){
 	//長さ超過
 	std::string new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9){
-		std::cout << ":Erroneus nickname" << std::endl;
-		message_map.insert(std::make_pair(this->fd_, ":Erroneus nickname"));
+		std::cout << new_nickname << ":Erroneus nickname" << std::endl;
+		message_map.insert(std::make_pair(this->fd_, new_nickname + ":Erroneus nickname"));
 		return message_map;
 	}
 	//ニックネーム設定成功
