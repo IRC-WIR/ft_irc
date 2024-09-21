@@ -2,6 +2,7 @@
  #define USER_H_
 
 #include "event_listener.h"
+#include "utils.h"
 
 class Channel;
 
@@ -19,12 +20,16 @@ class User : public EventListener{
 		std::map<int, std::string> TopicCommand(Event event);
 		std::map<int, std::string> ModeCommand(Event event);
 		std::map<int, std::string> PrivmsgCommand(Event event);
+		void set_server_password(const std::string& password);
+		bool get_is_password_authenticated() const;
+		int get_fd() const;
 
 	private:
 		int	fd_;
 		bool	is_password_authenticated_;
-		std::string	nickname_;
-		std::string	username_;
+		std::string	nick_name_;
+		std::string	user_name_;
+		std::string server_password_;
 		std::vector<Channel>	channels_;
 };
 

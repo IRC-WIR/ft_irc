@@ -4,7 +4,7 @@
 User::User(){
 }
 
-User::User(int fd) : fd_(fd){
+User::User(int fd) : fd_(fd), is_password_authenticated_(false){
 	(void)fd_;
 	(void)is_password_authenticated_;
 }
@@ -12,12 +12,27 @@ User::User(int fd) : fd_(fd){
 User::~User(){
 }
 
-std::map<int, std::string> User::PassCommand(Event event){
-	(void)event;
-	std::map<int, std::string> error_message;
+std::map<int, std::string> User::PassCommand(Event event) {
+	std::map<int, std::string> ret_map;
+	std::pair<int, std::string> ret_pair;
+
+	ret_map.clear();
+	if (event.get_command_params().size() < 1)
+	{
+		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
+		ret_map.insert(ret_pair);
+		return ret_map;
+	}
+	if (is_password_authenticated_)
+	{
+		ret_pair = std::make_pair(event.get_fd(), "ERR_ALREADYREGISTRED");
+		ret_map.insert(ret_pair);
+		return ret_map;
+	}
 	std::cout << "Pass method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
-	return error_message;
+	if (server_password_.compare(event.get_command_params()[0]) == 0)
+		is_password_authenticated_ = true;
+	return ret_map;
 }
 
 std::map<int, std::string> User::NickCommand(Event event){
@@ -43,15 +58,15 @@ std::map<int, std::string> User::NickCommand(Event event){
 	}
 	//ニックネーム設定成功
 	//ニックネーム新規登録の場合
-	if (this->nickname_.empty()){
+	if (this->nick_name_.empty()){
 		std::cout << "Introducing new nick \"" << new_nickname << "\"" << std::endl;
 		message_map.insert(std::make_pair(this->fd_, "Introducing new nick \"" + new_nickname + "\"" ));
 	//ニックネーム変更の場合
 	} else {
-		std::cout << this->nickname_ << " changed his nickname to " << new_nickname << "." << std::endl;
-		message_map.insert(std::make_pair(this->fd_, this->nickname_ + " changed his nickname to " + new_nickname  + "."));
+		std::cout << this->nick_name_ << " changed his nickname to " << new_nickname << "." << std::endl;
+		message_map.insert(std::make_pair(this->fd_, this->nick_name_ + " changed his nickname to " + new_nickname  + "."));
 	}
-	this->nickname_ = new_nickname;
+	this->nick_name_ = new_nickname;
 	return message_map;
 }
 
@@ -109,4 +124,19 @@ std::map<int, std::string> User::ModeCommand(Event event){
 	std::cout << "Mode method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return error_message;
+}
+
+void User::set_server_password(const std::string& password)
+{
+	server_password_ = password;
+}
+
+bool User::get_is_password_authenticated() const
+{
+	return is_password_authenticated_;
+}
+
+int User::get_fd() const
+{
+	return fd_;
 }

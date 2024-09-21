@@ -19,6 +19,13 @@ void	IrcServer::Run()
 	{
 		event_handler_.ExecutePoll();
 		event_handler_.WaitMillSecond(800);
+		//debug
+		for (std::vector<User*>::iterator it = users_.begin();
+			it != users_.end(); it++)
+		{
+			std::cout << "user fd: " << (*it)->get_fd() << std::endl;
+			std::cout << "user is_password_authenticated: " << (*it)->get_is_password_authenticated() << std::endl;
+		}
 	}
 	return ;
 }
@@ -76,6 +83,7 @@ void	IrcServer::add_channel(Channel *channel)
 
 void	IrcServer::add_user(User *user)
 {
+	user->set_server_password(password_);
 	users_.push_back(user);
 }
 

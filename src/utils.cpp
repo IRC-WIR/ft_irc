@@ -31,13 +31,22 @@ std::string utils::ft_split_after(const std::string& str, const std::string& del
 	return str.substr(n);
 }
 
-
 void utils::print_string_vector(const std::vector<std::string>& str_vec)
 {
 	for (std::vector<std::string>::const_iterator it = str_vec.begin();
 		it != str_vec.end();
 		it ++)
 	{
-		std::cout << *it << std::endl;
+		std::cout << "size: " << it->size() << std::endl;
+		std::cout << "\"" << *it << "\"" << std::endl;
+	}
+}
+
+void utils::erase_space(std::string& str)
+{
+	std::string::size_type pos;
+	while((pos = str.find('\n')) != std::string::npos)
+	{
+		str.erase(pos, 1);
 	}
 }

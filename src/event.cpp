@@ -41,5 +41,5 @@ void Event::set_command_params(const std::vector<std::string>& commmand_params)
 		it != commmand_params.end(); it ++)
 	{
 		command_params_.push_back(*it);
-	}	
+	}
 }
