@@ -44,7 +44,6 @@ void message::MessageParser::ParsingMessage(const std::string& msg)
 					command_params_.push_back(last_param);
 				if (command_params_.empty())
 				{
-					std::cout << "PARSE_EMPTY" << std::endl;
 					state_ = PARSE_EMPTY;
 					break;
 				}
