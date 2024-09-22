@@ -8,7 +8,6 @@ class Channel;
 
 class User : public EventListener{
 	public:
-		User();
 		User(int fd);
 		~User();
 		std::map<int, std::string> PassCommand(Event& event);
@@ -27,10 +26,14 @@ class User : public EventListener{
 	private:
 		int	fd_;
 		bool	is_password_authenticated_;
+		bool	is_user_done_;
 		std::string	nick_name_;
 		std::string	user_name_;
+		std::string	real_name_;
 		std::string server_password_;
 		std::vector<Channel>	channels_;
+
+		User(void);
 };
 
 #endif
