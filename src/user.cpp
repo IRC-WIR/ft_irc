@@ -36,11 +36,9 @@ std::map<int, std::string> User::PassCommand(Event& event) {
 }
 
 std::map<int, std::string> User::NickCommand(Event& event){
-	(void)event;
-	std::map<int, std::string> error_message;
-	std::cout << "Nick method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
-	return error_message;
+	std::map<int, std::string> message_map;
+	message_map.insert(std::make_pair(event.get_fd(), "NICK in USER is called"));
+	return message_map;
 }
 
 std::map<int, std::string> User::UserCommand(Event& event){

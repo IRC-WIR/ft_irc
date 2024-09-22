@@ -20,10 +20,9 @@ std::map<int, std::string> EndEventListener::PassCommand(Event& event)
 
 std::map<int, std::string> EndEventListener::NickCommand(Event& event)
 {
-	(void)event;
-	std::cout << "END" << std::endl;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::map<int, std::string> message_map;
+	message_map.insert(std::make_pair(event.get_fd(), "NICK in EndEventListener is called"));
+	return message_map;
 }
 
 std::map<int, std::string> EndEventListener::UserCommand(Event& event)

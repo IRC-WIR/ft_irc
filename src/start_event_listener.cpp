@@ -27,10 +27,9 @@ std::map<int, std::string> StartEventListener::PassCommand(Event& event)
 
 std::map<int, std::string> StartEventListener::NickCommand(Event& event)
 {
-	(void)event;
-	event.set_command(message::PASS);
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::map<int, std::string> message_map;
+	message_map.insert(std::make_pair(event.get_fd(), "NICK in StartEventListener is called"));
+	return message_map;
 }
 
 std::map<int, std::string> StartEventListener::UserCommand(Event& event)
