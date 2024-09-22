@@ -41,7 +41,7 @@ class EventHandler{
 		StartEventListener* start_event_listener_;
 		EndEventListener* end_event_listener_;
 		std::vector<struct pollfd>	poll_fd_;
-		std::map<int, std::string>	response_map_;
+		std::multimap<int, std::string>	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
 
