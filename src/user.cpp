@@ -52,11 +52,13 @@ std::map<int, std::string> User::UserCommand(Event& event){
 }
 
 std::map<int, std::string> User::JoinCommand(Event& event){
-	(void)event;
-	std::map<int, std::string> error_message;
-	std::cout << "Join method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
-	return error_message;
+	std::map<int, std::string> ret_map;
+
+	if (event.is_error_occurred())
+		ret_map.insert(std::make_pair(event.get_fd(), event.get_error_message()));
+	else
+		this->channels_.push_back(event.get_channel());
+	return ret_map;
 }
 
 std::map<int, std::string> User::InviteCommand(Event& event){
