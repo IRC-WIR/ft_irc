@@ -12,7 +12,7 @@ User::User(int fd) : fd_(fd), is_password_authenticated_(false){
 User::~User(){
 }
 
-std::map<int, std::string> User::PassCommand(Event& event) {
+std::map<int, std::string> User::PassCommand(const Event& event) {
 	std::map<int, std::string> ret_map;
 	std::pair<int, std::string> ret_pair;
 
@@ -35,7 +35,7 @@ std::map<int, std::string> User::PassCommand(Event& event) {
 	return ret_map;
 }
 
-std::map<int, std::string> User::NickCommand(Event& event){
+std::map<int, std::string> User::NickCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Nick method called!" << std::endl;
@@ -43,7 +43,7 @@ std::map<int, std::string> User::NickCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::UserCommand(Event& event){
+std::map<int, std::string> User::UserCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "User method called!" << std::endl;
@@ -51,7 +51,7 @@ std::map<int, std::string> User::UserCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::JoinCommand(Event& event){
+std::map<int, std::string> User::JoinCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Join method called!" << std::endl;
@@ -59,7 +59,7 @@ std::map<int, std::string> User::JoinCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::InviteCommand(Event& event){
+std::map<int, std::string> User::InviteCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Invite method called!" << std::endl;
@@ -67,7 +67,7 @@ std::map<int, std::string> User::InviteCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::KickCommand(Event& event){
+std::map<int, std::string> User::KickCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Kick method called!" << std::endl;
@@ -75,7 +75,7 @@ std::map<int, std::string> User::KickCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::TopicCommand(Event& event){
+std::map<int, std::string> User::TopicCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Topic method called!" << std::endl;
@@ -83,7 +83,7 @@ std::map<int, std::string> User::TopicCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::PrivmsgCommand(Event& event){
+std::map<int, std::string> User::PrivmsgCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Privmsg method called!" << std::endl;
@@ -91,7 +91,7 @@ std::map<int, std::string> User::PrivmsgCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::ModeCommand(Event& event){
+std::map<int, std::string> User::ModeCommand(const Event& event){
 	(void)event;
 	std::map<int, std::string> error_message;
 	std::cout << "Mode method called!" << std::endl;
