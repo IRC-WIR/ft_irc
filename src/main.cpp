@@ -21,7 +21,7 @@ int	main(int argc, char **argv)
 		return 1;
 	}
 	StartEventListener	start_event_listener = StartEventListener(irc_server);
-	EndEventListener	end_event_listener = EndEventListener(irc_server);
+	DeleteEventListener	end_event_listener = DeleteEventListener(irc_server);
 	EventHandler	event_handler(&start_event_listener, &end_event_listener, irc_server.get_port_no());
 	try
 	{

@@ -11,11 +11,11 @@
 
 class StartEventListener;
 
-class EndEventListener;
+class DeleteEventListener;
 
 class EventHandler{
 	public:
-		EventHandler(StartEventListener* start_event_listener, EndEventListener* end_event_listener, std::string port_no);
+		EventHandler(StartEventListener* start_event_listener, DeleteEventListener* delete_event_listener, std::string port_no);
 		EventHandler();
 		~EventHandler();
 		bool				IsListeningSocket();
@@ -29,7 +29,7 @@ class EventHandler{
 		message::ParseState	Parse(const char *buffer, Event& event);
 		void				ExecuteCommand(Event event);
 		void				CallStartEventListener(Event& event);
-		void				CallEndEventListener(Event& event);
+		void				CallDeleteEventListener(Event& event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
@@ -39,7 +39,7 @@ class EventHandler{
 
 		std::vector<EventListener *>	event_listeners_;
 		StartEventListener* start_event_listener_;
-		EndEventListener* end_event_listener_;
+		DeleteEventListener* delete_event_listener_;
 		std::vector<struct pollfd>	poll_fd_;
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;

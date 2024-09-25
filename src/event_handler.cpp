@@ -14,7 +14,7 @@ EventHandler::~EventHandler()
 	return ;
 }
 
-EventHandler::EventHandler(StartEventListener* start_event_listener, EndEventListener* end_event_listener, std::string port_no) : start_event_listener_(start_event_listener), end_event_listener_(end_event_listener)
+EventHandler::EventHandler(StartEventListener* start_event_listener, DeleteEventListener* delete_event_listener, std::string port_no) : start_event_listener_(start_event_listener), delete_event_listener_(delete_event_listener)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -132,7 +132,7 @@ void	EventHandler::ExecuteCommand(Event event){
 				return ;
 		}
 	}
-	CallEndEventListener(event);
+	CallDeleteEventListener(event);
 }
 
 void	EventHandler::CallStartEventListener(Event& event)
@@ -171,35 +171,35 @@ void	EventHandler::CallStartEventListener(Event& event)
 		}
 }
 
-void	EventHandler::CallEndEventListener(Event& event)
+void	EventHandler::CallDeleteEventListener(Event& event)
 {
 	switch (event.get_command()){
 		case message::PASS:
-			end_event_listener_->PassCommand(event);
+			delete_event_listener_->PassCommand(event);
 			break;
 		case message::NICK:
-			end_event_listener_->NickCommand(event);
+			delete_event_listener_->NickCommand(event);
 			break;
 		case message::USER:
-			end_event_listener_->UserCommand(event);
+			delete_event_listener_->UserCommand(event);
 			break;
 		case message::JOIN:
-			end_event_listener_->JoinCommand(event);
+			delete_event_listener_->JoinCommand(event);
 			break;
 		case message::INVITE:
-			end_event_listener_->InviteCommand(event);
+			delete_event_listener_->InviteCommand(event);
 			break;
 		case message::KICK:
-			end_event_listener_->KickCommand(event);
+			delete_event_listener_->KickCommand(event);
 			break;
 		case message::TOPIC:
-			end_event_listener_->TopicCommand(event);
+			delete_event_listener_->TopicCommand(event);
 			break;
 		case message::MODE:
-			end_event_listener_->ModeCommand(event);
+			delete_event_listener_->ModeCommand(event);
 			break;
 		case message::PRIVMSG:
-			end_event_listener_->PrivmsgCommand(event);
+			delete_event_listener_->PrivmsgCommand(event);
 			break;
 		default:
 			return ;
