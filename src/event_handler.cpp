@@ -14,7 +14,7 @@ EventHandler::~EventHandler()
 	return ;
 }
 
-EventHandler::EventHandler(StartEventListener* start_event_listener, DeleteEventListener* delete_event_listener, std::string port_no) : start_event_listener_(start_event_listener), delete_event_listener_(delete_event_listener)
+EventHandler::EventHandler(Check* check, DeleteEventListener* delete_event_listener, std::string port_no) : check_(check), delete_event_listener_(delete_event_listener)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -94,7 +94,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 
 void	EventHandler::ExecuteCommand(Event event){
 
-	CallStartEventListener(event);
+	CallCheck(event);
 
 	int listener_size = event_listeners_.size();
 
@@ -135,36 +135,36 @@ void	EventHandler::ExecuteCommand(Event event){
 	CallDeleteEventListener(event);
 }
 
-void	EventHandler::CallStartEventListener(Event& event)
+void	EventHandler::CallCheck(Event& event)
 {
 		switch (event.get_command()){
 
 			case message::PASS:
-				start_event_listener_->PassCommand(event);
+				check_->PassCommand(event);
 				break;
 			case message::NICK:
-				start_event_listener_->NickCommand(event);
+				check_->NickCommand(event);
 				break;
 			case message::USER:
-				start_event_listener_->UserCommand(event);
+				check_->UserCommand(event);
 				break;
 			case message::JOIN:
-				start_event_listener_->JoinCommand(event);
+				check_->JoinCommand(event);
 				break;
 			case message::INVITE:
-				start_event_listener_->InviteCommand(event);
+				check_->InviteCommand(event);
 				break;
 			case message::KICK:
-				start_event_listener_->KickCommand(event);
+				check_->KickCommand(event);
 				break;
 			case message::TOPIC:
-				start_event_listener_->TopicCommand(event);
+				check_->TopicCommand(event);
 				break;
 			case message::MODE:
-				start_event_listener_->ModeCommand(event);
+				check_->ModeCommand(event);
 				break;
 			case message::PRIVMSG:
-				start_event_listener_->PrivmsgCommand(event);
+				check_->PrivmsgCommand(event);
 				break;
 			default:
 				return ;
@@ -258,7 +258,7 @@ int	EventHandler::Accept()
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
 
-	EventListener* event_listener = start_event_listener_->accept(connected_socket_);
+	EventListener* event_listener = check_->accept(connected_socket_);
 	if (event_listener)
 		event_listeners_.push_back(event_listener);
 	return 0;

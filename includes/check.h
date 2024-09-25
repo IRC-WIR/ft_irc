@@ -2,11 +2,15 @@
  # define CHECK_H_
 
 #include "prepare_event_listener.h"
+#include "irc_server.h"
+
+class IrcServer;
 
 class Check: public PrepareEventListener{
 	public:
-		Check();
+		Check(IrcServer& ircServer);
 		~Check();
+		EventListener*	accept(int fd);
 		std::map<int, std::string> PassCommand(Event& event);
 		std::map<int, std::string> NickCommand(Event& event);
 		std::map<int, std::string> UserCommand(Event& event);
@@ -18,6 +22,7 @@ class Check: public PrepareEventListener{
 		std::map<int, std::string> PrivmsgCommand(Event& event);
 
 	private:
+		IrcServer& irc_server_;
 };
 
 #endif

@@ -1,10 +1,20 @@
 #include "check.h"
 
-Check::Check(){
+Check::Check(IrcServer &irc_server) : irc_server_(irc_server)
+{
+	(void)irc_server_;
+	return ;
 }
 
 Check::~Check(){
 
+}
+
+EventListener* Check::accept(int fd)
+{
+	User* new_user = new User(fd);
+	irc_server_.add_user(new_user);
+	return new_user;
 }
 
 std::map<int, std::string> Check::PassCommand(Event& event){

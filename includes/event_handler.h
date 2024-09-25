@@ -9,13 +9,13 @@
 #include "utils.h"
 #include "message.h"
 
-class StartEventListener;
+class Check;
 
 class DeleteEventListener;
 
 class EventHandler{
 	public:
-		EventHandler(StartEventListener* start_event_listener, DeleteEventListener* delete_event_listener, std::string port_no);
+		EventHandler(Check* check, DeleteEventListener* delete_event_listener, std::string port_no);
 		EventHandler();
 		~EventHandler();
 		bool				IsListeningSocket();
@@ -28,7 +28,7 @@ class EventHandler{
 		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
 		void				ExecuteCommand(Event event);
-		void				CallStartEventListener(Event& event);
+		void				CallCheck(Event& event);
 		void				CallDeleteEventListener(Event& event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
@@ -38,7 +38,7 @@ class EventHandler{
 
 
 		std::vector<EventListener *>	event_listeners_;
-		StartEventListener* start_event_listener_;
+		Check* check_;
 		DeleteEventListener* delete_event_listener_;
 		std::vector<struct pollfd>	poll_fd_;
 		std::map<int, std::string>	response_map_;
