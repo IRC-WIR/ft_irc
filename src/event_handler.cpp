@@ -61,8 +61,9 @@ void	EventHandler::ExecutePoll()
 	for (int i = 0; i < fd_size; i++)
 	{
 		pollfd entry = this->poll_fd_[i];
-		HandlePollInEvent(entry);
+		HandlePollOutEvent(entry);
 		HandlePollHupEvent(entry);
+		HandlePollInEvent(entry);
 	}
 	return ;
 }
@@ -90,6 +91,23 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			return ;
 		ExecuteCommand(event);
 	}
+}
+
+void	EventHandler::HandlePollOutEvent(pollfd entry)
+{
+	if (entry.revents& (POLLOUT))
+	{
+		int ready_fd = entry.fd;
+		std::pair<std::multimap<int, std::string>::iterator, std::multimap<int, std::string>::iterator> range;
+		range = response_map_.equal_range(ready_fd);
+
+    for (std::multimap<int, std::string>::iterator it = range.first;
+			it != range.second;
+			++it) {
+        std::cout << " - " << it->second << std::endl;
+    }		
+	}
+	return ;
 }
 
 void	EventHandler::ExecuteCommand(Event event){
@@ -215,12 +233,6 @@ void	EventHandler::CallEndEventListener(Event& event)
 	}
 }
 
-void	EventHandler::HandlePollOutEvent(pollfd entry)
-{
-	(void)entry;
-	return ;
-}
-
 void	EventHandler::HandlePollHupEvent(pollfd entry)
 {
 	if (entry.revents& (POLLHUP))
@@ -308,7 +320,7 @@ void	EventHandler::add_event_socket(int new_fd)
 {
 	pollfd new_pollfd;
 	new_pollfd.fd = new_fd;
-	new_pollfd.events = POLLIN;
+	new_pollfd.events = POLLIN | POLLOUT;
 	new_pollfd.revents = 0;
 	poll_fd_.push_back(new_pollfd);
 }
