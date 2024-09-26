@@ -7,8 +7,10 @@ class User;
 
 class Channel: public EventListener{
 	public:
-		Channel();
 		~Channel();
+
+	private:
+		Channel();
 		std::map<int, std::string> PassCommand(Event& event);
 		std::map<int, std::string> NickCommand(Event& event);
 		std::map<int, std::string> UserCommand(Event& event);
@@ -19,7 +21,6 @@ class Channel: public EventListener{
 		std::map<int, std::string> ModeCommand(Event& event);
 		std::map<int, std::string> PrivmsgCommand(Event& event);
 
-	private:
 		std::vector<User>	users_;
 		std::string		topic_;
 		std::string		key_;

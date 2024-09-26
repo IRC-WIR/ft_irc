@@ -1,7 +1,7 @@
 #include "channel.h"
 #include "user.h"
 
-Channel::Channel(){
+Channel::Channel() {
 		(void)max_member_num_;
 		(void)i_mode;
 		(void)t_mode;

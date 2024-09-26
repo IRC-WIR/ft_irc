@@ -11,6 +11,8 @@ class StartEventListener: public EventListener{
 		StartEventListener(IrcServer& ircServer);
 		~StartEventListener();
 		EventListener*	accept(int fd);
+
+	private:
 		std::map<int, std::string> PassCommand(Event& event);
 		std::map<int, std::string> NickCommand(Event& event);
 		std::map<int, std::string> UserCommand(Event& event);
@@ -21,7 +23,6 @@ class StartEventListener: public EventListener{
 		std::map<int, std::string> PrivmsgCommand(Event& event);
 		std::map<int, std::string> ModeCommand(Event& event);
 
-	private:
 		IrcServer& irc_server_;
 };
 
