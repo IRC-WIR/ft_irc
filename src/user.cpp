@@ -1,15 +1,13 @@
 #include "user.h"
 #include "channel.h"
 
-User::User(){
+User::User() {
 }
 
-User::User(int fd) : fd_(fd), is_password_authenticated_(false){
-	(void)fd_;
-	(void)is_password_authenticated_;
+User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_user_done_(false) {
 }
 
-User::~User(){
+User::~User() {
 }
 
 std::map<int, std::string> User::PassCommand(Event& event) {
@@ -43,12 +41,31 @@ std::map<int, std::string> User::NickCommand(Event& event){
 	return error_message;
 }
 
-std::map<int, std::string> User::UserCommand(Event& event){
-	(void)event;
-	std::map<int, std::string> error_message;
+std::map<int, std::string> User::UserCommand(Event& event) {
+	const int kParamsSize = 3;
+
+	std::map<int, std::string> ret_map;
+	std::vector<std::string> params = event.get_command_params();
+
 	std::cout << "User method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
-	return error_message;
+
+	if (event.get_fd() != this->get_fd())
+		return ret_map;
+	if (params.size() < kParamsSize)
+		ret_map.insert(std::make_pair(this->get_fd(), "ERR_NEEDMOREPARAMS"));
+	else if (this->is_user_done_)
+		ret_map.insert(std::make_pair(this->get_fd(), "ERR_ALREADYREGISTRED"));
+	else {
+		this->is_user_done_ = true;
+		this->user_name_ = params[0];
+		// 今回は1,2番目の要素は無視する
+		for (int i = 3; i < params.size(); i++) {
+			if (i != 3)
+				this->real_name_ += " ";
+			this->real_name_ += params[i];
+		}
+	}
+	return ret_map;
 }
 
 std::map<int, std::string> User::JoinCommand(Event& event){
