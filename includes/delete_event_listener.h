@@ -1,15 +1,15 @@
-#ifndef USER_H_
- #define USER_H_
+#ifndef DELETE_EVENT_LISTENER_H_
+	#define DELETE_EVENT_LISTENER_H_
 
 #include "event_listener.h"
-#include "utils.h"
+#include "irc_server.h"
 
-class Channel;
+class IrcServer;
 
-class User : public EventListener{
+class DeleteEventListener: public EventListener{
 	public:
-		User(int fd);
-		~User();
+		DeleteEventListener(IrcServer& ircServer);
+		~DeleteEventListener();
 		std::map<int, std::string> PassCommand(const Event& event);
 		std::map<int, std::string> NickCommand(const Event& event);
 		std::map<int, std::string> UserCommand(const Event& event);
@@ -19,21 +19,9 @@ class User : public EventListener{
 		std::map<int, std::string> TopicCommand(const Event& event);
 		std::map<int, std::string> ModeCommand(const Event& event);
 		std::map<int, std::string> PrivmsgCommand(const Event& event);
-		void set_server_password(const std::string& password);
-		bool get_is_password_authenticated() const;
-		int get_fd() const;
 
 	private:
-		int	fd_;
-		bool	is_password_authenticated_;
-		bool	is_user_done_;
-		std::string	nick_name_;
-		std::string	user_name_;
-		std::string	real_name_;
-		std::string server_password_;
-		std::vector<Channel>	channels_;
-
-		User(void);
+		IrcServer& irc_server_;
 };
 
 #endif

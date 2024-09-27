@@ -1,11 +1,11 @@
 #ifndef CHANNEL_H_
  # define CHANNEL_H_
 
-#include "event_listener.h"
+#include "prepare_event_listener.h"
 
 class User;
 
-class Channel: public EventListener{
+class Channel: public PrepareEventListener{
 	public:
 		Channel();
 		~Channel();

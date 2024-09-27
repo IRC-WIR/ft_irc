@@ -25,7 +25,7 @@ message::Command Event::get_command()
 	return command_;
 }
 
-std::vector<std::string> Event::get_command_params()
+std::vector<std::string> Event::get_command_params() const
 {
 	return command_params_;
 }
