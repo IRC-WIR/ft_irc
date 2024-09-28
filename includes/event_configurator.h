@@ -10,6 +10,8 @@ class EventConfigurator
 		EventConfigurator();
 		virtual ~EventConfigurator();
 		Event&	configurate(const Event& event);
+
+	protected:
 		virtual Event&	ConfiguratePass(const Event& event) = 0;
 		virtual Event&	ConfigurateNick(const Event& event) = 0;
 		virtual Event&	ConfigurateUser(const Event& event) = 0;
@@ -19,9 +21,6 @@ class EventConfigurator
 		virtual Event&	ConfigurateTopic(const Event& event) = 0;
 		virtual Event&	ConfigurateMode(const Event& event) = 0;
 		virtual Event&	ConfiguratePrivmsg(const Event& event) = 0;
-
-	private:
-
 };
 
 #endif
