@@ -9,15 +9,16 @@ class EventConfigurator
 	public:
 		EventConfigurator();
 		virtual ~EventConfigurator();
-		virtual Event&	PreparePassCommand(const Event& event) = 0;
-		virtual Event&	PrepareNickCommand(const Event& event) = 0;
-		virtual Event&	PrepareUserCommand(const Event& event) = 0;
-		virtual Event&	PrepareJoinCommand(const Event& event) = 0;
-		virtual Event&	PrepareInviteCommand(const Event& event) = 0;
-		virtual Event&	PrepareKickCommand(const Event& event) = 0;
-		virtual Event&	PrepareTopicCommand(const Event& event) = 0;
-		virtual Event&	PrepareModeCommand(const Event& event) = 0;
-		virtual Event&	PreparePrivmsgCommand(const Event& event) = 0;
+		Event&	configurate(const Event& event);
+		virtual Event&	ConfiguratePass(const Event& event) = 0;
+		virtual Event&	ConfigurateNick(const Event& event) = 0;
+		virtual Event&	ConfigurateUser(const Event& event) = 0;
+		virtual Event&	ConfigurateJoin(const Event& event) = 0;
+		virtual Event&	ConfigurateInvite(const Event& event) = 0;
+		virtual Event&	ConfigurateKick(const Event& event) = 0;
+		virtual Event&	ConfigurateTopic(const Event& event) = 0;
+		virtual Event&	ConfigurateMode(const Event& event) = 0;
+		virtual Event&	ConfiguratePrivmsg(const Event& event) = 0;
 
 	private:
 

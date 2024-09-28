@@ -17,55 +17,55 @@ EventListener* Check::accept(int fd)
 	return new_user;
 }
 
-Event&	Check::PreparePassCommand(const Event& event)
+Event&	Check::ConfiguratePass(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareNickCommand(const Event& event)
+Event&	Check::ConfigurateNick(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareUserCommand(const Event& event)
+Event&	Check::ConfigurateUser(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareJoinCommand(const Event& event)
+Event&	Check::ConfigurateJoin(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareInviteCommand(const Event& event)
+Event&	Check::ConfigurateInvite(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareKickCommand(const Event& event)
+Event&	Check::ConfigurateKick(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareTopicCommand(const Event& event)
+Event&	Check::ConfigurateTopic(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PrepareModeCommand(const Event& event)
+Event&	Check::ConfigurateMode(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Check::PreparePrivmsgCommand(const Event& event)
+Event&	Check::ConfiguratePrivmsg(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);

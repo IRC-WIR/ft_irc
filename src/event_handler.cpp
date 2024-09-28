@@ -94,8 +94,6 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 
 void	EventHandler::ExecuteCommand(Event event){
 
-	CallCheck(event);
-
 	int listener_size = event_listeners_.size();
 
 	for (int i = 0; i < listener_size; i++)
@@ -135,41 +133,6 @@ void	EventHandler::ExecuteCommand(Event event){
 	CallDeleteEventListener(event);
 }
 
-void	EventHandler::CallCheck(Event& event)
-{
-		switch (event.get_command()){
-
-			case message::PASS:
-				check_->PreparePassCommand(event);
-				break;
-			case message::NICK:
-				check_->PrepareNickCommand(event);
-				break;
-			case message::USER:
-				check_->PrepareUserCommand(event);
-				break;
-			case message::JOIN:
-				check_->PrepareJoinCommand(event);
-				break;
-			case message::INVITE:
-				check_->PrepareInviteCommand(event);
-				break;
-			case message::KICK:
-				check_->PrepareKickCommand(event);
-				break;
-			case message::TOPIC:
-				check_->PrepareTopicCommand(event);
-				break;
-			case message::MODE:
-				check_->PrepareModeCommand(event);
-				break;
-			case message::PRIVMSG:
-				check_->PreparePrivmsgCommand(event);
-				break;
-			default:
-				return ;
-		}
-}
 
 void	EventHandler::CallDeleteEventListener(Event& event)
 {

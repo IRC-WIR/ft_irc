@@ -11,15 +11,15 @@ class Check: public EventConfigurator{
 		Check(IrcServer& ircServer);
 		~Check();
 		EventListener*	accept(int fd);
-		Event&	PreparePassCommand(const Event& event);
-		Event&	PrepareNickCommand(const Event& event);
-		Event&	PrepareUserCommand(const Event& event);
-		Event&	PrepareJoinCommand(const Event& event);
-		Event&	PrepareInviteCommand(const Event& event);
-		Event&	PrepareKickCommand(const Event& event);
-		Event&	PrepareTopicCommand(const Event& event);
-		Event&	PrepareModeCommand(const Event& event);
-		Event&	PreparePrivmsgCommand(const Event& event);
+		Event&	ConfiguratePass(const Event& event);
+		Event&	ConfigurateNick(const Event& event);
+		Event&	ConfigurateUser(const Event& event);
+		Event&	ConfigurateJoin(const Event& event);
+		Event&	ConfigurateInvite(const Event& event);
+		Event&	ConfigurateKick(const Event& event);
+		Event&	ConfigurateTopic(const Event& event);
+		Event&	ConfigurateMode(const Event& event);
+		Event&	ConfiguratePrivmsg(const Event& event);
 
 	private:
 		IrcServer& irc_server_;

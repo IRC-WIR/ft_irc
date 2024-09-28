@@ -14,55 +14,55 @@ Channel::~Channel(){
 
 }
 
-Event&	Channel::PreparePassCommand(const Event& event)
+Event&	Channel::ConfiguratePass(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareNickCommand(const Event& event)
+Event&	Channel::ConfigurateNick(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareUserCommand(const Event& event)
+Event&	Channel::ConfigurateUser(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareJoinCommand(const Event& event)
+Event&	Channel::ConfigurateJoin(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareInviteCommand(const Event& event)
+Event&	Channel::ConfigurateInvite(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareKickCommand(const Event& event)
+Event&	Channel::ConfigurateKick(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareTopicCommand(const Event& event)
+Event&	Channel::ConfigurateTopic(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PrepareModeCommand(const Event& event)
+Event&	Channel::ConfigurateMode(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
 	return *new_event;
 }
-Event&	Channel::PreparePrivmsgCommand(const Event& event)
+Event&	Channel::ConfiguratePrivmsg(const Event& event)
 {
 	(void)event;
 	Event* new_event = new Event(0, 0);
