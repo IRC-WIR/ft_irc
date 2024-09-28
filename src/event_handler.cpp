@@ -140,31 +140,31 @@ void	EventHandler::CallCheck(Event& event)
 		switch (event.get_command()){
 
 			case message::PASS:
-				check_->PassCommand(event);
+				check_->PreparePassCommand(event);
 				break;
 			case message::NICK:
-				check_->NickCommand(event);
+				check_->PrepareNickCommand(event);
 				break;
 			case message::USER:
-				check_->UserCommand(event);
+				check_->PrepareUserCommand(event);
 				break;
 			case message::JOIN:
-				check_->JoinCommand(event);
+				check_->PrepareJoinCommand(event);
 				break;
 			case message::INVITE:
-				check_->InviteCommand(event);
+				check_->PrepareInviteCommand(event);
 				break;
 			case message::KICK:
-				check_->KickCommand(event);
+				check_->PrepareKickCommand(event);
 				break;
 			case message::TOPIC:
-				check_->TopicCommand(event);
+				check_->PrepareTopicCommand(event);
 				break;
 			case message::MODE:
-				check_->ModeCommand(event);
+				check_->PrepareModeCommand(event);
 				break;
 			case message::PRIVMSG:
-				check_->PrivmsgCommand(event);
+				check_->PreparePrivmsgCommand(event);
 				break;
 			default:
 				return ;

@@ -17,48 +17,57 @@ EventListener* Check::accept(int fd)
 	return new_user;
 }
 
-std::map<int, std::string> Check::PassCommand(Event& event){
+Event&	Check::PreparePassCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::NickCommand(Event& event){
+Event&	Check::PrepareNickCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::UserCommand(Event& event){
+Event&	Check::PrepareUserCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::JoinCommand(Event& event){
+Event&	Check::PrepareJoinCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::InviteCommand(Event& event){
+Event&	Check::PrepareInviteCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::KickCommand(Event& event){
+Event&	Check::PrepareKickCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::TopicCommand(Event& event){
+Event&	Check::PrepareTopicCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::ModeCommand(Event& event){
+Event&	Check::PrepareModeCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Check::PrivmsgCommand(Event& event){
+Event&	Check::PreparePrivmsgCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }

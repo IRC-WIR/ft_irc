@@ -1,23 +1,23 @@
 #ifndef CHANNEL_H_
  # define CHANNEL_H_
 
-#include "prepare_event_listener.h"
+#include "event_configurator.h"
 
 class User;
 
-class Channel: public PrepareEventListener{
+class Channel: public EventConfigurator{
 	public:
 		Channel();
 		~Channel();
-		std::map<int, std::string> PassCommand(Event& event);
-		std::map<int, std::string> NickCommand(Event& event);
-		std::map<int, std::string> UserCommand(Event& event);
-		std::map<int, std::string> JoinCommand(Event& event);
-		std::map<int, std::string> InviteCommand(Event& event);
-		std::map<int, std::string> KickCommand(Event& event);
-		std::map<int, std::string> TopicCommand(Event& event);
-		std::map<int, std::string> ModeCommand(Event& event);
-		std::map<int, std::string> PrivmsgCommand(Event& event);
+		Event&	PreparePassCommand(const Event& event);
+		Event&	PrepareNickCommand(const Event& event);
+		Event&	PrepareUserCommand(const Event& event);
+		Event&	PrepareJoinCommand(const Event& event);
+		Event&	PrepareInviteCommand(const Event& event);
+		Event&	PrepareKickCommand(const Event& event);
+		Event&	PrepareTopicCommand(const Event& event);
+		Event&	PrepareModeCommand(const Event& event);
+		Event&	PreparePrivmsgCommand(const Event& event);
 
 	private:
 		std::vector<User>	users_;

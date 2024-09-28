@@ -14,48 +14,57 @@ Channel::~Channel(){
 
 }
 
-std::map<int, std::string> Channel::PassCommand(Event& event){
+Event&	Channel::PreparePassCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::NickCommand(Event& event){
+Event&	Channel::PrepareNickCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::UserCommand(Event& event){
+Event&	Channel::PrepareUserCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::JoinCommand(Event& event){
+Event&	Channel::PrepareJoinCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::InviteCommand(Event& event){
+Event&	Channel::PrepareInviteCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::KickCommand(Event& event){
+Event&	Channel::PrepareKickCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::TopicCommand(Event& event){
+Event&	Channel::PrepareTopicCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::ModeCommand(Event& event){
+Event&	Channel::PrepareModeCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
-std::map<int, std::string> Channel::PrivmsgCommand(Event& event){
+Event&	Channel::PreparePrivmsgCommand(const Event& event)
+{
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	Event* new_event = new Event(0, 0);
+	return *new_event;
 }
