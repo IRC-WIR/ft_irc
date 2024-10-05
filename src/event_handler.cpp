@@ -95,7 +95,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 
 void	EventHandler::HandlePollOutEvent(pollfd entry)
 {
-	if (entry.revents& (POLLOUT))
+	if (entry.revents & POLLOUT)
 	{
 		int ready_fd = entry.fd;
 		std::pair<std::multimap<int, std::string>::iterator, std::multimap<int, std::string>::iterator> range;
