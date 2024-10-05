@@ -105,14 +105,12 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 			it != range.second;) {
 
 				int target_fd = it->first;
-				const char *message = it->second.data();
+				const char *message = it->second.c_str();
 				int	message_length = it->second.length();
 
 				if (send(target_fd, message, message_length, 0) < 0)
 					continue;
-				std::multimap<int, std::string>::iterator tmp_it = it; 	
-				it++;
-				response_map_.erase(tmp_it);
+				response_map_.erase(it++);
     }	
 	}
 	return ;
