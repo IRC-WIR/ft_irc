@@ -101,17 +101,35 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 		std::pair<std::multimap<int, std::string>::iterator, std::multimap<int, std::string>::iterator> range;
 		range = response_map_.equal_range(ready_fd);
 
-    for (std::multimap<int, std::string>::iterator it = range.first;
+    		for (std::multimap<int, std::string>::iterator it = range.first;
 			it != range.second;) {
 
 				int target_fd = it->first;
 				const char *message = it->second.c_str();
 				int	message_length = it->second.length();
 
-				if (send(target_fd, message, message_length, 0) < 0)
-					continue;
-				response_map_.erase(it++);
-    }	
+				ssize_t ret = send(target_fd, message, message_length, 0);
+				//send失敗
+				if (ret < 0)
+				{
+					//送信中にsignal発生
+//					if (errno == EINTR)
+//						continue;
+//					if (errno == EWOULDBLOCK)
+//					{
+//					}
+				//send成功
+				} else {
+					//sendは成功したが、すべてを送りきれなかった場合
+					if (ret < message_length)
+					{
+						it->second = it->second.substr(ret);
+						continue;
+					}
+					response_map_.erase(it++);
+						
+				}
+    		}	
 	}
 	return ;
 }
