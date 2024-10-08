@@ -210,7 +210,7 @@
           <mxGeometry x="-80" y="-540" width="162.5" height="60" as="geometry" />
         </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-23" value="vector&amp;lt;EventListener&amp;amp;&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="110" y="-540" width="150" height="60" as="geometry" />
+          <mxGeometry x="105" y="-540" width="150" height="60" as="geometry" />
         </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-24" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -230,8 +230,8 @@
         <mxCell id="207uhRGWZe7wrmqpFzqo-18" value="deleteElement" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="120" y="-642.5" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="207uhRGWZe7wrmqpFzqo-19" value="add" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="-45" y="-642.5" width="120" height="60" as="geometry" />
+        <mxCell id="207uhRGWZe7wrmqpFzqo-19" value="addUser" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-70" y="-697.5" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-26" value="DB" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#1FFF44;" parent="1" vertex="1">
           <mxGeometry x="1140" y="-600" width="120" height="60" as="geometry" />
@@ -254,8 +254,10 @@
         <mxCell id="207uhRGWZe7wrmqpFzqo-31" value="Channel(EventListener)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1297" y="-120" width="132.5" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="Utzet_RcOg0IqEUwT1VO-48" target="CLaO6KBTluZB6lomquzr-13">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="CLaO6KBTluZB6lomquzr-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="Utzet_RcOg0IqEUwT1VO-48" target="CLaO6KBTluZB6lomquzr-34">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1466" y="-35" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Utzet_RcOg0IqEUwT1VO-48" value="User(EventListener)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1297" y="-60" width="132.5" height="50" as="geometry" />
@@ -294,9 +296,6 @@
         <mxCell id="CLaO6KBTluZB6lomquzr-11" value="DB" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#1FFF44;" vertex="1" parent="1">
           <mxGeometry x="701" y="-410" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-13" value="Delete user" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1466" y="-60" width="100" height="50" as="geometry" />
-        </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-14" value="Exectute Command" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="693.5" y="-235" width="135" height="50" as="geometry" />
         </mxCell>
@@ -324,7 +323,7 @@
         <mxCell id="CLaO6KBTluZB6lomquzr-24" value="&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;判定してフラグが立っているユーザーやチャンネルを削除する&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="1477" y="85" width="160" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-25" value="2つvectorの重複をないように削除する&lt;br&gt;※setを使う&lt;br&gt;setになにを入れるべき？" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
+        <mxCell id="CLaO6KBTluZB6lomquzr-25" value="2つvectorの重複をないように削除する&lt;br&gt;※void pointerのsetを使う&lt;br&gt;setになにを入れるべき？" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
           <mxGeometry x="220" y="-658.5" width="80" height="100" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-26" value="片方だけを入れる場合がある（拡張性を考慮）" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
@@ -342,14 +341,14 @@
         <mxCell id="CLaO6KBTluZB6lomquzr-31" value="No" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="1010" y="-572.5" width="40" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-34" value="Delete channel" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1466" y="-120" width="100" height="50" as="geometry" />
+        <mxCell id="CLaO6KBTluZB6lomquzr-34" value="QUIT" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1477" y="-95" width="100" height="50" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-20" value="自分自身は削除するべきかを判定してフラグを立つ" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1432" y="-180" width="160" height="50" as="geometry" />
+          <mxGeometry x="1449.5" y="-160" width="160" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-36" value="参照で持つべきか、持論を確認" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
-          <mxGeometry x="58" y="-552.5" width="80" height="100" as="geometry" />
+        <mxCell id="CLaO6KBTluZB6lomquzr-37" value="addChannel" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-58.75" y="-642" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
