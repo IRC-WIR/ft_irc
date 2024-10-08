@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36" version="24.7.17">
   <diagram name="Page-1" id="13e1069c-82ec-6db2-03f1-153e76fe0fe0">
-    <mxGraphModel dx="3667" dy="2911" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="2598" dy="2406" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -42,13 +42,13 @@
           <mxGeometry x="240" y="-200" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="Utzet_RcOg0IqEUwT1VO-16" value="HandlePollOutEvent" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="240" y="-360" width="130" height="50" as="geometry" />
+          <mxGeometry x="236" y="-360" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="Utzet_RcOg0IqEUwT1VO-17" target="CLaO6KBTluZB6lomquzr-1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="430" y="-255" />
-              <mxPoint x="430" y="-715" />
+              <mxPoint x="490" y="-255" />
+              <mxPoint x="490" y="-715" />
             </Array>
             <mxPoint x="640" y="-720" as="targetPoint" />
           </mxGeometry>
