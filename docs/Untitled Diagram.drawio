@@ -331,7 +331,7 @@
           <mxGeometry x="265" y="-552.5" width="80" height="100" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-28" value="ユーザーを切断する処理はQUITコマンドと同じなため" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
-          <mxGeometry x="821" y="-435" width="80" height="100" as="geometry" />
+          <mxGeometry x="780" y="-425" width="80" height="100" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-29" value="実際に&lt;div&gt;コマンドの動作を行う&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
           <mxGeometry x="1637" y="-110" width="93" height="100" as="geometry" />
