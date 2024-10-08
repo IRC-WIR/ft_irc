@@ -122,7 +122,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Utzet_RcOg0IqEUwT1VO-41" value="FD" style="html=1;verticalAlign=bottom;startArrow=oval;startFill=1;endArrow=block;startSize=8;curved=0;rounded=0;" parent="1" edge="1">
-          <mxGeometry x="-0.0651" width="60" relative="1" as="geometry">
+          <mxGeometry x="0.1062" y="2" width="60" relative="1" as="geometry">
             <mxPoint x="1021" y="-617.79" as="sourcePoint" />
             <mxPoint x="1200" y="-618" as="targetPoint" />
             <mxPoint as="offset" />
@@ -163,12 +163,12 @@
         </mxCell>
         <mxCell id="Utzet_RcOg0IqEUwT1VO-56" value="" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1587" y="-225" as="sourcePoint" />
-            <mxPoint x="1367" y="-225.32999999999998" as="targetPoint" />
+            <mxPoint x="1587" y="-220" as="sourcePoint" />
+            <mxPoint x="1367" y="-220.32999999999998" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Utzet_RcOg0IqEUwT1VO-57" value="Event" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="1417" y="-280" width="100" height="50" as="geometry" />
+          <mxGeometry x="1417" y="-276" width="100" height="50" as="geometry" />
         </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-10" value="Check User(Event Configurator)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1487" y="-375" width="200" height="50" as="geometry" />
@@ -248,8 +248,14 @@
             <mxPoint x="1365" y="-690" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="CLaO6KBTluZB6lomquzr-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="207uhRGWZe7wrmqpFzqo-31" target="CLaO6KBTluZB6lomquzr-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-31" value="Channel(EventListener)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1297" y="-120" width="132.5" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="CLaO6KBTluZB6lomquzr-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="Utzet_RcOg0IqEUwT1VO-48" target="CLaO6KBTluZB6lomquzr-13">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Utzet_RcOg0IqEUwT1VO-48" value="User(EventListener)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1297" y="-60" width="132.5" height="50" as="geometry" />
@@ -271,8 +277,8 @@
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-3" value="FD" style="html=1;verticalAlign=bottom;startArrow=oval;startFill=1;endArrow=block;startSize=8;curved=0;rounded=0;" edge="1" parent="1">
           <mxGeometry x="0.0667" width="60" relative="1" as="geometry">
-            <mxPoint x="601" y="-600" as="sourcePoint" />
-            <mxPoint x="760" y="-600" as="targetPoint" />
+            <mxPoint x="601" y="-610" as="sourcePoint" />
+            <mxPoint x="760" y="-610" as="targetPoint" />
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
@@ -289,7 +295,7 @@
           <mxGeometry x="701" y="-582.5" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-13" value="Delete user" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="740" y="-140" width="100" height="50" as="geometry" />
+          <mxGeometry x="1466" y="-60" width="100" height="50" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-14" value="Exectute Command" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="693.5" y="-235" width="135" height="50" as="geometry" />
@@ -308,9 +314,6 @@
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-19" value="is listening socket" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="975" y="-652.5" width="80" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-20" value="自分自身は削除するべきかを判定してフラグを立つ" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1449.5" y="-120" width="160" height="50" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-21" value="Event作成" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="711" y="-485" width="100" height="50" as="geometry" />
@@ -331,13 +334,19 @@
           <mxGeometry x="780" y="-425" width="80" height="100" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-29" value="実際に&lt;div&gt;コマンドの動作を行う&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
-          <mxGeometry x="1637" y="-110" width="93" height="100" as="geometry" />
+          <mxGeometry x="1604" y="-120" width="93" height="100" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-30" value="Yes" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="1040" y="-642" width="40" height="30" as="geometry" />
         </mxCell>
         <mxCell id="CLaO6KBTluZB6lomquzr-31" value="No" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="1015" y="-572.5" width="40" height="30" as="geometry" />
+          <mxGeometry x="1010" y="-572.5" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="CLaO6KBTluZB6lomquzr-34" value="Delete channel" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1466" y="-120" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="CLaO6KBTluZB6lomquzr-20" value="自分自身は削除するべきかを判定してフラグを立つ" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1432" y="-180" width="160" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
