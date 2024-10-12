@@ -101,35 +101,41 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 		std::pair<std::multimap<int, std::string>::iterator, std::multimap<int, std::string>::iterator> range;
 		range = response_map_.equal_range(ready_fd);
 
-    		for (std::multimap<int, std::string>::iterator it = range.first;
+    for (std::multimap<int, std::string>::iterator it = range.first;
 			it != range.second;) {
 
-				int target_fd = it->first;
-				const char *message = it->second.c_str();
-				int	message_length = it->second.length();
+			int target_fd = it->first;
+			const char *message = it->second.c_str();
+			int	message_length = it->second.length();
 
-				ssize_t ret = send(target_fd, message, message_length, 0);
-				//send失敗
-				if (ret < 0)
-				{
-					//送信中にsignal発生
-//					if (errno == EINTR)
-//						continue;
-//					if (errno == EWOULDBLOCK)
-//					{
-//					}
-				//send成功
-				} else {
-					//sendは成功したが、すべてを送りきれなかった場合
-					if (ret < message_length)
-					{
-						it->second = it->second.substr(ret);
-						continue;
-					}
-					response_map_.erase(it++);
-						
+			size_t sent_length = send(target_fd, message, message_length, 0);
+			if (sent_length < 0) {
+				//異常終了
+				if (errno == EFAULT || errno == EMSGSIZE){
+					std::cout <<  strerror(errno) << std::endl;
+    			exit(EXIT_FAILURE);
 				}
-    		}	
+				//接続切断
+				if (errno != EINTR && errno != ENOBUFS && errno != EWOULDBLOCK){
+					Detach(entry);
+					Event event = Event(entry.fd, entry.revents); 
+					event.set_command(message::QUIT);
+					ExecuteCommand(event);
+				}
+			//部分的に送信成功した場合、残りの文字列のみを残す
+			} else if (sent_length < (size_t)message_length){
+				it->second = it->second.substr(sent_length);
+			}
+			//直ちに再送
+			if (errno == EINTR)
+				continue;
+			//次回POLLOUT発生時に再送
+			if (errno == ENOBUFS || errno == EWOULDBLOCK){
+				++it;
+				continue;
+			}
+			response_map_.erase(it++);
+		}
 	}
 	return ;
 }

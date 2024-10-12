@@ -16,6 +16,7 @@ enum Command
 	TOPIC,
 	MODE,
 	PRIVMSG,
+	QUIT,
 	NOT_FOUND
 };
 
