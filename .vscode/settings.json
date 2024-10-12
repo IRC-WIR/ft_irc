@@ -73,6 +73,13 @@
 		"random": "cpp",
 		"utility": "cpp",
 		"ranges": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"condition_variable": "cpp",
+		"numbers": "cpp",
+		"queue": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp",
+		"cinttypes": "cpp"
 	}
 }
