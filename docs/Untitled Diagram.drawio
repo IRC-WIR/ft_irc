@@ -256,9 +256,6 @@
         <mxCell id="Utzet_RcOg0IqEUwT1VO-48" value="User(EventListener)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1297" y="18" width="132.5" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="CLaO6KBTluZB6lomquzr-43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="207uhRGWZe7wrmqpFzqo-16" target="Utzet_RcOg0IqEUwT1VO-48" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="207uhRGWZe7wrmqpFzqo-16" value="DB" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#1FFF44;" parent="1" vertex="1">
           <mxGeometry x="1304.5" y="88" width="120" height="60" as="geometry" />
         </mxCell>
