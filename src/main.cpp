@@ -1,5 +1,7 @@
-#include "irc_server.h"
+#include "server.h"
 #include "event_handler.h"
+#include "database.h"
+#include "utils.h"
 
 int	main(int argc, char **argv)
 {
@@ -9,28 +11,20 @@ int	main(int argc, char **argv)
 		std::cerr << "Please execute as follows: ./ircserv <port> <password>" << std::endl;
 		return 1;
 	}
-	IrcServer	irc_server;
 	try
 	{
+		Database			database;
+		utils::check_digital_str(argv[1]);
+		EventHandler		event_handler(database, utils::ft_stoi(argv[1]));
+		Server::IrcServer	irc_server(event_handler);
 		irc_server.set_port_no(argv[1]);
 		irc_server.set_password(argv[2]);
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
-	Check	check = Check(irc_server);
-	DeleteEventListener	end_event_listener = DeleteEventListener(irc_server);
-	EventHandler	event_handler(&check, &end_event_listener, irc_server.get_port_no());
-	try
-	{
-		irc_server.set_event_handler(event_handler);
 		irc_server.Run();
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 1;
 	}
 
 	return 0;

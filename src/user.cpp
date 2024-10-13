@@ -1,14 +1,32 @@
 #include "user.h"
 #include "channel.h"
 
-User::User() {
-}
-
-User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_user_done_(false) {
+User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_user_done_(false), is_delete_(false) {
 }
 
 User::~User() {
 }
+
+void User::CheckCommand(Event& event) const
+{
+	//未実装
+	(void)event;
+}
+
+std::pair<int, std::string>* User::ExecuteCommand(const Event& event)
+{
+	//未実装
+	std::pair<int, std::string>* ret_pair = new std::pair<int, std::string>();
+	(void)event;
+	return ret_pair;
+}
+
+bool User::is_finished() const
+{
+	//未実装
+	return true;
+}
+
 
 std::map<int, std::string> User::PassCommand(const Event& event) {
 	std::map<int, std::string> ret_map;
@@ -127,4 +145,9 @@ bool User::get_is_password_authenticated() const
 int User::get_fd() const
 {
 	return fd_;
+}
+
+bool User::get_is_delete() const
+{
+	return is_delete_;
 }

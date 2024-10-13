@@ -1,20 +1,15 @@
 #include "event_handler.h"
-#include "irc_server.h"
 
 const	int	EventHandler::kQueueLimit = 10;
 const	int EventHandler::kBufferSize = 512;
-
-EventHandler::EventHandler()
-{
-	return ;
-}
+const	std::string EventHandler::kPollErrMsg = "poll failed";
 
 EventHandler::~EventHandler()
 {
 	return ;
 }
 
-EventHandler::EventHandler(Check* check, DeleteEventListener* delete_event_listener, std::string port_no) : check_(check), delete_event_listener_(delete_event_listener)
+EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -26,7 +21,7 @@ EventHandler::EventHandler(Check* check, DeleteEventListener* delete_event_liste
 	poll_fd_.push_back(listening_pollfd);
 
 	server_address_.sin_family = AF_INET;
-	server_address_.sin_port = htons(utils::ft_stoi(port_no));
+	server_address_.sin_port = htons(port_no);
 	server_address_.sin_addr.s_addr = INADDR_ANY;
 	bind(listening_socket_, (struct sockaddr*)&(server_address_), sizeof(server_address_));
 	//第２引数をメンバ変数に定数追加　適切な数は？
@@ -50,7 +45,7 @@ void	EventHandler::ExecutePoll()
 //	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
-		throw (IrcServer::IrcException("poll failed"));
+		throw (eventHandlerException(kPollErrMsg));
 	if (pollResult == 0)
 	{
 		//debug
@@ -89,7 +84,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		message::ParseState parse_state = Parse(buffer, event);
 		if (parse_state == message::PARSE_ERROR)
 			return ;
-		ExecuteCommand(event);
+		database_.ExecuteEvent(event);
 	}
 }
 
@@ -118,7 +113,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 					Detach(entry);
 					Event event = Event(entry.fd, entry.revents); 
 					event.set_command(message::QUIT);
-					ExecuteCommand(event);
+					database_.ExecuteEvent(event);
 				}
 			//部分的に送信成功した場合、残りの文字列のみを残す
 			} else if (sent_length < (size_t)message_length){
@@ -138,15 +133,6 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 		}
 	}
 	return ;
-}
-
-void	EventHandler::ExecuteCommand(Event event){
-
-	int listener_size = event_listeners_.size();
-	for (int i = 0; i < listener_size; i++)
-	{
-		add_response_map(event_listeners_[i]->ExecuteCommand(event));
-	}
 }
 
 void	EventHandler::HandlePollHupEvent(pollfd entry)
@@ -194,10 +180,7 @@ int	EventHandler::Accept()
 		return -1;
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
-
-	EventListener* event_listener = check_->accept(connected_socket_);
-	if (event_listener)
-		event_listeners_.push_back(event_listener);
+	database_.CreateUser(connected_socket_);
 	return 0;
 }
 
@@ -252,3 +235,4 @@ void	EventHandler::add_response_map(std::pair<int, std::string> newResponse){
 		it->second.push_back(newResponse.second);
 	}
 }
+EventHandler::eventHandlerException::eventHandlerException(const std::string& msg) : std::invalid_argument(msg){};
