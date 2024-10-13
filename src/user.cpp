@@ -13,11 +13,11 @@ void User::CheckCommand(Event& event) const
 	(void)event;
 }
 
-std::pair<int, std::string>* User::ExecuteCommand(const Event& event)
+std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 {
 	//未実装
-	std::pair<int, std::string>* ret_pair = new std::pair<int, std::string>();
 	(void)event;
+	std::pair<int, std::string> ret_pair;
 	return ret_pair;
 }
 

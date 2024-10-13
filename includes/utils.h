@@ -19,6 +19,15 @@ namespace utils {
 	bool is_same_string(const std::string& dest, const std::string& src);
 	//int count_space(const std::string& str);
 	void erase_space(std::string& str);
+	template <typename K, typename V>
+	void mergeMaps(std::map<K, V>& dest_map, const std::map<K, V>& src_map)
+	{
+		for (typename std::map<K, V>::const_iterator it = src_map.begin();
+			it != src_map.end(); it++)
+		{
+			dest_map.insert(*it);
+		}
+	}
 
 	class utilsException : public std::invalid_argument
 	{

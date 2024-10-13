@@ -84,7 +84,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		message::ParseState parse_state = Parse(buffer, event);
 		if (parse_state == message::PARSE_ERROR)
 			return ;
-		database_.ExecuteEvent(event);
+		add_response_map(database_.ExecuteEvent(event));
 	}
 }
 
@@ -224,15 +224,24 @@ void	EventHandler::add_event_socket(int new_fd)
 	poll_fd_.push_back(new_pollfd);
 }
 
-void	EventHandler::add_response_map(std::pair<int, std::string> newResponse){
-	std::map<int, std::vector<std::string> >::iterator it =
-		this->response_map_.find(newResponse.first);
-	//該当fdのpairが存在しない場合は新規pair追加
-	if (it == this->response_map_.end()){
-		this->response_map_.insert(std::pair<int, std::vector<std::string> >(newResponse.first, std::vector<std::string>(1, newResponse.second)));
-	//該当fdのpairが存在する場合は要素のsecondに文字列を追加
-	} else {
-		it->second.push_back(newResponse.second);
+void	EventHandler::add_response_map(std::map<int, std::string> new_response){
+	
+	for (std::map<int, std::string>::iterator new_map_iterator =
+		new_response.begin();
+		new_map_iterator != new_response.end();
+		new_map_iterator++){
+		std::map<int, std::vector<std::string> >::iterator existing_map_iterator =
+			this->response_map_.find(new_map_iterator->first);
+
+		//該当fdに対して送信するメッセージが存在しない場合は新規pair追加
+		if (existing_map_iterator == this->response_map_.end()){
+			this->response_map_.insert(std::pair<int, std::vector<std::string> >
+			(new_map_iterator->first, std::vector<std::string>(1, new_map_iterator->second)));
+
+		//該当fdに対して送信するメッセージが存在する場合は要素のsecondに文字列を追加
+		} else {
+			existing_map_iterator->second.push_back(new_map_iterator->second);
+		}
 	}
 }
 EventHandler::eventHandlerException::eventHandlerException(const std::string& msg) : std::invalid_argument(msg){};

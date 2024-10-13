@@ -12,7 +12,7 @@ class Channel: public EventListener, public EventConfigurator{
 		~Channel();
 
 		void CheckCommand(Event& event) const;
-		std::pair<int, std::string>* ExecuteCommand(const Event& event);
+		std::pair<int, std::string> ExecuteCommand(const Event& event);
 		bool is_finished() const;
 
 

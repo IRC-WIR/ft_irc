@@ -61,4 +61,5 @@ void erase_space(std::string& str)
 
 utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
+
 }

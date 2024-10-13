@@ -13,7 +13,7 @@ class User : public EventListener, public EventConfigurator{
 		~User();
 
 		void CheckCommand(Event& event) const;
-		std::pair<int, std::string>* ExecuteCommand(const Event& event);
+		std::pair<int, std::string> ExecuteCommand(const Event& event);
 		bool is_finished() const;
 
 		void set_server_password(const std::string& password);
