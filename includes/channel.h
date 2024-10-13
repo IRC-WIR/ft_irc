@@ -18,6 +18,7 @@ class Channel: public PrepareEventListener{
 		std::map<int, std::string> TopicCommand(Event& event);
 		std::map<int, std::string> ModeCommand(Event& event);
 		std::map<int, std::string> PrivmsgCommand(Event& event);
+		std::pair<int, std::string>	ExecuteCommand(const Event& event);
 
 	private:
 		std::vector<User>	users_;

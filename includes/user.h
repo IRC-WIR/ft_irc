@@ -19,6 +19,7 @@ class User : public EventListener{
 		std::map<int, std::string> TopicCommand(const Event& event);
 		std::map<int, std::string> ModeCommand(const Event& event);
 		std::map<int, std::string> PrivmsgCommand(const Event& event);
+		std::pair<int, std::string>	ExecuteCommand(const Event& event);
 		void set_server_password(const std::string& password);
 		bool get_is_password_authenticated() const;
 		int get_fd() const;

@@ -6,7 +6,6 @@
 #include "user.h"
 #include "channel.h"
 #include "check.h"
-#include "delete_event_listener.h"
 #include "utils.h"
 
 

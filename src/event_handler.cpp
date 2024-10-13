@@ -97,16 +97,14 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 {
 	if (entry.revents & POLLOUT)
 	{
-		int ready_fd = entry.fd;
-		std::pair<std::multimap<int, std::string>::iterator, std::multimap<int, std::string>::iterator> range;
-		range = response_map_.equal_range(ready_fd);
+		int target_fd = entry.fd;
+		std::vector<std::string> message = response_map_[target_fd];
 
-    for (std::multimap<int, std::string>::iterator it = range.first;
-			it != range.second;) {
+    for (std::vector<std::string>::iterator it = message.begin();
+			it != message.end(); it++) {
 
-			int target_fd = it->first;
-			const char *message = it->second.c_str();
-			int	message_length = it->second.length();
+			const char *message = (*it).c_str();
+			int	message_length = (*it).length();
 
 			size_t sent_length = send(target_fd, message, message_length, 0);
 			if (sent_length < 0) {
@@ -124,7 +122,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 				}
 			//部分的に送信成功した場合、残りの文字列のみを残す
 			} else if (sent_length < (size_t)message_length){
-				it->second = it->second.substr(sent_length);
+				*it = (*it).substr(sent_length);
 			}
 			//直ちに再送
 			if (errno == EINTR)
@@ -134,7 +132,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 				++it;
 				continue;
 			}
-			response_map_.erase(it++);
+			response_map_[target_fd].erase(it++);
 		}
 	}
 	return ;
@@ -143,40 +141,9 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 void	EventHandler::ExecuteCommand(Event event){
 
 	int listener_size = event_listeners_.size();
-
 	for (int i = 0; i < listener_size; i++)
 	{
-		switch (event.get_command()){
-			case message::PASS:
-				utils::mergeMaps(response_map_, event_listeners_[i]->PassCommand(event));
-				break;
-			case message::NICK:
-				utils::mergeMaps(response_map_, event_listeners_[i]->NickCommand(event));
-				break;
-			case message::USER:
-				utils::mergeMaps(response_map_, event_listeners_[i]->UserCommand(event));
-				break;
-			case message::JOIN:
-				utils::mergeMaps(response_map_, event_listeners_[i]->JoinCommand(event));
-				break;
-			case message::INVITE:
-				utils::mergeMaps(response_map_, event_listeners_[i]->InviteCommand(event));
-				break;
-			case message::KICK:
-				utils::mergeMaps(response_map_, event_listeners_[i]->KickCommand(event));
-				break;
-			case message::TOPIC:
-				utils::mergeMaps(response_map_, event_listeners_[i]->TopicCommand(event));
-				break;
-			case message::MODE:
-				utils::mergeMaps(response_map_, event_listeners_[i]->ModeCommand(event));
-				break;
-			case message::PRIVMSG:
-				utils::mergeMaps(response_map_, event_listeners_[i]->PrivmsgCommand(event));
-				break;
-			default:
-				return ;
-		}
+		add_response_map(event_listeners_[i]->ExecuteCommand(event));
 	}
 }
 
@@ -272,3 +239,14 @@ void	EventHandler::add_event_socket(int new_fd)
 	poll_fd_.push_back(new_pollfd);
 }
 
+void	EventHandler::add_response_map(std::pair<int, std::string> newResponse){
+	std::map<int, std::vector<std::string> >::iterator it =
+		this->response_map_.find(newResponse.first);
+	//該当fdのpairが存在しない場合は新規pair追加
+	if (it == this->response_map_.end()){
+		this->response_map_.insert(std::pair<int, std::vector<std::string> >(newResponse.first, std::vector<std::string>(1, newResponse.second)));
+	//該当fdのpairが存在する場合は要素のsecondに文字列を追加
+	} else {
+		it->second.push_back(newResponse.second);
+	}
+}

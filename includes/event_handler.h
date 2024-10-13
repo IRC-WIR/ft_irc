@@ -22,6 +22,7 @@ class EventHandler{
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
 		void				add_event_socket(int new_fd);
+		void				add_response_map(std::pair<int, std::string> newResponse);
 
 	private:
 		int					Accept();
@@ -39,7 +40,7 @@ class EventHandler{
 		Check* check_;
 		DeleteEventListener* delete_event_listener_;
 		std::vector<struct pollfd>	poll_fd_;
-		std::multimap<int, std::string>	response_map_;
+		std::map<int, std::vector<std::string> >	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
 
