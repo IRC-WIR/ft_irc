@@ -2,6 +2,7 @@
 	#define MESSAGE_H_
 
 #include "utils.h"
+
 namespace message
 {
 

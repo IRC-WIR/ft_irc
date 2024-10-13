@@ -5,39 +5,37 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/socket.h>
-#include "event_listener.h"
-#include "utils.h"
 #include "message.h"
-
-class StartEventListener;
-
-class EndEventListener;
+#include "event.h"
+#include "database.h"
 
 class EventHandler{
 	public:
-		EventHandler(StartEventListener* start_event_listener, EndEventListener* end_event_listener, std::string port_no);
-		EventHandler();
+		EventHandler(Database& database,int port_no);
 		~EventHandler();
 		bool				IsListeningSocket();
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
 		void				add_event_socket(int new_fd);
+		//ネスト例外クラス
+		class eventHandlerException : public std::invalid_argument
+		{
+			public:
+				eventHandlerException(const std::string& msg);
+		};
 
 	private:
+		EventHandler();
 		int					Accept();
 		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
-		void				ExecuteCommand(Event event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
 		void				HandlePollOutEvent(pollfd entry);
 		void				HandlePollHupEvent(pollfd entry);
 
-
-		std::vector<EventListener *>	event_listeners_;
-		StartEventListener* start_event_listener_;
-		EndEventListener* end_event_listener_;
+		Database&	database_;
 		std::vector<struct pollfd>	poll_fd_;
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;
@@ -46,6 +44,7 @@ class EventHandler{
 		//定数
 		static const int	kQueueLimit;
 		static const int	kBufferSize;
+		static const std::string kPollErrMsg;
 };
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef EVENT_H_
 	#define EVENT_H_
 
-#include "utils.h"
 #include "message.h"
 
 class Event {
@@ -10,8 +9,8 @@ class Event {
 		~Event();
 		int		get_fd() const;
 		int		get_event_type() const;
-		message::Command	get_command();
-		std::vector<std::string>	get_command_params();
+		message::Command	get_command() const;
+		std::vector<std::string>	get_command_params() const;
 		void	set_command(const message::Command& command);
 		void	set_command_params(const std::vector<std::string>& commmand_params);
 

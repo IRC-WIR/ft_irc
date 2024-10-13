@@ -14,3 +14,6 @@ ircserv
 
 #.DS_STORE
 .DS_STORE
+
+#.vscode
+.vscode

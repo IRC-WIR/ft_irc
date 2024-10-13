@@ -20,12 +20,12 @@ int Event::get_event_type() const
 	return event_type_;
 }
 
-message::Command Event::get_command()
+message::Command Event::get_command() const
 {
 	return command_;
 }
 
-std::vector<std::string> Event::get_command_params()
+std::vector<std::string> Event::get_command_params() const
 {
 	return command_params_;
 }

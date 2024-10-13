@@ -10,19 +10,8 @@ class EventListener
 	public:
 		EventListener();
 		virtual ~EventListener();
-		void ExecuteCommand(std::map<int, std::string>& response, Event& event);
-
-	private:
-		virtual std::map<int, std::string> PassCommand(Event& event) = 0;
-		virtual std::map<int, std::string> NickCommand(Event& event) = 0;
-		virtual std::map<int, std::string> UserCommand(Event& event) = 0;
-		virtual std::map<int, std::string> JoinCommand(Event& event) = 0;
-		virtual std::map<int, std::string> InviteCommand(Event& event) = 0;
-		virtual std::map<int, std::string> KickCommand(Event& event) = 0;
-		virtual std::map<int, std::string> TopicCommand(Event& event) = 0;
-		virtual std::map<int, std::string> ModeCommand(Event& event) = 0;
-		virtual std::map<int, std::string> PrivmsgCommand(Event& event) = 0;
-
+		virtual std::pair<int, std::string> ExecuteCommand(const Event& event) = 0;
+		virtual bool is_finished() const = 0;
 };
 
 #endif
