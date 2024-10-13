@@ -5,6 +5,8 @@
 #include "event_configurator.h"
 #include "utils.h"
 
+class Channel;
+
 class User : public EventListener, public EventConfigurator{
 	public:
 		User(int fd);
@@ -28,6 +30,7 @@ class User : public EventListener, public EventConfigurator{
 		std::string	user_name_;
 		std::string	real_name_;
 		std::string server_password_;
+		std::vector<Channel>	channels_;
 		bool is_delete_;
 
 		std::map<int, std::string> PassCommand(const Event& event);

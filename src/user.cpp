@@ -1,4 +1,5 @@
 #include "user.h"
+#include "channel.h"
 
 User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_user_done_(false), is_delete_(false) {
 }
