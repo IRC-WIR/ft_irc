@@ -1,20 +1,15 @@
 #include "event_handler.h"
-#include "irc_server.h"
 
 const	int	EventHandler::kQueueLimit = 10;
 const	int EventHandler::kBufferSize = 512;
-
-EventHandler::EventHandler()
-{
-	return ;
-}
+const	std::string EventHandler::kPollErrMsg = "poll failed";
 
 EventHandler::~EventHandler()
 {
 	return ;
 }
 
-EventHandler::EventHandler(Check* check, DeleteEventListener* delete_event_listener, std::string port_no) : check_(check), delete_event_listener_(delete_event_listener)
+EventHandler::EventHandler(DataBase& data_base, const std::string& port_no) : data_base_(data_base)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -50,7 +45,7 @@ void	EventHandler::ExecutePoll()
 //	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
-		throw (IrcServer::IrcException("poll failed"));
+		throw (eventHandlerException(kPollErrMsg));
 	if (pollResult == 0)
 	{
 		//debug
@@ -92,117 +87,14 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 	}
 }
 
-void	EventHandler::ExecuteCommand(Event event){
-
-	CallCheck(event);
-
-	int listener_size = event_listeners_.size();
+void	EventHandler::ExecuteCommand(Event event)
+{
+	std::vector<EventListener*> event_listeners = data_base_.get_execute_element();
+	int listener_size = event_listeners.size();
 
 	for (int i = 0; i < listener_size; i++)
 	{
-		switch (event.get_command()){
-			case message::PASS:
-				utils::mergeMaps(response_map_, event_listeners_[i]->PassCommand(event));
-				break;
-			case message::NICK:
-				event_listeners_[i]->NickCommand(event);
-				break;
-			case message::USER:
-				event_listeners_[i]->UserCommand(event);
-				break;
-			case message::JOIN:
-				event_listeners_[i]->JoinCommand(event);
-				break;
-			case message::INVITE:
-				event_listeners_[i]->InviteCommand(event);
-				break;
-			case message::KICK:
-				event_listeners_[i]->KickCommand(event);
-				break;
-			case message::TOPIC:
-				event_listeners_[i]->TopicCommand(event);
-				break;
-			case message::MODE:
-				event_listeners_[i]->ModeCommand(event);
-				break;
-			case message::PRIVMSG:
-				event_listeners_[i]->PrivmsgCommand(event);
-				break;
-			default:
-				return ;
-		}
-	}
-	CallDeleteEventListener(event);
-}
-
-void	EventHandler::CallCheck(Event& event)
-{
-		switch (event.get_command()){
-
-			case message::PASS:
-				check_->PassCommand(event);
-				break;
-			case message::NICK:
-				check_->NickCommand(event);
-				break;
-			case message::USER:
-				check_->UserCommand(event);
-				break;
-			case message::JOIN:
-				check_->JoinCommand(event);
-				break;
-			case message::INVITE:
-				check_->InviteCommand(event);
-				break;
-			case message::KICK:
-				check_->KickCommand(event);
-				break;
-			case message::TOPIC:
-				check_->TopicCommand(event);
-				break;
-			case message::MODE:
-				check_->ModeCommand(event);
-				break;
-			case message::PRIVMSG:
-				check_->PrivmsgCommand(event);
-				break;
-			default:
-				return ;
-		}
-}
-
-void	EventHandler::CallDeleteEventListener(Event& event)
-{
-	switch (event.get_command()){
-		case message::PASS:
-			delete_event_listener_->PassCommand(event);
-			break;
-		case message::NICK:
-			delete_event_listener_->NickCommand(event);
-			break;
-		case message::USER:
-			delete_event_listener_->UserCommand(event);
-			break;
-		case message::JOIN:
-			delete_event_listener_->JoinCommand(event);
-			break;
-		case message::INVITE:
-			delete_event_listener_->InviteCommand(event);
-			break;
-		case message::KICK:
-			delete_event_listener_->KickCommand(event);
-			break;
-		case message::TOPIC:
-			delete_event_listener_->TopicCommand(event);
-			break;
-		case message::MODE:
-			delete_event_listener_->ModeCommand(event);
-			break;
-		case message::PRIVMSG:
-			delete_event_listener_->PrivmsgCommand(event);
-			break;
-		default:
-			return ;
+		event_listeners[i]->ExecuteCommand(event);
 	}
 }
 
@@ -257,10 +149,7 @@ int	EventHandler::Accept()
 		return -1;
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
-
-	EventListener* event_listener = check_->accept(connected_socket_);
-	if (event_listener)
-		event_listeners_.push_back(event_listener);
+	data_base_.createUser(connected_socket_);
 	return 0;
 }
 
@@ -304,3 +193,4 @@ void	EventHandler::add_event_socket(int new_fd)
 	poll_fd_.push_back(new_pollfd);
 }
 
+EventHandler::eventHandlerException::eventHandlerException(const std::string& msg) : std::invalid_argument(msg){};
