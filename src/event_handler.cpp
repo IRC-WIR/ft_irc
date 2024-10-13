@@ -133,6 +133,8 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 				continue;
 			}
 			response_map_[target_fd].erase(it++);
+			if (response_map_[target_fd].empty())
+				response_map_.erase(target_fd);
 		}
 	}
 	return ;
