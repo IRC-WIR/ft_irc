@@ -8,8 +8,7 @@
 class EventListener
 {
 	public:
-		EventListener();
-		virtual ~EventListener();
+		virtual ~EventListener() {};
 		virtual std::pair<int, std::string>* ExecuteCommand(const Event& event) = 0;
 		virtual bool is_finished() const = 0;
 
