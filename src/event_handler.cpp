@@ -9,7 +9,7 @@ EventHandler::~EventHandler()
 	return ;
 }
 
-EventHandler::EventHandler(DataBase& data_base, const std::string& port_no) : data_base_(data_base)
+EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -21,7 +21,7 @@ EventHandler::EventHandler(DataBase& data_base, const std::string& port_no) : da
 	poll_fd_.push_back(listening_pollfd);
 
 	server_address_.sin_family = AF_INET;
-	server_address_.sin_port = htons(utils::ft_stoi(port_no));
+	server_address_.sin_port = htons(port_no);
 	server_address_.sin_addr.s_addr = INADDR_ANY;
 	bind(listening_socket_, (struct sockaddr*)&(server_address_), sizeof(server_address_));
 	//第２引数をメンバ変数に定数追加　適切な数は？
@@ -83,18 +83,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		message::ParseState parse_state = Parse(buffer, event);
 		if (parse_state == message::PARSE_ERROR)
 			return ;
-		ExecuteCommand(event);
-	}
-}
-
-void	EventHandler::ExecuteCommand(Event event)
-{
-	std::vector<EventListener*> event_listeners = data_base_.get_execute_element();
-	int listener_size = event_listeners.size();
-
-	for (int i = 0; i < listener_size; i++)
-	{
-		event_listeners[i]->ExecuteCommand(event);
+		database_.ExecuteEvent(event);
 	}
 }
 
@@ -149,7 +138,7 @@ int	EventHandler::Accept()
 		return -1;
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
-	data_base_.createUser(connected_socket_);
+	database_.CreateUser(connected_socket_);
 	return 0;
 }
 

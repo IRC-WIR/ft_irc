@@ -6,7 +6,8 @@
 class EventConfigurator{
 
 	public:
-		virtual ~EventConfigurator() {};
+		EventConfigurator();
+		virtual ~EventConfigurator();
 		virtual void CheckCommand(Event& event) const = 0;
 		virtual bool is_finished() const = 0;
 

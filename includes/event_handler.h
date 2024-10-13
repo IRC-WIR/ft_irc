@@ -7,11 +7,11 @@
 #include <sys/socket.h>
 #include "message.h"
 #include "event.h"
-#include "data_base.h"
+#include "database.h"
 
 class EventHandler{
 	public:
-		EventHandler(DataBase& data_base, const std::string& port_no);
+		EventHandler(Database& database,int port_no);
 		~EventHandler();
 		bool				IsListeningSocket();
 		void				ExecutePoll();
@@ -29,14 +29,14 @@ class EventHandler{
 		int					Accept();
 		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
-		void				ExecuteCommand(Event event);
+	//	void				ExecuteCommand(Event event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
 		void				HandlePollOutEvent(pollfd entry);
 		void				HandlePollHupEvent(pollfd entry);
 
-		DataBase&	data_base_;
+		Database&	database_;
 		std::vector<struct pollfd>	poll_fd_;
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;

@@ -1,6 +1,6 @@
 #include "server.h"
 #include "event_handler.h"
-#include "data_base.h"
+#include "database.h"
 #include "utils.h"
 
 int	main(int argc, char **argv)
@@ -13,9 +13,9 @@ int	main(int argc, char **argv)
 	}
 	try
 	{
-		DataBase			data_base;
+		Database			database;
 		utils::check_digital_str(argv[1]);
-		EventHandler		event_handler(data_base, argv[1]);
+		EventHandler		event_handler(database, utils::ft_stoi(argv[1]));
 		Server::IrcServer	irc_server(event_handler);
 		irc_server.set_port_no(argv[1]);
 		irc_server.set_password(argv[2]);

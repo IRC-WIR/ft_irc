@@ -4,6 +4,7 @@
 #include "event_listener.h"
 #include "event_configurator.h"
 #include "utils.h"
+#include "user.h"
 
 class Channel: public EventListener, public EventConfigurator{
 	public:
@@ -26,6 +27,8 @@ class Channel: public EventListener, public EventConfigurator{
 		bool	o_mode;
 		bool	l_mode;
 		bool	is_delete_;
+		std::vector<User*> users_;
+		std::vector<User*> operators_;
 
 		std::map<int, std::string> PassCommand(Event& event);
 		std::map<int, std::string> NickCommand(Event& event);
