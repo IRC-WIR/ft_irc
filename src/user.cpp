@@ -1,7 +1,7 @@
 #include "user.h"
 #include "channel.h"
 
-User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_user_done_(false), is_delete_(false) {
+User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(false) {
 }
 
 User::~User() {
@@ -96,10 +96,9 @@ std::pair<int, std::string> User::UserCommand(const Event& event){
 		return ret_pair;
 	if (params.size() < kParamsSize)
 		ret_pair = std::make_pair(this->get_fd(), "ERR_NEEDMOREPARAMS");
-	else if (this->is_user_done_)
+	else if (this->is_verified())
 		ret_pair = std::make_pair(this->get_fd(), "ERR_ALREADYREGISTRED");
 	else {
-		this->is_user_done_ = true;
 		this->user_name_ = params[0];
 		// 今回は1,2番目の要素は無視する
 		for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
@@ -177,4 +176,14 @@ int User::get_fd() const
 bool User::get_is_delete() const
 {
 	return is_delete_;
+}
+
+bool	User::is_verified() const
+{
+	if (!this->is_password_authenticated_
+		|| this->nick_name_.empty()
+		|| this->user_name_.empty()){
+		return false;
+	}
+	return true;
 }

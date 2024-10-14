@@ -15,6 +15,7 @@ class User : public EventListener, public EventConfigurator{
 		void CheckCommand(Event& event) const;
 		std::pair<int, std::string> ExecuteCommand(const Event& event);
 		bool is_finished() const;
+		bool is_verified() const;
 
 		void set_server_password(const std::string& password);
 		bool get_is_password_authenticated() const;
@@ -26,7 +27,6 @@ class User : public EventListener, public EventConfigurator{
 		int		fd_;
 
 		bool	is_password_authenticated_;
-		bool	is_user_done_;
 		std::string	nick_name_;
 		std::string	user_name_;
 		std::string	real_name_;
