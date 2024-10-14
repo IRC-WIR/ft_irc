@@ -110,7 +110,8 @@ Command MessageParser::get_command() const
 	return command_;
 }
 
-ParseState MessageParser::get_state() const{
+ParseState MessageParser::get_state() const
+{
 	return state_;
 }
 

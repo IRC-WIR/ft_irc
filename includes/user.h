@@ -13,7 +13,7 @@ class User : public EventListener, public EventConfigurator{
 		~User();
 
 		void CheckCommand(Event& event) const;
-		std::pair<int, std::string>* ExecuteCommand(const Event& event);
+		std::pair<int, std::string> ExecuteCommand(const Event& event);
 		bool is_finished() const;
 
 		void set_server_password(const std::string& password);
@@ -24,6 +24,7 @@ class User : public EventListener, public EventConfigurator{
 	private:
 		User();
 		int		fd_;
+
 		bool	is_password_authenticated_;
 		bool	is_user_done_;
 		std::string	nick_name_;
@@ -33,15 +34,15 @@ class User : public EventListener, public EventConfigurator{
 		std::vector<Channel>	channels_;
 		bool is_delete_;
 
-		std::map<int, std::string> PassCommand(const Event& event);
-		std::map<int, std::string> NickCommand(const Event& event);
-		std::map<int, std::string> UserCommand(const Event& event);
-		std::map<int, std::string> JoinCommand(const Event& event);
-		std::map<int, std::string> InviteCommand(const Event& event);
-		std::map<int, std::string> KickCommand(const Event& event);
-		std::map<int, std::string> TopicCommand(const Event& event);
-		std::map<int, std::string> ModeCommand(const Event& event);
-		std::map<int, std::string> PrivmsgCommand(const Event& event);
+		std::pair<int, std::string> PassCommand(const Event& event);
+		std::pair<int, std::string> NickCommand(const Event& event);
+		std::pair<int, std::string> UserCommand(const Event& event);
+		std::pair<int, std::string> JoinCommand(const Event& event);
+		std::pair<int, std::string> InviteCommand(const Event& event);
+		std::pair<int, std::string> KickCommand(const Event& event);
+		std::pair<int, std::string> TopicCommand(const Event& event);
+		std::pair<int, std::string> ModeCommand(const Event& event);
+		std::pair<int, std::string> PrivmsgCommand(const Event& event);
 };
 
 #endif
