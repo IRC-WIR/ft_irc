@@ -34,48 +34,48 @@ bool Channel::is_finished() const
 	return true;
 }
 
-std::map<int, std::string> Channel::PassCommand(Event& event){
+std::pair<int, std::string> Channel::PassCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::NickCommand(Event& event){
+std::pair<int, std::string> Channel::NickCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::UserCommand(Event& event){
+std::pair<int, std::string> Channel::UserCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::JoinCommand(Event& event){
+std::pair<int, std::string> Channel::JoinCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::InviteCommand(Event& event){
+std::pair<int, std::string> Channel::InviteCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::KickCommand(Event& event){
+std::pair<int, std::string> Channel::KickCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::TopicCommand(Event& event){
+std::pair<int, std::string> Channel::TopicCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::ModeCommand(Event& event){
+std::pair<int, std::string> Channel::ModeCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }
-std::map<int, std::string> Channel::PrivmsgCommand(Event& event){
+std::pair<int, std::string> Channel::PrivmsgCommand(Event& event){
 	(void)event;
-	std::map<int, std::string> error_message;
-	return error_message;
+	std::pair<int, std::string> ret_pair;
+	return ret_pair;
 }

@@ -1,9 +1,9 @@
 #ifndef EVENT_LISTENER_H_
  #define EVENT_LISTENER_H_
 
-
 #include "event.h"
 #include "utils.h"
+#include "message.h"
 
 class EventListener
 {
@@ -12,9 +12,6 @@ class EventListener
 		virtual ~EventListener();
 		virtual std::pair<int, std::string> ExecuteCommand(const Event& event) = 0;
 		virtual bool is_finished() const = 0;
-
-	private:
-
 };
 
 #endif
