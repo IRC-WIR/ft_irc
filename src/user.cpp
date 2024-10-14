@@ -15,9 +15,40 @@ void User::CheckCommand(Event& event) const
 
 std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 {
-	//未実装
-	(void)event;
 	std::pair<int, std::string> ret_pair;
+
+	switch (event.get_command())
+	{
+		case message::PASS:
+			ret_pair = PassCommand(event);
+			break;
+		case message::NICK:
+			ret_pair = NickCommand(event);
+			break;
+		case message::USER:
+			ret_pair = UserCommand(event);
+			break;
+		case message::JOIN:
+			ret_pair = JoinCommand(event);
+			break;
+		case message::INVITE:
+			ret_pair = InviteCommand(event);
+			break;
+		case message::KICK:
+			ret_pair = KickCommand(event);
+			break;
+		case message::TOPIC:
+			ret_pair = TopicCommand(event);
+			break;
+		case message::MODE:
+			ret_pair = ModeCommand(event);
+			break;
+		case message::PRIVMSG:
+			ret_pair = PrivmsgCommand(event);
+			break;
+		default:
+			return ret_pair;
+	}
 	return ret_pair;
 }
 

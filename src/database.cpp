@@ -29,9 +29,6 @@ void Database::CheckEvent(Event& event) const
 
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event){
 	std::map<int, std::string> ret;
-	//未完成、下記配慮が必要
-	//①別ブランチでretにpairからmap<int, std::string>に入力する変換が必要）
-	//②ExecuteCommandからはnewしたpairが帰ってくるので、map<int, std::string>もnewするなら、pairを先にdeleteをするべき！？
 	std::size_t vector_length = execute_element_.size();
 	for (size_t i = 0; i < vector_length; i++)
 	{

@@ -93,11 +93,10 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 	if (entry.revents & POLLOUT)
 	{
 		int target_fd = entry.fd;
-		std::vector<std::string> message = response_map_[target_fd];
 
-    for (std::vector<std::string>::iterator it = message.begin();
-			it != message.end(); it++) {
-
+    for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
+			it != response_map_[target_fd].end();) {
+			
 			const char *message = (*it).c_str();
 			int	message_length = (*it).length();
 
@@ -114,6 +113,8 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 					Event event = Event(entry.fd, entry.revents); 
 					event.set_command(message::QUIT);
 					database_.ExecuteEvent(event);
+					response_map_.erase(target_fd);	
+					return ;
 				}
 			//部分的に送信成功した場合、残りの文字列のみを残す
 			} else if (sent_length < (size_t)message_length){
@@ -127,9 +128,12 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 				++it;
 				continue;
 			}
-			response_map_[target_fd].erase(it++);
-			if (response_map_[target_fd].empty())
-				response_map_.erase(target_fd);
+			it = response_map_[target_fd].erase(it);
+		}
+		//空の場合、response_map_から要素を消す
+		if (response_map_[target_fd].empty()){
+			std::cout << "erase from Database::response_map_" << std::endl;
+			response_map_.erase(target_fd);
 		}
 	}
 	return ;
@@ -230,6 +234,7 @@ void	EventHandler::add_response_map(std::map<int, std::string> new_response){
 		new_response.begin();
 		new_map_iterator != new_response.end();
 		new_map_iterator++){
+
 		std::map<int, std::vector<std::string> >::iterator existing_map_iterator =
 			this->response_map_.find(new_map_iterator->first);
 
