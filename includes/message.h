@@ -48,7 +48,7 @@ class MessageParser
 		ParseState state_;
 		std::vector<std::string> command_params_;
 		static const std::map<std::string, Command> kCommandMap;
-		static std::map<std::string, message::Command> createCommandMap();
+		static std::map<std::string, Command> CreateCommandMap();
 };
 
 } // namespace message

@@ -2,9 +2,9 @@
 
 namespace message {
 
-const std::map<std::string, Command> MessageParser::kCommandMap = MessageParser::createCommandMap();
+const std::map<std::string, Command> MessageParser::kCommandMap = MessageParser::CreateCommandMap();
 
-std::map<std::string, Command> MessageParser::createCommandMap() {
+std::map<std::string, Command> MessageParser::CreateCommandMap() {
     std::map<std::string, Command> m;
     m.insert(std::make_pair("PASS", PASS));
     m.insert(std::make_pair("NICK", NICK));
@@ -55,7 +55,10 @@ void MessageParser::ParsingMessage(const std::string& msg)
 			default:
 				last_param = utils::ft_split_after(message_, ":");
 				if (!last_param.empty())
+				{
+					utils::erase_space(last_param);
 					command = utils::ft_split_before(message_, ":");
+				}
 				state_ = PARSE_COMMAND;
 				break;
 		}

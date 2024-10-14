@@ -151,6 +151,8 @@ void	EventHandler::Receive(Event event, char* buffer)
 
 message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::string str_buffer(buffer);
+
+	//何回コマンドを受け取ったかを「/r/n」をsplitで確認
 	message::MessageParser message_parser(str_buffer);
 
 	//debug
