@@ -19,31 +19,31 @@ std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 
 	switch (event.get_command())
 	{
-		case message::PASS:
+		case message::kPass:
 			ret_pair = PassCommand(event);
 			break;
-		case message::NICK:
+		case message::kNick:
 			ret_pair = NickCommand(event);
 			break;
-		case message::USER:
+		case message::kUser:
 			ret_pair = UserCommand(event);
 			break;
-		case message::JOIN:
+		case message::kJoin:
 			ret_pair = JoinCommand(event);
 			break;
-		case message::INVITE:
+		case message::kInvite:
 			ret_pair = InviteCommand(event);
 			break;
-		case message::KICK:
+		case message::kKick:
 			ret_pair = KickCommand(event);
 			break;
-		case message::TOPIC:
+		case message::kTopic:
 			ret_pair = TopicCommand(event);
 			break;
-		case message::MODE:
+		case message::kMode:
 			ret_pair = ModeCommand(event);
 			break;
-		case message::PRIVMSG:
+		case message::kPrivmsg:
 			ret_pair = PrivmsgCommand(event);
 			break;
 		default:

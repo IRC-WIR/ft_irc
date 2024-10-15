@@ -15,7 +15,6 @@ void check_digital_str(std::string num_str)
 	};
 }
 
-
 int ft_stoi(std::string num_str)
 {
 	std::stringstream ss(num_str);
@@ -50,14 +49,32 @@ void print_string_vector(const std::vector<std::string>& str_vec)
 	}
 }
 
-void erase_space(std::string& str)
+void erase_newline(std::string& str)
 {
 	std::string::size_type pos;
+	while ((pos = str.find("\r\n")) != std::string::npos)
+		str.erase(pos, 2);
 	while((pos = str.find('\n')) != std::string::npos)
-	{
 		str.erase(pos, 1);
-	}
 }
+
+bool is_ascii(char c)
+{
+	return static_cast<unsigned char>(c) <= 127;
+}
+
+bool is_ascii_str(const std::string& str)
+{
+	const char* c = str.c_str();
+	while(c)
+	{
+		if(!is_ascii(*c))
+			return false;
+		c++;
+	}
+	return true;
+}
+
 
 utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
