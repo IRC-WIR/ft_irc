@@ -25,12 +25,12 @@ message::Command Event::get_command() const
 	return command_;
 }
 
-std::vector<std::string> Event::get_command_params() const
+const std::vector<std::string>& Event::get_command_params() const
 {
 	return command_params_;
 }
 
-void Event::set_command(const message::Command& command)
+void Event::set_command(message::Command command)
 {
 	command_ = command;
 }
