@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstring> //for std::memset
 #include <utility> //for std::pair
+#include <set> //for std::set
 
 namespace utils {
 	void check_digital_str(std::string num_str);

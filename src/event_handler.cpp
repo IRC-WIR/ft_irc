@@ -84,6 +84,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		if (parse_state == message::PARSE_ERROR)
 			return ;
 		database_.ExecuteEvent(event);
+		database_.DeleteFinishedElements(event);
 	}
 }
 
