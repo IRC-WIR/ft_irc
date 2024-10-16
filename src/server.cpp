@@ -1,6 +1,6 @@
 #include "server.h"
 
-namespace Server {
+namespace server {
 
 IrcServer::IrcServer(EventHandler& event_handler) : event_handler_(event_handler)
 {

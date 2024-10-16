@@ -12,7 +12,7 @@ OBJS			=	$(patsubst $(SRC_DIR)%.cpp,$(OBJ_DIR)%.o,$(SRCS))
 
 INCLUDE			=	-I./includes
 
-RM			=	rm -rf	
+RM			=	rm -rf
 MKDIR			=	mkdir -p
 
 all		:	${NAME}
@@ -32,4 +32,8 @@ fclean	:	clean
 
 re		:	fclean all
 
-.PHONY: all clean fclean re
+test	:
+	cd test && cmake -S . -B build && cmake --build build
+	cd test/build && ctest
+
+.PHONY: all clean fclean re test

@@ -3,7 +3,7 @@
 
 #include "event_handler.h"
 
-namespace Server
+namespace server
 {
 	class IrcServer{
 	public:
