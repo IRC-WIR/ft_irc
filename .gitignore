@@ -17,3 +17,6 @@ ircserv
 
 #.vscode
 .vscode
+
+#test's build file
+./test/build
