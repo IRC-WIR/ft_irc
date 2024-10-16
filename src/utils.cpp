@@ -65,13 +65,14 @@ bool is_ascii(char c)
 
 bool is_ascii_str(const std::string& str)
 {
-	const char* c = str.c_str();
-	while(c)
+	std::string::const_iterator it = str.begin();
+	while (it != str.end())
 	{
-		if(!is_ascii(*c))
+		if (!is_ascii(*it))
 			return false;
-		c++;
+		it ++;
 	}
+
 	return true;
 }
 

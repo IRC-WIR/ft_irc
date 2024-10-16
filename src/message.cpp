@@ -32,8 +32,10 @@ void MessageParser::ParsingMessage(const std::string& msg)
 		state_ = kParseEmpty;
 		return;
 	}
+	std::cout << "message_: " << message_ << std::endl;
 	if (!utils::is_ascii_str(message_))
 	{
+		std::cout << "test in not ascii code" << std::endl;
 		state_ = KParseNotAscii;
 		return;
 	}
