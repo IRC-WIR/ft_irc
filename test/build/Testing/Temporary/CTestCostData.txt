@@ -1,2 +1,0 @@
-HelloTest.BasicAssertions 3 0.00575758
----

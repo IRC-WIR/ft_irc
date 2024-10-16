@@ -1,5 +1,0 @@
-if(EXISTS "/Users/weijuan/projects/42Tokyo/IRC/ft_irc/ft_irc/test/build/hello_test[1]_tests.cmake")
-  include("/Users/weijuan/projects/42Tokyo/IRC/ft_irc/ft_irc/test/build/hello_test[1]_tests.cmake")
-else()
-  add_test(hello_test_NOT_BUILT hello_test_NOT_BUILT)
-endif()
