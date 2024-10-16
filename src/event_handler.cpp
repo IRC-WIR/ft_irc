@@ -83,8 +83,11 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		message::ParseState parse_state = Parse(buffer, event);
 		if (parse_state == message::PARSE_ERROR)
 			return ;
+		std::cout << "test1" << std::endl;
 		database_.ExecuteEvent(event);
-		database_.DeleteFinishedElements(event);
+		std::cout << "test2" << std::endl;
+		database_.DeleteFinishedElements();
+		std::cout << "test3" << std::endl;
 	}
 }
 
