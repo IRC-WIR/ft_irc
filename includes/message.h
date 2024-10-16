@@ -47,7 +47,7 @@ class MessageParser
 		std::vector<std::string> command_params_;
 		static const std::map<std::string, Command> kCommandMap;
 		static std::map<std::string, Command> CreateCommandMap();
-		bool	isFinishParsing(ParseState state);
+		bool	IsFinishParsing();
 		void	ParsingMessage(const std::string& msg);
 		void	ParsingCommand(const std::string& command);
 		void	Init(const std::string& msg);

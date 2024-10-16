@@ -39,7 +39,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	}
 	std::string last_param;
 	std::string command = message_;
-	while (!isFinishParsing(state_))
+	while (!IsFinishParsing())
 	{
 		switch (state_)
 		{
@@ -128,11 +128,9 @@ std::vector<std::string> MessageParser::get_params() const
 	return command_params_;
 }
 
-bool MessageParser::isFinishParsing(ParseState state)
+bool MessageParser::IsFinishParsing()
 {
-	if (state == kParseError || state == kParseEmpty || state == kParseComplete)
-		return true;
-	return false;
+	return (state_ == kParseError || state_ == kParseEmpty || state_ == kParseComplete);
 }
 
 }
