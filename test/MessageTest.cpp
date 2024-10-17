@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "message.h"
 
-// test the command normal parsing
+// test PASS command
 TEST(MessageTest, ParsingTest1) {
 
   std::string raw_message =
@@ -14,39 +14,10 @@ TEST(MessageTest, ParsingTest1) {
   EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
   // Expect last command params.
   EXPECT_EQ(" space_include_last_param: ", message_parser.get_params()[1]);
-
-}
-
-// test the endof \n parsing
-TEST(MessageTest, ParsingTest2) {
-
-  std::string raw_message =
-    "PASS 1234abcd : space_include_last_param: \n";
-  message::MessageParser message_parser(raw_message);
-
-  // Expect PASS command.
-  EXPECT_EQ(message::kPass, message_parser.get_command());
-  // Expect first command params.
-  EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
-  // Expect last command params.
-  EXPECT_EQ(" space_include_last_param: ", message_parser.get_params()[1]);
-
-}
-
-// test lower_case parsing
-TEST(MessageTest, ParsingTest3) {
-
-   std::string raw_message =
-    "pass 1234abcd\r\n";
-  message::MessageParser message_parser(raw_message);
-  // Expect PASS command.
-  EXPECT_EQ(message::kPass, message_parser.get_command());
-  // Expect first command params.
-  EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
 }
 
 //test NICK command
-TEST(MessageTest, ParsingTest4) {
+TEST(MessageTest, ParsingTest2) {
 
   std::string raw_upper_message =
     "NICK 1234abcd\r\n";
@@ -60,7 +31,7 @@ TEST(MessageTest, ParsingTest4) {
   EXPECT_EQ(message::kNick, message_lower_parser.get_command());
 }
 //test USER command
-TEST(MessageTest, ParsingTest5) {
+TEST(MessageTest, ParsingTest3) {
 
   std::string raw_upper_message =
     "USER user * * : user_full_name\r\n";
@@ -82,7 +53,7 @@ TEST(MessageTest, ParsingTest5) {
   EXPECT_EQ(" user_full_name", message_upper_parser.get_params()[3]);
 }
 //test JOIN command
-TEST(MessageTest, ParsingTest6) {
+TEST(MessageTest, ParsingTest4) {
 
   std::string raw_upper_message =
     "JOIN #ch key\r\n";
@@ -99,8 +70,9 @@ TEST(MessageTest, ParsingTest6) {
   // Expect JOIN command param[1]
   EXPECT_EQ("key", message_upper_parser.get_params()[1]);
 }
+
 //test INVITE command
-TEST(MessageTest, ParsingTest7) {
+TEST(MessageTest, ParsingTest5) {
 
   std::string raw_upper_message =
     "INVITE user1 #ch1\r\n";
@@ -117,8 +89,9 @@ TEST(MessageTest, ParsingTest7) {
   // Expect INVITE command param[1]
   EXPECT_EQ("#ch1", message_upper_parser.get_params()[1]);
 }
+
 //test KICK command
-TEST(MessageTest, ParsingTest8) {
+TEST(MessageTest, ParsingTest6) {
 
   std::string raw_upper_message =
     "KICK #ch1 user\r\n";
@@ -135,8 +108,9 @@ TEST(MessageTest, ParsingTest8) {
   // Expect INVITE command param[1]
   EXPECT_EQ("user", message_upper_parser.get_params()[1]);
 }
+
 //test TOPIC command
-TEST(MessageTest, ParsingTest9) {
+TEST(MessageTest, ParsingTest7) {
 
   std::string raw_upper_message =
     "TOPIC #ch1 topic_name\r\n";
@@ -153,8 +127,9 @@ TEST(MessageTest, ParsingTest9) {
   // Expect INVITE command param[1]
   EXPECT_EQ("topic_name", message_upper_parser.get_params()[1]);
 }
+
 //test MODE command
-TEST(MessageTest, ParsingTest10) {
+TEST(MessageTest, ParsingTest8) {
 
   std::string raw_upper_message =
     "MODE #ch1 +o user\r\n";
@@ -173,8 +148,9 @@ TEST(MessageTest, ParsingTest10) {
   // Expect MODE command param[2]
   EXPECT_EQ("user", message_upper_parser.get_params()[2]);
 }
+
 //test PRIVMSG command
-TEST(MessageTest, ParsingTest11) {
+TEST(MessageTest, ParsingTest9) {
 
   std::string raw_upper_message =
     "PRIVMSG user : test_to_send\r\n";
@@ -191,8 +167,9 @@ TEST(MessageTest, ParsingTest11) {
   // Expect PRIVMSG last command param
   EXPECT_EQ(" test_to_send", message_upper_parser.get_params()[1]);
 }
+
 //test QUIT command
-TEST(MessageTest, ParsingTest12) {
+TEST(MessageTest, ParsingTest10) {
 
   std::string raw_upper_message =
     "QUIT\r\n";
@@ -206,5 +183,44 @@ TEST(MessageTest, ParsingTest12) {
   EXPECT_EQ(message::kQuit, message_lower_parser.get_command());
 }
 
+// test the endof \n parsing
+TEST(MessageTest, ParsingTest11) {
 
+  std::string raw_message =
+    "PASS 1234abcd : space_include_last_param: \n";
+  message::MessageParser message_parser(raw_message);
 
+  // Expect PASS command.
+  EXPECT_EQ(message::kPass, message_parser.get_command());
+  // Expect first command params.
+  EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
+  // Expect last command params.
+  EXPECT_EQ(" space_include_last_param: ", message_parser.get_params()[1]);
+
+}
+
+// test lower_case parsing
+TEST(MessageTest, ParsingTest12) {
+
+   std::string raw_message =
+    "pass 1234abcd\r\n";
+  message::MessageParser message_parser(raw_message);
+  // Expect PASS command.
+  EXPECT_EQ(message::kPass, message_parser.get_command());
+  // Expect first command params.
+  EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
+}
+
+// test space seperate
+TEST(MessageTest, ParsingTest13) {
+
+   std::string raw_message =
+    "PASS    abcd1234      efgh5678\r\n";
+  message::MessageParser message_parser(raw_message);
+  // Expect PASS command.
+  EXPECT_EQ(message::kPass, message_parser.get_command());
+  // Expect first command params.
+  EXPECT_EQ("abcd1234", message_parser.get_params()[0]);
+  // Expect first command params.
+  EXPECT_EQ("efgh5678", message_parser.get_params()[1]);
+}

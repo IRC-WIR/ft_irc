@@ -80,10 +80,11 @@ void MessageParser::ParsingCommand(const std::string& command)
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
 		utils::erase_newline(str);
-		command_params_.push_back(str);
+		if (!str.empty())
+			command_params_.push_back(str);
 	}
 	//find command
-	std::string command_str = this->command_params_[0];
+	std::string command_str = command_params_[0];
 	utils::convert_to_upper(command_str);
 	std::map<std::string, Command>::const_iterator it = kCommandMap.find(command_str);
 	//can't find command

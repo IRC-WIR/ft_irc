@@ -41,8 +41,8 @@ void	EventHandler::ExecutePoll()
 	// {
 	// 	std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
 	// }
-//	std::cout << "-- listener --" << std::endl;
-//	std::cout << event_listeners_.size() << std::endl;
+	//	std::cout << "-- listener --" << std::endl;
+	//	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
 		throw (eventHandlerException(kPollErrMsg));
