@@ -14,7 +14,7 @@ TEST(MessageErrorTest, ParsingErrorTest1) {
   EXPECT_EQ(message::kParseError, message_parser.get_state());
 }
 
-//test empty command
+//test empty message
 TEST(MessageErrorTest, ParsingErrorTest2) {
 
   std::string raw_message =
@@ -27,8 +27,21 @@ TEST(MessageErrorTest, ParsingErrorTest2) {
   EXPECT_EQ(message::kParseEmpty, message_parser.get_state());
 }
 
-//test not ascii code command
+//test empty command
 TEST(MessageErrorTest, ParsingErrorTest3) {
+
+  std::string raw_message =
+    "/r/n";
+  message::MessageParser message_parser(raw_message);
+
+  //Expect not found command.
+  EXPECT_EQ(message::kNotFound, message_parser.get_command());
+  //Expect ParseError state.
+  EXPECT_EQ(message::kParseError, message_parser.get_state());
+}
+
+//test not ascii code command
+TEST(MessageErrorTest, ParsingErrorTest4) {
 
   std::string raw_message =
     "あいうえお param1 param2\r\n";
