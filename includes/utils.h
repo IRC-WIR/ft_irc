@@ -17,6 +17,7 @@ namespace utils {
 	void erase_newline(std::string& str);
 	bool is_ascii(char c);
 	bool is_ascii_str(const std::string& str);
+	void convert_to_upper(std::string& str);
 
 	template <typename K, typename V>
 	void mergeMaps(std::map<K, V>& dest_map, const std::map<K, V>& src_map)
@@ -27,6 +28,8 @@ namespace utils {
 			dest_map.insert(*it);
 		}
 	}
+
+
 	//debug
 	void print_string_vector(const std::vector<std::string>& str_vec);
 

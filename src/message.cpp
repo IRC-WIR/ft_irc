@@ -3,7 +3,8 @@
 namespace message {
 
 const std::map<std::string, Command> MessageParser::kCommandMap = MessageParser::CreateCommandMap();
-
+//here
+//convert to Upper & compare from map
 std::map<std::string, Command> MessageParser::CreateCommandMap() {
     std::map<std::string, Command> m;
     m.insert(std::make_pair("PASS", kPass));
@@ -79,22 +80,23 @@ void MessageParser::ParsingCommand(const std::string& command)
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
 		utils::erase_newline(str);
-		this->command_params_.push_back(str);
+		command_params_.push_back(str);
 	}
 	//find command
-	const std::string command_str = this->command_params_[0];
+	std::string command_str = this->command_params_[0];
+	utils::convert_to_upper(command_str);
 	std::map<std::string, Command>::const_iterator it = kCommandMap.find(command_str);
 	//can't find command
 	if (it == kCommandMap.end())
 	{
-		this->command_ = kNotFound;
+		command_ = kNotFound;
 		state_ = kParseError;
 		return;
 	}
 
-	//find command, remove  commmand string from commad_params vector
-	this->command_params_.erase(command_params_.begin());
-	this->command_ = it->second;
+	//find command, remove commmand string from commad_params vector
+	command_params_.erase(command_params_.begin());
+	command_ = it->second;
 	state_ = kParseParam;
 }
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(my_project)
+project(ircserv)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -14,16 +14,22 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-enable_testing()
-
-add_executable(
-  hello_test
-  hello_test.cc
+add_executable(${PROJECT_NAME}-googletest
+  #testFile
+  test/MessageTest.cpp
+  src/message.cpp
+  src/utils.cpp
 )
-target_link_libraries(
-  hello_test
+target_link_libraries(${PROJECT_NAME}-googletest
   GTest::gtest_main
 )
 
-include(GoogleTest)
-gtest_discover_tests(hello_test)
+target_include_directories(${PROJECT_NAME}-googletest PRIVATE
+  includes
+  includes/message.h
+  includes/utils.h
+)
+
+add_test(NAME test-pass-parsing COMMAND ${PROJECT_NAME}-googletest)
+
+enable_testing()

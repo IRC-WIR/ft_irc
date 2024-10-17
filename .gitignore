@@ -19,4 +19,4 @@ ircserv
 .vscode
 
 #test's build file
-./test/build
+build

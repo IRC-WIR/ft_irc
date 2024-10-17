@@ -76,6 +76,17 @@ bool is_ascii_str(const std::string& str)
 	return true;
 }
 
+void convert_to_upper(std::string& str)
+{
+	std::string::iterator it = str.begin();
+	while (it != str.end())
+	{
+		if ('a' <= *it && *it <= 'z')
+			*it = (*it) - ('a' - 'A');
+		it ++;
+	}
+}
+
 
 utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
 

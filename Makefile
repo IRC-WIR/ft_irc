@@ -15,6 +15,9 @@ INCLUDE			=	-I./includes
 RM			=	rm -rf
 MKDIR			=	mkdir -p
 
+TEST_BUILD_DIR		= test/build
+
+
 all		:	${NAME}
 
 ${NAME}: ${OBJS}
@@ -25,15 +28,16 @@ ${OBJ_DIR}%.o : ${SRC_DIR}%.cpp
 	${CXX} ${CXXFLAGS} ${INCLUDE} -o $@ -c $<
 
 clean	:
-	${RM} ${OBJ_DIR}
+	${RM} ${OBJ_DIR} ${TEST_BUILD_DIR}
 
 fclean	:	clean
-	${RM} ${NAME} ${OBJ_DIR}
+	${RM} ${NAME}
 
 re		:	fclean all
 
-test	:
-	cd test && cmake -S . -B build && cmake --build build
+test	:	re
+	cmake -S . -B ${TEST_BUILD_DIR}
+	cmake --build ${TEST_BUILD_DIR}
 	cd test/build && ctest
 
 .PHONY: all clean fclean re test
