@@ -27,6 +27,7 @@ class User : public EventListener, public EventConfigurator{
 		int		fd_;
 
 		bool	is_password_authenticated_;
+		bool	is_user_done_;
 		std::string	nick_name_;
 		std::string	user_name_;
 		std::string	real_name_;
