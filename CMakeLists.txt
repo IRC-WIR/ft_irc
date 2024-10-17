@@ -15,8 +15,10 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(${PROJECT_NAME}-googletest
-  #testFile
+  #MessageParsingSuccessFile
   test/MessageTest.cpp
+  #MessageParsingErrorFile
+  test/MessageErrorTest.cpp
   src/message.cpp
   src/utils.cpp
 )

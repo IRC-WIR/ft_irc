@@ -30,6 +30,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	Init(msg);
 	if (message_.empty())
 	{
+		command_ = kNotFound;
 		state_ = kParseEmpty;
 		return;
 	}
@@ -37,6 +38,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	if (!utils::is_ascii_str(message_))
 	{
 		std::cout << "test in not ascii code" << std::endl;
+		command_ = kNotFound;
 		state_ = KParseNotAscii;
 		return;
 	}
