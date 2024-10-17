@@ -15,6 +15,7 @@ namespace utils {
 	std::string ft_split_before(const std::string& str, const std::string& delim);
 	std::string ft_split_after(const std::string& str, const std::string& delim);
 	void erase_newline(std::string& str);
+	void erase_space(std::string& str);
 	bool is_ascii(char c);
 	bool is_ascii_str(const std::string& str);
 	void convert_to_upper(std::string& str);

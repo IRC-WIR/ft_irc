@@ -58,6 +58,13 @@ void erase_newline(std::string& str)
 		str.erase(pos, 1);
 }
 
+void erase_space(std::string& str)
+{
+	std::string::size_type pos;
+	while ((pos = str.find(" ")) != std::string::npos)
+		str.erase(pos, 1);
+}
+
 bool is_ascii(char c)
 {
 	return static_cast<unsigned char>(c) <= 127;
