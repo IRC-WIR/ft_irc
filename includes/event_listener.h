@@ -1,17 +1,14 @@
 #ifndef EVENT_LISTENER_H_
- #define EVENT_LISTENER_H_
+# define EVENT_LISTENER_H_
 
-#include "event.h"
-#include "utils.h"
-#include "message.h"
+# include "finishable.h"
+# include "event.h"
 
-class EventListener
-{
+class EventListener : virtual public Finishable {
 	public:
 		EventListener();
 		virtual ~EventListener();
 		virtual std::pair<int, std::string> ExecuteCommand(const Event& event) = 0;
-		virtual bool is_finished() const = 0;
 };
 
 #endif
