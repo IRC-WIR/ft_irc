@@ -62,7 +62,4 @@ void	Database::DeleteFinishedElements()
 		EventListener* event_ex  = dynamic_cast<EventConfigurator*>(*it);
 		event_ck ? delete(event_ck) : delete(event_ex);
 	}
-
-
-
 }
