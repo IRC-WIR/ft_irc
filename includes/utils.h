@@ -15,6 +15,12 @@ namespace utils {
 	int	ft_stoi(std::string num_str);
 	std::string ft_split_before(const std::string& str, const std::string& delim);
 	std::string ft_split_after(const std::string& str, const std::string& delim);
+	void erase_newline(std::string& str);
+	void erase_space(std::string& str);
+	bool is_ascii(char c);
+	bool is_ascii_str(const std::string& str);
+	void convert_to_upper(std::string& str);
+
 	template <typename K, typename V>
 	void mergeMaps(std::map<K, V>& dest_map, const std::map<K, V>& src_map)
 	{
@@ -24,17 +30,18 @@ namespace utils {
 			dest_map.insert(*it);
 		}
 	}
+
+
 	//debug
 	void print_string_vector(const std::vector<std::string>& str_vec);
-	bool is_same_string(const std::string& dest, const std::string& src);
-	//int count_space(const std::string& str);
-	void erase_space(std::string& str);
 
+	//utils Exception
 	class utilsException : public std::invalid_argument
 	{
 		public:
 			utilsException(const std::string& msg);
 	};
+
 	//エラーメッセージ定数
 	static const std::string kNotDigitalNumber = "Input Value is not digital number";
 };
