@@ -11,31 +11,31 @@ void User::CheckCommand(Event& event) const
 {
 	switch (event.get_command())
 	{
-		case message::PASS:
+		case message::kPass:
 			CkPassCommand(event);
 			break;
-		case message::NICK:
+		case message::kNick:
 			CkNickCommand(event);
 			break;
-		case message::USER:
+		case message::kUser:
 			CkUserCommand(event);
 			break;
-		case message::JOIN:
+		case message::kJoin:
 			CkJoinCommand(event);
 			break;
-		case message::INVITE:
+		case message::kInvite:
 			CkInviteCommand(event);
 			break;
-		case message::KICK:
+		case message::kKick:
 			CkKickCommand(event);
 			break;
-		case message::TOPIC:
+		case message::kTopic:
 			CkTopicCommand(event);
 			break;
-		case message::MODE:
+		case message::kMode:
 			CkModeCommand(event);
 			break;
-		case message::PRIVMSG:
+		case message::kPrivmsg:
 			CkPrivmsgCommand(event);
 			break;
 		default:
@@ -49,64 +49,34 @@ std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 
 	switch (event.get_command())
 	{
-<<<<<<< HEAD
 		case message::kPass:
-			ret_pair = PassCommand(event);
-			break;
-		case message::kNick:
-			ret_pair = NickCommand(event);
-			break;
-		case message::kUser:
-			ret_pair = UserCommand(event);
-			break;
-		case message::kJoin:
-			ret_pair = JoinCommand(event);
-			break;
-		case message::kInvite:
-			ret_pair = InviteCommand(event);
-			break;
-		case message::kKick:
-			ret_pair = KickCommand(event);
-			break;
-		case message::kTopic:
-			ret_pair = TopicCommand(event);
-			break;
-		case message::kMode:
-			ret_pair = ModeCommand(event);
-			break;
-		case message::kPrivmsg:
-			ret_pair = PrivmsgCommand(event);
-=======
-		case message::PASS:
 			ret_pair = ExPassCommand(event);
 			break;
-		case message::NICK:
+		case message::kNick:
 			ret_pair = ExNickCommand(event);
 			break;
-		case message::USER:
+		case message::kUser:
 			ret_pair = ExUserCommand(event);
 			break;
-		case message::JOIN:
+		case message::kJoin:
 			ret_pair = ExJoinCommand(event);
 			break;
-		case message::INVITE:
+		case message::kInvite:
 			ret_pair = ExInviteCommand(event);
 			break;
-		case message::KICK:
+		case message::kKick:
 			ret_pair = ExKickCommand(event);
 			break;
-		case message::TOPIC:
+		case message::kTopic:
 			ret_pair = ExTopicCommand(event);
 			break;
-		case message::MODE:
+		case message::kMode:
 			ret_pair = ExModeCommand(event);
 			break;
-		case message::PRIVMSG:
+		case message::kPrivmsg:
 			ret_pair = ExPrivmsgCommand(event);
->>>>>>> main
 			break;
 		default:
-			return ret_pair;
 	}
 	return ret_pair;
 }
