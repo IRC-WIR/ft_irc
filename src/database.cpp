@@ -42,24 +42,11 @@ std::map<int, std::string>*	Database::ExecuteEvent(const Event& event){
 
 void	Database::DeleteFinishedElements()
 {
-	std::set<void *> v_ptr_set;
-	size_t i = 0;
-	while (i < check_element_.size())
-	{
-		v_ptr_set.insert(check_element_[i]);
-		i ++;
-	}
-	i = 0;
-	while (i < execute_element_.size())
-	{
-		v_ptr_set.insert(execute_element_[i]);
-		i ++;
-	}
-	for (std::set<void *>::iterator it; it != v_ptr_set.end(); it ++)
-	{
+	std::set<Finishable *> v_ptr_set;
 
-		EventConfigurator* event_ck  = dynamic_cast<EventConfigurator*>(*it);
-		EventListener* event_ex  = dynamic_cast<EventConfigurator*>(*it);
-		event_ck ? delete(event_ck) : delete(event_ex);
-	}
+	Database::erase_and_add(check_element_, v_ptr_set);
+	Database::erase_and_add(execute_element_, v_ptr_set);
+
+	for (std::set<Finishable *>::iterator it = v_ptr_set.begin(); it != v_ptr_set.end(); ++it)
+		delete *it;
 }
