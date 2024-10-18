@@ -1,5 +1,5 @@
-#ifndef ERROR_STATUS
-# define ERROR_STATUS
+#ifndef ERROR_STATUS_H_
+# define ERROR_STATUS_H_
 
 # include <string>
 
