@@ -15,7 +15,6 @@ class Channel: public EventListener, public EventConfigurator{
 		std::pair<int, std::string> ExecuteCommand(const Event& event);
 		bool is_finished() const;
 
-
 	private:
 		std::string		topic_;
 		std::string		key_;

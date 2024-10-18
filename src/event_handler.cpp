@@ -41,8 +41,8 @@ void	EventHandler::ExecutePoll()
 	// {
 	// 	std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
 	// }
-//	std::cout << "-- listener --" << std::endl;
-//	std::cout << event_listeners_.size() << std::endl;
+	//	std::cout << "-- listener --" << std::endl;
+	//	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
 		throw (eventHandlerException(kPollErrMsg));
@@ -81,8 +81,15 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			Detach(entry);
 		std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
 		message::ParseState parse_state = Parse(buffer, event);
-		if (parse_state == message::PARSE_ERROR)
+		if (parse_state == message::kParseError)
 			return ;
+		//debug
+		if (parse_state == message::KParseNotAscii)
+		{
+			std::cout << "Not Ascii code input" << std::endl;
+			return;
+		}
+		//
 		database_.ExecuteEvent(event);
 	}
 }
@@ -151,6 +158,8 @@ void	EventHandler::Receive(Event event, char* buffer)
 
 message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::string str_buffer(buffer);
+
+	//何回コマンドを受け取ったかを「/r/n」をsplitで確認
 	message::MessageParser message_parser(str_buffer);
 
 	//debug

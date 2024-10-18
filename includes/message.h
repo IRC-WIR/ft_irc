@@ -8,36 +8,34 @@ namespace message
 
 enum Command
 {
-	PASS = 0,
-	NICK,
-	USER,
-	JOIN,
-	INVITE,
-	KICK,
-	TOPIC,
-	MODE,
-	PRIVMSG,
-	NOT_FOUND
+	kPass = 0,
+	kNick,
+	kUser,
+	kJoin,
+	kInvite,
+	kKick,
+	kTopic,
+	kMode,
+	kPrivmsg,
+	kQuit,
+	kNotFound
 };
 
 enum ParseState
 {
-	PARSE_DEFAULT = 0,
-	PARSE_COMMAND,
-	PARSE_PARAM,
-	PARSE_ERROR,
-	PARSE_EMPTY,
-	PARSE_COMPLETE
+	kParseDefault = 0,
+	kParseCommand,
+	kParseParam,
+	kParseError,
+	kParseEmpty,
+	KParseNotAscii,
+	kParseComplete
 };
 
 class MessageParser
 {
 	public:
 		MessageParser(const std::string& msg);
-		void 	ParsingMessage(const std::string& msg);
-		void	ParsingCommand(const std::string& command);
-		void	Init(const std::string& msg);
-		bool	IsEndOfMessage(const char& ch);
 
 		Command	get_command() const;
 		ParseState get_state() const;
@@ -48,7 +46,12 @@ class MessageParser
 		ParseState state_;
 		std::vector<std::string> command_params_;
 		static const std::map<std::string, Command> kCommandMap;
-		static std::map<std::string, message::Command> createCommandMap();
+		static std::map<std::string, Command> CreateCommandMap();
+		bool	IsFinishParsing();
+		void	ParsingMessage(const std::string& msg);
+		void	ParsingCommand(const std::string& command);
+		void	Init(const std::string& msg);
+		bool	IsEndOfMessage(const char& ch);
 };
 
 } // namespace message
