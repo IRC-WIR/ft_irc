@@ -77,7 +77,7 @@ std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 			ret_pair = ExPrivmsgCommand(event);
 			break;
 		default:
-			return ret_pair;
+			break;
 	}
 	return ret_pair;
 }
