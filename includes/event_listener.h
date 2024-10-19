@@ -6,8 +6,8 @@
 
 class EventListener : virtual public Finishable {
 	public:
-		EventListener();
-		virtual ~EventListener();
+		EventListener() {}
+		virtual ~EventListener() {}
 		virtual std::pair<int, std::string> ExecuteCommand(const Event& event) = 0;
 };
 

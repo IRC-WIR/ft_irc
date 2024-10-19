@@ -6,8 +6,8 @@
 
 class EventConfigurator : virtual public Finishable {
 	public:
-		EventConfigurator();
-		virtual ~EventConfigurator();
+		EventConfigurator() {}
+		virtual ~EventConfigurator() {}
 		virtual void CheckCommand(Event& event) const = 0;
 };
 
