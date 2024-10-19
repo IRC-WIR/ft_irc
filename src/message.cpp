@@ -29,12 +29,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 {
 	Init(msg);
 	if (message_.empty())
-	{
-		command_ = kNotFound;
-		state_ = kParseEmpty;
 		return;
-	}
-	std::cout << "message_: " << message_ << std::endl;
 	if (!utils::is_ascii_str(message_))
 	{
 		std::cout << "test in not ascii code" << std::endl;
@@ -64,6 +59,8 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			default:
+			//debug in parsing
+				std::cout << "message_:" << message_ << std::endl;
 				last_param = utils::ft_split_after(message_, ":");
 				if (!last_param.empty())
 				{
@@ -78,18 +75,31 @@ void MessageParser::ParsingMessage(const std::string& msg)
 
 void MessageParser::ParsingCommand(const std::string& command)
 {
+	std::cout << "----ParsingCommand debug1----" << std::endl;
 	std::stringstream ss(command);
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
+		std::cout << "str in getline:" << str << std::endl;
 		utils::erase_newline(str);
-		if (!str.empty())
-			command_params_.push_back(str);
+		std::cout << "str after erase new line:" << str << std::endl;
+		if (str.empty())
+			continue;
+		command_params_.push_back(str);
+	}
+	std::cout << "----ParsingCommand debug2----" << std::endl;
+	//input like "/r/n"(no charactor expect for /r/n)
+	if (command_params_.size() == 0)
+	{
+		command_ = kNotFound;
+		state_ = kParseEmpty;
+		return;
 	}
 	//find command
 	std::string command_str = command_params_[0];
 	utils::convert_to_upper(command_str);
 	std::map<std::string, Command>::const_iterator it = kCommandMap.find(command_str);
 	//can't find command
+	std::cout << "----ParsingCommand debug3----" << std::endl;
 	if (it == kCommandMap.end())
 	{
 		command_ = kNotFound;
@@ -97,15 +107,18 @@ void MessageParser::ParsingCommand(const std::string& command)
 		return;
 	}
 
+	std::cout << "----ParsingCommand debug4----" << std::endl;
 	//find command, remove commmand string from commad_params vector
 	command_params_.erase(command_params_.begin());
 	command_ = it->second;
 	state_ = kParseParam;
+	std::cout << "----ParsingCommand finished----" << std::endl;
 }
 
 
 void MessageParser::Init(const std::string& msg)
 {
+	command_ = kCommandDefault;
 	state_ = kParseDefault;
 	message_ = msg;
 	command_params_.clear();

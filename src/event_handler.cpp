@@ -1,4 +1,5 @@
 #include "event_handler.h"
+#include <errno.h>
 
 const	int	EventHandler::kQueueLimit = 10;
 const	int EventHandler::kBufferSize = 512;
@@ -45,7 +46,11 @@ void	EventHandler::ExecutePoll()
 	//	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
+	{
+		//bebug
+		std::cerr << strerror(errno) << std::endl;
 		throw (eventHandlerException(kPollErrMsg));
+	}
 	if (pollResult == 0)
 	{
 		//debug
