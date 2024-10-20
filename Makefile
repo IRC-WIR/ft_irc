@@ -12,8 +12,11 @@ OBJS			=	$(patsubst $(SRC_DIR)%.cpp,$(OBJ_DIR)%.o,$(SRCS))
 
 INCLUDE			=	-I./includes
 
-RM			=	rm -rf	
+RM			=	rm -rf
 MKDIR			=	mkdir -p
+
+TEST_BUILD_DIR		= test/build
+
 
 all		:	${NAME}
 
@@ -25,11 +28,16 @@ ${OBJ_DIR}%.o : ${SRC_DIR}%.cpp
 	${CXX} ${CXXFLAGS} ${INCLUDE} -o $@ -c $<
 
 clean	:
-	${RM} ${OBJ_DIR}
+	${RM} ${OBJ_DIR} ${TEST_BUILD_DIR}
 
 fclean	:	clean
-	${RM} ${NAME} ${OBJ_DIR}
+	${RM} ${NAME}
 
 re		:	fclean all
 
-.PHONY: all clean fclean re
+test	:	re
+	cmake -S . -B ${TEST_BUILD_DIR}
+	cmake --build ${TEST_BUILD_DIR}
+	cd test/build && ctest
+
+.PHONY: all clean fclean re test
