@@ -75,18 +75,14 @@ void MessageParser::ParsingMessage(const std::string& msg)
 
 void MessageParser::ParsingCommand(const std::string& command)
 {
-	std::cout << "----ParsingCommand debug1----" << std::endl;
 	std::stringstream ss(command);
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
-		std::cout << "str in getline:" << str << std::endl;
 		utils::erase_newline(str);
-		std::cout << "str after erase new line:" << str << std::endl;
 		if (str.empty())
 			continue;
 		command_params_.push_back(str);
 	}
-	std::cout << "----ParsingCommand debug2----" << std::endl;
 	//input like "/r/n"(no charactor expect for /r/n)
 	if (command_params_.size() == 0)
 	{
@@ -99,20 +95,16 @@ void MessageParser::ParsingCommand(const std::string& command)
 	utils::convert_to_upper(command_str);
 	std::map<std::string, Command>::const_iterator it = kCommandMap.find(command_str);
 	//can't find command
-	std::cout << "----ParsingCommand debug3----" << std::endl;
 	if (it == kCommandMap.end())
 	{
 		command_ = kNotFound;
 		state_ = kParseError;
 		return;
 	}
-
-	std::cout << "----ParsingCommand debug4----" << std::endl;
 	//find command, remove commmand string from commad_params vector
 	command_params_.erase(command_params_.begin());
 	command_ = it->second;
 	state_ = kParseParam;
-	std::cout << "----ParsingCommand finished----" << std::endl;
 }
 
 

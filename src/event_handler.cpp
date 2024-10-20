@@ -173,7 +173,6 @@ message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	std::cout << "command: " << message_parser.get_command() << std::endl;
 	std::cout << "command params: ";
 	utils::print_string_vector(message_parser.get_params());
-
 	std::cout << "\n\n------debug------" << std::endl;
 	//
 	event.set_command(message_parser.get_command());
