@@ -4,6 +4,7 @@
 #include "event_listener.h"
 #include "event_configurator.h"
 #include "utils.h"
+#include "error_status.h"
 
 class Channel;
 
@@ -14,6 +15,7 @@ class User : public EventListener, public EventConfigurator{
 
 		void CheckCommand(Event& event) const;
 		std::pair<int, std::string> ExecuteCommand(const Event& event);
+		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
 		bool is_finished() const;
 		bool is_verified() const;
 

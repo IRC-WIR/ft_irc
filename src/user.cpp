@@ -82,6 +82,25 @@ std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 	return ret_pair;
 }
 
+std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const
+{
+	std::string ret_str;
+	//add error no
+	ret_str += utils::ft_itos(err_status.get_error_code());
+	ret_str += " ";
+	//add nick name
+	ret_str += nick_name_;
+	ret_str += " ";
+	//add command
+	ret_str += message::MessageParser::get_command_str_map().find(cmd)->second;
+	ret_str += " ";
+	//add Error Message
+	ret_str += ": ";
+	ret_str += err_status.get_error_message();
+	ret_str += "\r\n";
+	return ret_str;
+}
+
 bool User::is_finished() const
 {
 	//未実装

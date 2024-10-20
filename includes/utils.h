@@ -13,6 +13,7 @@
 namespace utils {
 	void check_digital_str(std::string num_str);
 	int	ft_stoi(std::string num_str);
+	std::string ft_itos(int integer);
 	std::string ft_split_before(const std::string& str, const std::string& delim);
 	std::string ft_split_after(const std::string& str, const std::string& delim);
 	void erase_newline(std::string& str);
