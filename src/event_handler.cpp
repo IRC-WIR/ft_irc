@@ -72,7 +72,10 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 	if (entry.revents& (POLLIN))
 	{
 		if (entry.fd == listening_socket_)
-			return(Accept());
+		{
+			Accept();
+			return;
+		}
 		//eventを作成
 		Event event = Event(entry.fd, entry.revents);
 		//bufferを作成し、null埋めする
