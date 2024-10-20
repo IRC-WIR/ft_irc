@@ -12,7 +12,9 @@ EventHandler::~EventHandler()
 EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-
+	if (listening_socket_ < 0)
+		exit(EXIT_FAILURE);
+	SetNonBlockingMode(listening_socket_);
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
@@ -184,6 +186,13 @@ void	EventHandler::WaitMillSecond(int ms)
 	}
 }
 
+int	SetNonBlockingMode(int socket_fd){
+	int ret = fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+	if (ret < 0)
+		exit(EXIT_FAILURE);
+	return ret;
+}
+
 int	EventHandler::Accept()
 {
 	socklen_t server_address_len = (socklen_t)sizeof(server_address_);
@@ -191,7 +200,8 @@ int	EventHandler::Accept()
 			(struct sockaddr*)&(server_address_),
 			&server_address_len);
 	if (connected_socket_ == -1)
-		return -1;
+		exit(EXIT_FAILURE);
+	SetNonBlockingMode(connected_socket_);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
 	database_.CreateUser(connected_socket_);
