@@ -40,6 +40,13 @@ std::map<int, std::string>*	Database::ExecuteEvent(const Event& event){
 	return ret;
 }
 
-void	Database::DeleteFinishedElements(){
+void	Database::DeleteFinishedElements()
+{
+	std::set<Finishable *> ptr_set;
 
+	Database::erase_and_add(check_element_, ptr_set);
+	Database::erase_and_add(execute_element_, ptr_set);
+
+	for (std::set<Finishable *>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
+		delete *it;
 }
