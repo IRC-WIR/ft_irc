@@ -91,6 +91,9 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		}
 		//
 		database_.ExecuteEvent(event);
+		std::cout << "test2" << std::endl;
+		database_.DeleteFinishedElements();
+		std::cout << "test3" << std::endl;
 	}
 }
 
