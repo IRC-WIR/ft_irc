@@ -9,6 +9,22 @@ EventHandler::~EventHandler()
 	return ;
 }
 
+static int	SetNonBlockingMode(int socket_fd){
+	int ret = fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+	if (ret < 0){
+		switch (errno)
+		{
+		case EWOULDBLOCK:
+		case EINTR:
+			SetNonBlockingMode(socket_fd);
+		default:
+			std::cout << strerror(errno) << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	return ret;
+}
+
 EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -186,22 +202,6 @@ void	EventHandler::WaitMillSecond(int ms)
 		if ((current.tv_sec - start.tv_sec) * 1000 + (current.tv_usec - start.tv_usec) / 1000 >= ms)
 			return ;
 	}
-}
-
-int	EventHandler::SetNonBlockingMode(int socket_fd){
-	int ret = fcntl(socket_fd, F_SETFL, O_NONBLOCK);
-	if (ret < 0){
-		switch (errno)
-		{
-		case EWOULDBLOCK:
-		case EINTR:
-			SetNonBlockingMode(socket_fd);
-		default:
-			std::cout << strerror(errno) << std::endl;
-			exit(EXIT_FAILURE);
-		}
-	}
-	return ret;
 }
 
 void	EventHandler::Accept()

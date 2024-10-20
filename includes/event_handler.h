@@ -17,7 +17,6 @@ class EventHandler{
 		bool				IsListeningSocket();
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
-		int					SetNonBlockingMode(int socket_fd);
 		void				add_event_socket(int new_fd);
 		void				add_response_map(std::map<int, std::string> newResponse);
 		//ネスト例外クラス
