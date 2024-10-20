@@ -72,10 +72,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 	if (entry.revents& (POLLIN))
 	{
 		if (entry.fd == listening_socket_)
-		{
-			Accept();
-			return ;
-		}
+			return(Accept());
 		//eventを作成
 		Event event = Event(entry.fd, entry.revents);
 		//bufferを作成し、null埋めする
@@ -191,25 +188,50 @@ void	EventHandler::WaitMillSecond(int ms)
 int	EventHandler::SetNonBlockingMode(int socket_fd){
 	int ret = fcntl(socket_fd, F_SETFL, O_NONBLOCK);
 	if (ret < 0){
-		std::cout << strerror(errno) << std::endl;
-		exit(EXIT_FAILURE);
+		switch (errno)
+		{
+		case EWOULDBLOCK:
+		case EINTR:
+			SetNonBlockingMode(socket_fd);
+		default:
+			std::cout << strerror(errno) << std::endl;
+			exit(EXIT_FAILURE);
+		}
 	}
 	return ret;
 }
 
-int	EventHandler::Accept()
+void	EventHandler::Accept()
 {
 	socklen_t server_address_len = (socklen_t)sizeof(server_address_);
 	int connected_socket_ = accept(listening_socket_,
 			(struct sockaddr*)&(server_address_),
 			&server_address_len);
-	if (connected_socket_ == -1)
-		exit(EXIT_FAILURE);
+	if (connected_socket_ == -1){
+		switch (errno)
+		{
+		//接続リトライ
+		case EWOULDBLOCK:
+		case EINTR:
+			break;
+		//プログラム終了
+		case EBADF:
+		case EFAULT:
+		case ECONNABORTED:
+		case EINVAL:
+		case ENOTSOCK:
+		case EOPNOTSUPP:
+			exit(EXIT_FAILURE);
+		//接続不可
+		default:
+			return;
+		}
+	}
 	SetNonBlockingMode(connected_socket_);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
 	database_.CreateUser(connected_socket_);
-	return 0;
+	return;
 }
 
 void	EventHandler::Receive(Event event, char* buffer)

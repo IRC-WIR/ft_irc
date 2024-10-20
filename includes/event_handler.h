@@ -29,7 +29,7 @@ class EventHandler{
 
 	private:
 		EventHandler();
-		int					Accept();
+		void				Accept();
 		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
 		void				Send(Event event);
