@@ -148,8 +148,13 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 			int	res_msg_length = (*it).length();
 			int sent_msg_length = send(target_fd, res_msg_char, res_msg_length, 0);
 			
-			//メッセージ全体の送信に失敗
-			if (sent_msg_length < res_msg_length) {
+			//一部のみ送信成功
+			if (sent_msg_length > 0 && sent_msg_length < res_msg_length) {
+				*it = (*it).substr(sent_msg_length);
+				continue;
+			}
+			//送信失敗
+			if (sent_msg_length < 0) {
 
 				switch (errno) {
 				//プログラム終了
@@ -159,8 +164,6 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
     			exit(EXIT_FAILURE);
 				//次回POLLOUT発生時に再送
 				case EWOULDBLOCK:
-					if (sent_msg_length > 0)
-						*it = (*it).substr(sent_msg_length);
 					return;
 				//直ちに再送
 			  case EINTR:
