@@ -9,8 +9,27 @@ EventHandler::~EventHandler()
 	return ;
 }
 
-static int	SetNonBlockingMode(int socket_fd){
-	int ret = fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+static int GetCurrentFlags(int socket_fd)
+{
+	int current_flags = fcntl(socket_fd, F_GETFL, 0);
+	if (current_flags < 0) {
+		switch (errno)
+		{
+		case EWOULDBLOCK:
+		case EINTR:
+			GetCurrentFlags(socket_fd);
+		default:
+			std::cout << strerror(errno) << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	return current_flags;
+}
+
+static int	SetNonBlockingMode(int socket_fd)
+{
+	int flags = GetCurrentFlags(socket_fd) | O_NONBLOCK;
+	int ret = fcntl(socket_fd, F_SETFL, flags);
 	if (ret < 0){
 		switch (errno)
 		{
