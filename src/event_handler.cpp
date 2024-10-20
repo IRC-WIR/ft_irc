@@ -12,8 +12,10 @@ EventHandler::~EventHandler()
 EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-	if (listening_socket_ < 0)
+	if (listening_socket_ < 0) {
+		std::cout << strerror(errno) << std::endl;
 		exit(EXIT_FAILURE);
+	}
 	SetNonBlockingMode(listening_socket_);
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
@@ -105,44 +107,44 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 	if (entry.revents & POLLOUT)
 	{
 		int target_fd = entry.fd;
-
     for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
 			it != response_map_[target_fd].end();) {
+			const char *res_msg_char = (*it).c_str();
+			int	res_msg_length = (*it).length();
+			int sent_msg_length = send(target_fd, res_msg_char, res_msg_length, 0);
 			
-			const char *message = (*it).c_str();
-			int	message_length = (*it).length();
+			//メッセージ全体の送信に失敗
+			if (sent_msg_length < res_msg_length) {
 
-			size_t sent_length = send(target_fd, message, message_length, 0);
-			if (sent_length < 0) {
-				//異常終了
-				if (errno == EFAULT || errno == EMSGSIZE){
+				switch (errno) {
+				//プログラム終了
+				case EFAULT:
+				case EMSGSIZE:
 					std::cout <<  strerror(errno) << std::endl;
     			exit(EXIT_FAILURE);
-				}
+				//次回POLLOUT発生時に再送
+				case EWOULDBLOCK:
+					if (sent_msg_length > 0)
+						*it = (*it).substr(sent_msg_length);
+					return;
+				//直ちに再送
+			  case EINTR:
+					break ;
 				//接続切断
-				if (errno != EINTR && errno != ENOBUFS && errno != EWOULDBLOCK){
+				default:
 					Detach(entry);
 					Event event = Event(entry.fd, entry.revents); 
 					event.set_command(message::kQuit);
 					database_.ExecuteEvent(event);
 					response_map_.erase(target_fd);	
-					return ;
+					return;
 				}
-			//部分的に送信成功した場合、残りの文字列のみを残す
-			} else if (sent_length < (size_t)message_length){
-				*it = (*it).substr(sent_length);
-			}
-			//直ちに再送
-			if (errno == EINTR)
 				continue;
-			//次回POLLOUT発生時に再送
-			if (errno == ENOBUFS || errno == EWOULDBLOCK){
-				++it;
-				continue;
+			} else {
+				it = response_map_[target_fd].erase(it);
 			}
-			it = response_map_[target_fd].erase(it);
 		}
-		//空の場合、response_map_から要素を消す
+		//対象ソケットへの、メッセージを送信し切った場合
 		if (response_map_[target_fd].empty()){
 			std::cout << "erase from Database::response_map_" << std::endl;
 			response_map_.erase(target_fd);
@@ -186,10 +188,12 @@ void	EventHandler::WaitMillSecond(int ms)
 	}
 }
 
-int	SetNonBlockingMode(int socket_fd){
+int	EventHandler::SetNonBlockingMode(int socket_fd){
 	int ret = fcntl(socket_fd, F_SETFL, O_NONBLOCK);
-	if (ret < 0)
+	if (ret < 0){
+		std::cout << strerror(errno) << std::endl;
 		exit(EXIT_FAILURE);
+	}
 	return ret;
 }
 
