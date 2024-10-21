@@ -40,6 +40,8 @@ class MessageParser
 		Command	get_command() const;
 		ParseState get_state() const;
 		std::vector<std::string> get_params() const;
+		static const std::map<Command, std::string>& get_command_str_map();
+
 	private:
 		std::string	message_;
 		Command	command_;
@@ -47,6 +49,9 @@ class MessageParser
 		std::vector<std::string> command_params_;
 		static const std::map<std::string, Command> kCommandMap;
 		static std::map<std::string, Command> CreateCommandMap();
+		static const std::map<Command, std::string> kCommandStrMap;
+		static std::map<Command, std::string> CreateCommandStrMap();
+
 		bool	IsFinishParsing();
 		void	ParsingMessage(const std::string& msg);
 		void	ParsingCommand(const std::string& command);
