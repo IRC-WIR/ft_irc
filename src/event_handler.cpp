@@ -185,13 +185,8 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		default:
 			database_.ExecuteEvent(event);
 			std::string remain_str = utils::ft_split_after(request_buffer, "\n");
-			std::cout << "remain_str: " << remain_str << std::endl;
 			if (remain_str.empty())
-			{
-				std::cout << "remain_str is empty" << std::endl;
 				break;
-			}
-			std::cout << "remain_str is not empty" << std::endl;
 			if (req_it != request_map_.end())
 				req_it -> second = remain_str;
 			else

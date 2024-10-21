@@ -28,11 +28,8 @@ MessageParser::MessageParser(const std::string& msg)
 void MessageParser::ParsingMessage(const std::string& msg)
 {
 	Init(msg);
-	if (message_.empty())
-		return;
 	if (!utils::is_ascii_str(message_))
 	{
-		std::cout << "test in not ascii code" << std::endl;
 		command_ = kNotFound;
 		state_ = KParseNotAscii;
 		return;
@@ -83,7 +80,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 			continue;
 		command_params_.push_back(str);
 	}
-	//input like "/r/n"(no charactor expect for /r/n)
+	//input like "/r/n"
 	if (command_params_.size() == 0)
 	{
 		command_ = kNotFound;
