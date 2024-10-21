@@ -5,13 +5,11 @@ const	int	EventHandler::kQueueLimit = 10;
 const	int EventHandler::kBufferSize = 512;
 const	std::string EventHandler::kPollErrMsg = "poll failed";
 
-EventHandler::~EventHandler()
-{
+EventHandler::~EventHandler() {
 	return ;
 }
 
-EventHandler::EventHandler(Database& database,int port_no) : database_(database)
-{
+EventHandler::EventHandler(Database& database,int port_no) : database_(database) {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 
 	struct pollfd listening_pollfd;
@@ -33,8 +31,7 @@ EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 	return;
 }
 
-void	EventHandler::ExecutePoll()
-{
+void	EventHandler::ExecutePoll() {
 	int	pollResult = poll(poll_fd_.data(), poll_fd_.size(), 1000);
 	//debug
 	// std::cout << "-- pollfd --" << std::endl;
@@ -67,8 +64,7 @@ void	EventHandler::ExecutePoll()
 	return ;
 }
 
-void	EventHandler::HandlePollInEvent(pollfd entry)
-{
+void	EventHandler::HandlePollInEvent(pollfd entry) {
 	if (entry.revents& (POLLIN))
 	{
 		if (entry.fd == listening_socket_)
@@ -76,45 +72,30 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 			Accept();
 			return ;
 		}
-		//eventを作成
-		Event event = Event(entry.fd, entry.revents);
-		//bufferを作成し、null埋めする
-		char buffer[kBufferSize + 1];
-		std::memset(buffer, 0, kBufferSize + 1);
-		Receive(event, buffer);
-		if (buffer[0] == '\0')
+		//receive用のbufferを作成し、null埋めする
+		char receive_buffer[kBufferSize + 1];
+		std::memset(receive_buffer, 0, kBufferSize + 1);
+		Receive(entry.fd, receive_buffer);
+		if (receive_buffer[0] == '\0')
 			Detach(entry);
-		std::cout << "[ "<< event.get_fd() << " ]Message from client: " << buffer << std::endl;
-		message::ParseState parse_state = Parse(buffer, event);
-		if (parse_state == message::kParseError)
-			return ;
-		//debug
-		if (parse_state == message::KParseNotAscii)
-		{
-			std::cout << "Not Ascii code input" << std::endl;
-			return;
-		}
-		//
-		database_.ExecuteEvent(event);
+		std::cout << "[ "<< entry.fd << " ]Message from client: " << receive_buffer << std::endl;
+		Execute(entry, receive_buffer);
 	}
 }
 
-void	EventHandler::HandlePollOutEvent(pollfd entry)
-{
+void	EventHandler::HandlePollOutEvent(pollfd entry) {
 	(void)entry;
 	return ;
 }
 
-void	EventHandler::HandlePollHupEvent(pollfd entry)
-{
+void	EventHandler::HandlePollHupEvent(pollfd entry) {
 	if (entry.revents& (POLLHUP))
 	{
 		std::cout << entry.fd << ">> disconnected" << std::endl;
 	}
 }
 
-void	EventHandler::Detach(pollfd event)
-{
+void	EventHandler::Detach(pollfd event) {
 	std::cout << "connection hang up " << event.fd << std::endl;
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
@@ -126,8 +107,7 @@ void	EventHandler::Detach(pollfd event)
 	return ;
 }
 
-void	EventHandler::WaitMillSecond(int ms)
-{
+void	EventHandler::WaitMillSecond(int ms) {
 	timeval start;
 	timeval current;
 
@@ -140,8 +120,7 @@ void	EventHandler::WaitMillSecond(int ms)
 	}
 }
 
-int	EventHandler::Accept()
-{
+int	EventHandler::Accept() {
 	socklen_t server_address_len = (socklen_t)sizeof(server_address_);
 	int connected_socket_ = accept(listening_socket_,
 			(struct sockaddr*)&(server_address_),
@@ -154,14 +133,78 @@ int	EventHandler::Accept()
 	return 0;
 }
 
-void	EventHandler::Receive(Event event, char* buffer)
-{
+void	EventHandler::Receive(int fd, char* buffer) {
 	//receive the message from the socket
-	recv(event.get_fd(), buffer, kBufferSize, 0);
+	recv(fd, buffer, kBufferSize, 0);
 	std::cout << "<Receive> " << buffer << std::endl;
 }
 
-message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
+
+void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
+	std::string request_buffer;
+	//find request fd's remain msg
+	std::map<int, std::string>::iterator req_it = request_map_.find(entry.fd);
+	if (req_it != request_map_.end())
+	{
+		std::cout << "find fd in request map" << std::endl;
+		request_buffer += req_it->second;
+		req_it->second.clear();
+	}
+	//add receive buffer to request_buffer;
+	request_buffer += msg;
+	//debug
+	std::cout << "request_buffer: " << request_buffer << std::endl;
+	//prepare parsing message
+	std::string parsing_msg = utils::ft_split_before(request_buffer, "\n");
+	if (parsing_msg.empty())
+	{
+		std::cout << "test ^D" << std::endl;
+		if (req_it != request_map_.end())
+			req_it->second += request_buffer;
+		else
+			request_map_.insert(std::make_pair(entry.fd, request_buffer));
+		return ;
+	}
+	//finish prepare parsing message
+	//eventを作成
+	Event event = Event(entry.fd, entry.revents);
+	//parse
+	message::ParseState parse_state = Parse(parsing_msg, event);
+	//judge parse result
+	switch (parse_state)
+	{
+		case message::kParseError:
+			std::cout << "Parse Error" <<std::endl;
+			break ;
+		case message::KParseNotAscii:
+			//have to define the action of inputting out range of Ascii
+			std::cout << "Not Ascii code input" << std::endl;
+			break;
+		case message::kParseEmpty:
+			//have to define the action of emmpty inputting
+			std::cout << "Parse Empty" <<std::endl;
+			break ;
+		default:
+			database_.ExecuteEvent(event);
+			std::string remain_str = utils::ft_split_after(request_buffer, "\n");
+			std::cout << "remain_str: " << remain_str << std::endl;
+			if (remain_str.empty())
+			{
+				std::cout << "remain_str is empty" << std::endl;
+				break;
+			}
+			std::cout << "remain_str is not empty" << std::endl;
+			if (req_it != request_map_.end())
+				req_it -> second = remain_str;
+			else
+				request_map_.insert(std::make_pair(event.get_fd(), remain_str));
+			break;
+	}
+}
+
+
+
+message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
 	std::string str_buffer(buffer);
 
 	//何回コマンドを受け取ったかを「/r/n」をsplitで確認
@@ -180,14 +223,12 @@ message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	return message_parser.get_state();
 }
 
-void	EventHandler::Send(Event event)
-{
+void	EventHandler::Send(Event event) {
 	(void)event;
 	return ;
 }
 
-void	EventHandler::add_event_socket(int new_fd)
-{
+void	EventHandler::add_event_socket(int new_fd) {
 	pollfd new_pollfd;
 	new_pollfd.fd = new_fd;
 	new_pollfd.events = POLLIN;

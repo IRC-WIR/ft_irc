@@ -35,7 +35,7 @@ std::string ft_split_after(const std::string& str, const std::string& delim)
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
-	return str.substr(n + 1);
+	return str.substr(n + delim.size());
 }
 
 void print_string_vector(const std::vector<std::string>& str_vec)

@@ -27,8 +27,9 @@ class EventHandler{
 	private:
 		EventHandler();
 		int					Accept();
-		void				Receive(Event event, char* buffer);
-		message::ParseState	Parse(const char *buffer, Event& event);
+		void				Receive(int fd, char* buffer);
+		void				Execute(const pollfd& entry, const std::string& msg);
+		message::ParseState	Parse(const std::string& buffer, Event& event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
@@ -40,6 +41,7 @@ class EventHandler{
 		std::map<int, std::string>	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
+		std::map<int, std::string>	request_map_;
 
 		//定数
 		static const int	kQueueLimit;
