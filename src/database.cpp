@@ -18,8 +18,7 @@ void Database::CreateUser(int fd)
 	}
 }
 
-void Database::CheckEvent(Event& event) const
-{
+void Database::CheckEvent(Event& event) const {
 	std::size_t vector_length = check_element_.size();
 	for (std::size_t i = 0; i < vector_length; i++)
 	{
@@ -27,18 +26,18 @@ void Database::CheckEvent(Event& event) const
 	}
 }
 
-std::map<int, std::string>	Database::ExecuteEvent(const Event& event){
+std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
 	std::map<int, std::string> ret;
 	std::size_t vector_length = execute_element_.size();
-	for (size_t i = 0; i < vector_length; i++)
-	{
-		ret.insert(execute_element_[i] -> ExecuteCommand(event));
+	for (size_t i = 0; i < vector_length; i++) {
+		OptionalMessage message = execute_element_[i] -> ExecuteCommand(event);
+		if (!message.isEmpty())
+			ret.insert(message.MakePair());
 	}
 	return ret;
 }
 
-void	Database::DeleteFinishedElements()
-{
+void	Database::DeleteFinishedElements() {
 	std::set<Finishable *> ptr_set;
 
 	Database::erase_and_add(check_element_, ptr_set);

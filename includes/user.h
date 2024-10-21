@@ -5,6 +5,7 @@
 #include "event_configurator.h"
 #include "utils.h"
 #include "error_status.h"
+#include "optional_message.h"
 
 class Channel;
 
@@ -14,7 +15,7 @@ class User : public EventListener, public EventConfigurator{
 		~User();
 
 		void CheckCommand(Event& event) const;
-		std::pair<int, std::string> ExecuteCommand(const Event& event);
+		OptionalMessage ExecuteCommand(const Event& event);
 		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
 		bool is_finished() const;
 		bool is_verified() const;
@@ -48,15 +49,15 @@ class User : public EventListener, public EventConfigurator{
 		void CkPrivmsgCommand(Event& event) const;
 
 		//execute command
-		std::pair<int, std::string> ExPassCommand(const Event& event);
-		std::pair<int, std::string> ExNickCommand(const Event& event);
-		std::pair<int, std::string> ExUserCommand(const Event& event);
-		std::pair<int, std::string> ExJoinCommand(const Event& event);
-		std::pair<int, std::string> ExInviteCommand(const Event& event);
-		std::pair<int, std::string> ExKickCommand(const Event& event);
-		std::pair<int, std::string> ExTopicCommand(const Event& event);
-		std::pair<int, std::string> ExModeCommand(const Event& event);
-		std::pair<int, std::string> ExPrivmsgCommand(const Event& event);
+		OptionalMessage ExPassCommand(const Event& event);
+		OptionalMessage ExNickCommand(const Event& event);
+		OptionalMessage ExUserCommand(const Event& event);
+		OptionalMessage ExJoinCommand(const Event& event);
+		OptionalMessage ExInviteCommand(const Event& event);
+		OptionalMessage ExKickCommand(const Event& event);
+		OptionalMessage ExTopicCommand(const Event& event);
+		OptionalMessage ExModeCommand(const Event& event);
+		OptionalMessage ExPrivmsgCommand(const Event& event);
 };
 
 #endif

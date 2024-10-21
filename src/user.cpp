@@ -43,43 +43,31 @@ void User::CheckCommand(Event& event) const
 	}
 }
 
-std::pair<int, std::string> User::ExecuteCommand(const Event& event)
+OptionalMessage User::ExecuteCommand(const Event& event)
 {
-	std::pair<int, std::string> ret_pair;
-
 	switch (event.get_command())
 	{
 		case message::kPass:
-			ret_pair = ExPassCommand(event);
-			break;
+			return ExPassCommand(event);
 		case message::kNick:
-			ret_pair = ExNickCommand(event);
-			break;
+			return ExNickCommand(event);
 		case message::kUser:
-			ret_pair = ExUserCommand(event);
-			break;
+			return ExUserCommand(event);
 		case message::kJoin:
-			ret_pair = ExJoinCommand(event);
-			break;
+			return ExJoinCommand(event);
 		case message::kInvite:
-			ret_pair = ExInviteCommand(event);
-			break;
+			return ExInviteCommand(event);
 		case message::kKick:
-			ret_pair = ExKickCommand(event);
-			break;
+			return ExKickCommand(event);
 		case message::kTopic:
-			ret_pair = ExTopicCommand(event);
-			break;
+			return ExTopicCommand(event);
 		case message::kMode:
-			ret_pair = ExModeCommand(event);
-			break;
+			return ExModeCommand(event);
 		case message::kPrivmsg:
-			ret_pair = ExPrivmsgCommand(event);
-			break;
+			return ExPrivmsgCommand(event);
 		default:
-			break;
+			return OptionalMessage::Empty();
 	}
-	return ret_pair;
 }
 
 std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const
@@ -108,8 +96,8 @@ bool User::is_finished() const
 }
 
 //Execute
-std::pair<int, std::string> User::ExPassCommand(const Event& event) {
-	std::pair<int, std::string> ret_pair;
+OptionalMessage User::ExPassCommand(const Event& event) {
+	OptionalMessage ret_pair;
 
 	if (event.get_command_params().size() < 1)
 	{
@@ -127,18 +115,18 @@ std::pair<int, std::string> User::ExPassCommand(const Event& event) {
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExNickCommand(const Event& event){
+OptionalMessage User::ExNickCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Nick method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExUserCommand(const Event& event){
+OptionalMessage User::ExUserCommand(const Event& event){
 	const int kParamsSize = 3;
 
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::vector<std::string> params = event.get_command_params();
 
 	if (event.get_fd() != this->get_fd())
@@ -159,49 +147,49 @@ std::pair<int, std::string> User::ExUserCommand(const Event& event){
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExJoinCommand(const Event& event){
+OptionalMessage User::ExJoinCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Join method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExInviteCommand(const Event& event){
+OptionalMessage User::ExInviteCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Invite method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExKickCommand(const Event& event){
+OptionalMessage User::ExKickCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Kick method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExTopicCommand(const Event& event){
+OptionalMessage User::ExTopicCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Topic method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExPrivmsgCommand(const Event& event){
+OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Privmsg method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;
 }
 
-std::pair<int, std::string> User::ExModeCommand(const Event& event){
+OptionalMessage User::ExModeCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
+	OptionalMessage ret_pair;
 	std::cout << "Mode method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
 	return ret_pair;

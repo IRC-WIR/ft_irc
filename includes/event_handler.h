@@ -9,6 +9,7 @@
 #include "message.h"
 #include "event.h"
 #include "database.h"
+#include "optional_message.h"
 
 class EventHandler{
 	public:
