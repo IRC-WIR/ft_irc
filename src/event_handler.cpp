@@ -93,12 +93,11 @@ void	EventHandler::ExecutePoll()
 	}
 	int fd_size = poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
-	{
-		pollfd entry = this->poll_fd_[i];
-		HandlePollOutEvent(entry);
-		HandlePollHupEvent(entry);
-		HandlePollInEvent(entry);
-	}
+		HandlePollHupEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollInEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollOutEvent(this->poll_fd_[i]);
 	return ;
 }
 
@@ -161,7 +160,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 				case EFAULT:
 				case EMSGSIZE:
 					std::cout <<  strerror(errno) << std::endl;
-    			exit(EXIT_FAILURE);
+					exit(EXIT_FAILURE);
 				//次回POLLOUT発生時に再送
 				case EWOULDBLOCK:
 					return;
