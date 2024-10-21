@@ -22,13 +22,6 @@ int ft_stoi(std::string num_str)
 	return (num_int);
 }
 
-std::string ft_itos(int integer)
-{
-	std::stringstream ss;
-	ss << integer;
-	return ss.str();
-}
-
 std::string ft_split_before(const std::string& str, const std::string& delim)
 {
 	std::string::size_type n = str.find(delim);
