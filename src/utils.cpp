@@ -97,4 +97,5 @@ void convert_to_upper(std::string& str)
 
 utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
+
 }

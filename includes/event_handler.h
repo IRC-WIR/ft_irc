@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include "message.h"
 #include "event.h"
 #include "database.h"
@@ -17,6 +18,7 @@ class EventHandler{
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
 		void				add_event_socket(int new_fd);
+		void				add_response_map(std::map<int, std::string> newResponse);
 		//ネスト例外クラス
 		class eventHandlerException : public std::invalid_argument
 		{
@@ -26,7 +28,7 @@ class EventHandler{
 
 	private:
 		EventHandler();
-		int					Accept();
+		void				Accept();
 		void				Receive(Event event, char* buffer);
 		message::ParseState	Parse(const char *buffer, Event& event);
 		void				Send(Event event);
@@ -37,7 +39,7 @@ class EventHandler{
 
 		Database&	database_;
 		std::vector<struct pollfd>	poll_fd_;
-		std::map<int, std::string>	response_map_;
+		std::map<int, std::vector<std::string> >	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
 

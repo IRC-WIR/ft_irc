@@ -9,10 +9,49 @@ EventHandler::~EventHandler()
 	return ;
 }
 
+static int GetCurrentFlags(int socket_fd)
+{
+	int current_flags = fcntl(socket_fd, F_GETFL, 0);
+	if (current_flags < 0) {
+		switch (errno)
+		{
+		case EWOULDBLOCK:
+		case EINTR:
+			GetCurrentFlags(socket_fd);
+		default:
+			std::cout << strerror(errno) << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	return current_flags;
+}
+
+static int	SetNonBlockingMode(int socket_fd)
+{
+	int flags = GetCurrentFlags(socket_fd) | O_NONBLOCK;
+	int ret = fcntl(socket_fd, F_SETFL, flags);
+	if (ret < 0){
+		switch (errno)
+		{
+		case EWOULDBLOCK:
+		case EINTR:
+			SetNonBlockingMode(socket_fd);
+		default:
+			std::cout << strerror(errno) << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	return ret;
+}
+
 EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-
+	if (listening_socket_ < 0) {
+		std::cout << strerror(errno) << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	SetNonBlockingMode(listening_socket_);
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
@@ -54,11 +93,11 @@ void	EventHandler::ExecutePoll()
 	}
 	int fd_size = poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
-	{
-		pollfd entry = this->poll_fd_[i];
-		HandlePollInEvent(entry);
-		HandlePollHupEvent(entry);
-	}
+		HandlePollHupEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollInEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollOutEvent(this->poll_fd_[i]);
 	return ;
 }
 
@@ -69,7 +108,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 		if (entry.fd == listening_socket_)
 		{
 			Accept();
-			return ;
+			return;
 		}
 		//eventを作成
 		Event event = Event(entry.fd, entry.revents);
@@ -99,7 +138,55 @@ void	EventHandler::HandlePollInEvent(pollfd entry)
 
 void	EventHandler::HandlePollOutEvent(pollfd entry)
 {
-	(void)entry;
+	if (entry.revents & POLLOUT)
+	{
+		int target_fd = entry.fd;
+    for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
+			it != response_map_[target_fd].end();) {
+			const char *res_msg_char = (*it).c_str();
+			int	res_msg_length = (*it).length();
+			int sent_msg_length = send(target_fd, res_msg_char, res_msg_length, 0);
+			
+			//一部のみ送信成功
+			if (sent_msg_length > 0 && sent_msg_length < res_msg_length) {
+				*it = (*it).substr(sent_msg_length);
+				continue;
+			}
+			//送信失敗
+			if (sent_msg_length < 0) {
+
+				switch (errno) {
+				//プログラム終了
+				case EFAULT:
+				case EMSGSIZE:
+					std::cout <<  strerror(errno) << std::endl;
+					exit(EXIT_FAILURE);
+				//次回POLLOUT発生時に再送
+				case EWOULDBLOCK:
+					return;
+				//直ちに再送
+			  case EINTR:
+					break ;
+				//接続切断
+				default:
+					Detach(entry);
+					Event event = Event(entry.fd, entry.revents); 
+					event.set_command(message::kQuit);
+					database_.ExecuteEvent(event);
+					response_map_.erase(target_fd);	
+					return;
+				}
+				continue;
+			} else {
+				it = response_map_[target_fd].erase(it);
+			}
+		}
+		//対象ソケットへの、メッセージを送信し切った場合
+		if (response_map_[target_fd].empty()){
+			std::cout << "erase from Database::response_map_" << std::endl;
+			response_map_.erase(target_fd);
+		}
+	}
 	return ;
 }
 
@@ -138,18 +225,37 @@ void	EventHandler::WaitMillSecond(int ms)
 	}
 }
 
-int	EventHandler::Accept()
+void	EventHandler::Accept()
 {
 	socklen_t server_address_len = (socklen_t)sizeof(server_address_);
 	int connected_socket_ = accept(listening_socket_,
 			(struct sockaddr*)&(server_address_),
 			&server_address_len);
-	if (connected_socket_ == -1)
-		return -1;
+	if (connected_socket_ == -1){
+		switch (errno)
+		{
+		//接続リトライ
+		case EWOULDBLOCK:
+		case EINTR:
+			break;
+		//プログラム終了
+		case EBADF:
+		case EFAULT:
+		case ECONNABORTED:
+		case EINVAL:
+		case ENOTSOCK:
+		case EOPNOTSUPP:
+			exit(EXIT_FAILURE);
+		//接続不可
+		default:
+			return;
+		}
+	}
+	SetNonBlockingMode(connected_socket_);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	add_event_socket(connected_socket_);
 	database_.CreateUser(connected_socket_);
-	return 0;
+	return;
 }
 
 void	EventHandler::Receive(Event event, char* buffer)
@@ -165,15 +271,15 @@ message::ParseState	EventHandler::Parse(const char *buffer, Event &event){
 	//何回コマンドを受け取ったかを「/r/n」をsplitで確認
 	message::MessageParser message_parser(str_buffer);
 
-	//debug
-	std::cout << "------debug------" << std::endl;
-	std::cout << "state: " << message_parser.get_state() << std::endl;
-	std::cout << "command: " << message_parser.get_command() << std::endl;
-	std::cout << "command params: ";
-	utils::print_string_vector(message_parser.get_params());
-
-	std::cout << "\n\n------debug------" << std::endl;
-	//
+//	//debug
+//	std::cout << "------debug------" << std::endl;
+//	std::cout << "state: " << message_parser.get_state() << std::endl;
+//	std::cout << "command: " << message_parser.get_command() << std::endl;
+//	std::cout << "command params: ";
+//	utils::print_string_vector(message_parser.get_params());
+//
+//	std::cout << "\n\n------debug------" << std::endl;
+//	//
 	event.set_command(message_parser.get_command());
 	event.set_command_params(message_parser.get_params());
 	return message_parser.get_state();
@@ -189,9 +295,30 @@ void	EventHandler::add_event_socket(int new_fd)
 {
 	pollfd new_pollfd;
 	new_pollfd.fd = new_fd;
-	new_pollfd.events = POLLIN;
+	new_pollfd.events = POLLIN | POLLOUT;
 	new_pollfd.revents = 0;
 	poll_fd_.push_back(new_pollfd);
 }
 
+void	EventHandler::add_response_map(std::map<int, std::string> new_response){
+	
+	for (std::map<int, std::string>::iterator new_map_iterator =
+		new_response.begin();
+		new_map_iterator != new_response.end();
+		new_map_iterator++){
+
+		std::map<int, std::vector<std::string> >::iterator existing_map_iterator =
+			this->response_map_.find(new_map_iterator->first);
+
+		//該当fdに対して送信するメッセージが存在しない場合は新規pair追加
+		if (existing_map_iterator == this->response_map_.end()){
+			this->response_map_.insert(std::pair<int, std::vector<std::string> >
+			(new_map_iterator->first, std::vector<std::string>(1, new_map_iterator->second)));
+
+		//該当fdに対して送信するメッセージが存在する場合は要素のsecondに文字列を追加
+		} else {
+			existing_map_iterator->second.push_back(new_map_iterator->second);
+		}
+	}
+}
 EventHandler::eventHandlerException::eventHandlerException(const std::string& msg) : std::invalid_argument(msg){};

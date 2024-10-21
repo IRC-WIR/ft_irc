@@ -18,7 +18,7 @@ class Database {
 		void DeleteFinishedElements();
 
 		void CheckEvent(Event& event) const;
-		std::map<int, std::string>* ExecuteEvent(const Event& event);
+		std::map<int, std::string> ExecuteEvent(const Event& event);
 
 	private:
 		std::vector<EventConfigurator*> check_element_;
