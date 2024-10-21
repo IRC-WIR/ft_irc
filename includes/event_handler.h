@@ -18,10 +18,10 @@ class EventHandler{
 		void				WaitMillSecond(int ms);
 		void				add_event_socket(int new_fd);
 		//ネスト例外クラス
-		class eventHandlerException : public std::invalid_argument
+		class EventHandlerException : public std::invalid_argument
 		{
 			public:
-				eventHandlerException(const std::string& msg);
+				EventHandlerException(const std::string& msg);
 		};
 
 	private:

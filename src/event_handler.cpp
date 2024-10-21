@@ -46,7 +46,7 @@ void	EventHandler::ExecutePoll() {
 	{
 		//bebug
 		std::cerr << strerror(errno) << std::endl;
-		throw (eventHandlerException(kPollErrMsg));
+		throw (EventHandlerException(kPollErrMsg));
 	}
 	if (pollResult == 0)
 	{
@@ -229,4 +229,4 @@ void	EventHandler::add_event_socket(int new_fd) {
 	poll_fd_.push_back(new_pollfd);
 }
 
-EventHandler::eventHandlerException::eventHandlerException(const std::string& msg) : std::invalid_argument(msg){};
+EventHandler::EventHandlerException::EventHandlerException(const std::string& msg) : std::invalid_argument(msg){};
