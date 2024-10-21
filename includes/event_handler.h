@@ -6,9 +6,12 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <fcntl.h>
+#include <cerrno>
+#include <cstdlib>
 #include "message.h"
 #include "event.h"
 #include "database.h"
+#include "optional_message.h"
 
 class EventHandler{
 	public:

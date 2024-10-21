@@ -9,36 +9,32 @@ EventHandler::~EventHandler()
 	return ;
 }
 
-static int GetCurrentFlags(int socket_fd)
-{
+static int GetCurrentFlags(int socket_fd) {
 	int current_flags = fcntl(socket_fd, F_GETFL, 0);
 	if (current_flags < 0) {
-		switch (errno)
-		{
+		switch (errno) {
 		case EWOULDBLOCK:
 		case EINTR:
-			GetCurrentFlags(socket_fd);
+			return GetCurrentFlags(socket_fd);
 		default:
 			std::cout << strerror(errno) << std::endl;
-			exit(EXIT_FAILURE);
+			std::exit(EXIT_FAILURE);
 		}
 	}
 	return current_flags;
 }
 
-static int	SetNonBlockingMode(int socket_fd)
-{
+static int	SetNonBlockingMode(int socket_fd) {
 	int flags = GetCurrentFlags(socket_fd) | O_NONBLOCK;
 	int ret = fcntl(socket_fd, F_SETFL, flags);
-	if (ret < 0){
-		switch (errno)
-		{
+	if (ret < 0) {
+		switch (errno) {
 		case EWOULDBLOCK:
 		case EINTR:
-			SetNonBlockingMode(socket_fd);
+			return SetNonBlockingMode(socket_fd);
 		default:
 			std::cout << strerror(errno) << std::endl;
-			exit(EXIT_FAILURE);
+			std::exit(EXIT_FAILURE);
 		}
 	}
 	return ret;
@@ -49,7 +45,7 @@ EventHandler::EventHandler(Database& database,int port_no) : database_(database)
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (listening_socket_ < 0) {
 		std::cout << strerror(errno) << std::endl;
-		exit(EXIT_FAILURE);
+		std::exit(EXIT_FAILURE);
 	}
 	SetNonBlockingMode(listening_socket_);
 	struct pollfd listening_pollfd;
@@ -160,7 +156,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry)
 				case EFAULT:
 				case EMSGSIZE:
 					std::cout <<  strerror(errno) << std::endl;
-					exit(EXIT_FAILURE);
+					std::exit(EXIT_FAILURE);
 				//次回POLLOUT発生時に再送
 				case EWOULDBLOCK:
 					return;
@@ -245,7 +241,7 @@ void	EventHandler::Accept()
 		case EINVAL:
 		case ENOTSOCK:
 		case EOPNOTSUPP:
-			exit(EXIT_FAILURE);
+			std::exit(EXIT_FAILURE);
 		//接続不可
 		default:
 			return;
