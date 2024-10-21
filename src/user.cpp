@@ -45,8 +45,7 @@ void User::CheckCommand(Event& event) const
 
 OptionalMessage User::ExecuteCommand(const Event& event)
 {
-	switch (event.get_command())
-	{
+	switch (event.get_command()) {
 		case message::kPass:
 			return ExPassCommand(event);
 		case message::kNick:
