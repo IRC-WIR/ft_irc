@@ -96,40 +96,39 @@ bool User::is_finished() const
 
 //Execute
 OptionalMessage User::ExPassCommand(const Event& event) {
-	OptionalMessage ret_pair;
+	std::pair<int, std::string> ret_pair;
 
 	if (event.get_command_params().size() < 1)
 	{
 		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
-		return ret_pair;
+	return OptionalMessage::Empty();
 	}
 	if (is_password_authenticated_)
 	{
 		ret_pair = std::make_pair(event.get_fd(), "ERR_ALREADYREGISTRED");
-		return ret_pair;
+	return OptionalMessage::Empty();
 	}
 	std::cout << "Pass method called!" << std::endl;
 	if (server_password_.compare(event.get_command_params()[0]) == 0)
 		is_password_authenticated_ = true;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExNickCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Nick method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExUserCommand(const Event& event){
 	const int kParamsSize = 3;
 
-	OptionalMessage ret_pair;
+	std::pair<int, std::string> ret_pair;
 	std::vector<std::string> params = event.get_command_params();
 
 	if (event.get_fd() != this->get_fd())
-		return ret_pair;
+		return OptionalMessage::Empty();
 	if (params.size() < kParamsSize)
 		ret_pair = std::make_pair(this->get_fd(), "ERR_NEEDMOREPARAMS");
 	else if (!this->user_name_.empty())
@@ -143,55 +142,49 @@ OptionalMessage User::ExUserCommand(const Event& event){
 			this->real_name_ += params[i];
 		}
 	}
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExJoinCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Join method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExInviteCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Invite method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExKickCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Kick method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExTopicCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Topic method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Privmsg method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExModeCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
 	std::cout << "Mode method called!" << std::endl;
 	utils::print_string_vector(event.get_command_params());
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 //Execute
 

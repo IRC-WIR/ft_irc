@@ -85,48 +85,39 @@ bool Channel::is_finished() const
 //Execute
 OptionalMessage Channel::ExPassCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExNickCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExUserCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExJoinCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExInviteCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExKickCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExTopicCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExModeCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExPrivmsgCommand(const Event& event){
 	(void)event;
-	OptionalMessage ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 //Execute
 
