@@ -146,19 +146,17 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	std::map<int, std::string>::iterator req_it = request_map_.find(entry.fd);
 	if (req_it != request_map_.end())
 	{
-		std::cout << "find fd in request map" << std::endl;
 		request_buffer += req_it->second;
 		req_it->second.clear();
 	}
 	//add receive buffer to request_buffer;
 	request_buffer += msg;
-	//debug
-	std::cout << "request_buffer: " << request_buffer << std::endl;
 	//prepare parsing message
 	std::string parsing_msg = utils::ft_split_before(request_buffer, "\n");
 	if (parsing_msg.empty())
 	{
-		std::cout << "test ^D" << std::endl;
+		//erase the request_buffer like "\n"
+		utils::erase_newline(request_buffer);
 		if (req_it != request_map_.end())
 			req_it->second += request_buffer;
 		else
