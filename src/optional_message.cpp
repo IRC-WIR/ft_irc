@@ -19,18 +19,18 @@ OptionalMessage::OptionalMessage(int fd, const std::string& message)
 }
 
 OptionalMessage::OptionalMessage(const OptionalMessage& src)
-		: is_empty_(src.is_empty()), fd_(src.fd_), message_(src.message_) {
+		: is_empty_(src.isEmpty()), fd_(src.fd_), message_(src.message_) {
 }
 
 OptionalMessage::~OptionalMessage() {
 }
 
-bool OptionalMessage::is_empty() const {
+bool OptionalMessage::isEmpty() const {
 	return this->is_empty_;
 }
 
 std::pair<int, std::string> OptionalMessage::MakePair() const {
-	if (this->is_empty())
+	if (this->isEmpty())
 		throw OptionalMessage::EmptyMessageException();
 	return std::make_pair(this->fd_, this->message_);
 }
