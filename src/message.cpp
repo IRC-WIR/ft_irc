@@ -3,6 +3,8 @@
 namespace message {
 
 const std::map<std::string, Command> MessageParser::kCommandMap = MessageParser::CreateCommandMap();
+const std::map<Command, std::string> MessageParser::kCommandStrMap = MessageParser::CreateCommandStrMap();
+
 //here
 //convert to Upper & compare from map
 std::map<std::string, Command> MessageParser::CreateCommandMap() {
@@ -19,6 +21,22 @@ std::map<std::string, Command> MessageParser::CreateCommandMap() {
     m.insert(std::make_pair("QUIT", kQuit));
     return m;
 }
+
+std::map<Command, std::string> MessageParser::CreateCommandStrMap() {
+	std::map<Command, std::string> m;
+	m.insert(std::make_pair(kPass, "PASS"));
+	m.insert(std::make_pair(kNick, "NICK"));
+	m.insert(std::make_pair(kUser, "USER"));
+	m.insert(std::make_pair(kJoin, "JOIN"));
+	m.insert(std::make_pair(kInvite, "INVITE"));
+	m.insert(std::make_pair(kKick, "KICK"));
+	m.insert(std::make_pair(kTopic, "TOPIC"));
+	m.insert(std::make_pair(kMode, "MODE"));
+	m.insert(std::make_pair(kPrivmsg, "PRIVMSG"));
+	m.insert(std::make_pair(kQuit, "QUIT"));
+	return m;
+}
+
 
 MessageParser::MessageParser(const std::string& msg)
 {
@@ -136,6 +154,12 @@ std::vector<std::string> MessageParser::get_params() const
 {
 	return command_params_;
 }
+
+const std::map<Command, std::string>& MessageParser::get_command_str_map()
+{
+	return message::MessageParser::kCommandStrMap;
+}
+
 
 bool MessageParser::IsFinishParsing()
 {
