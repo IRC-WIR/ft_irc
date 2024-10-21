@@ -3,6 +3,7 @@
 
 # include <string>
 # include <stdexcept>
+# include <utility>
 
 // Javaにある「Optional」クラスを参考にしました。
 // c++にも「std::optional」という似た仕組みがあるようです。

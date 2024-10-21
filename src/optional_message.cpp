@@ -32,7 +32,7 @@ bool OptionalMessage::is_empty() const {
 std::pair<int, std::string> OptionalMessage::MakePair() const {
 	if (this->is_empty())
 		throw OptionalMessage::EmptyMessageException();
-	return std::pair(this->fd_, this->message_);
+	return std::make_pair(this->fd_, this->message_);
 }
 
 OptionalMessage::EmptyMessageException::EmptyMessageException()
