@@ -84,21 +84,21 @@ std::pair<int, std::string> User::ExecuteCommand(const Event& event)
 
 std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const
 {
-	std::string ret_str;
+	std::stringstream ret_ss;
 	//add error no
-	ret_str += utils::ft_itos(err_status.get_error_code());
-	ret_str += " ";
+	ret_ss << err_status.get_error_code();
+	ret_ss << " ";
 	//add nick name
-	ret_str += nick_name_;
-	ret_str += " ";
+	ret_ss << nick_name_;
+	ret_ss << " ";
 	//add command
-	ret_str += message::MessageParser::get_command_str_map().find(cmd)->second;
-	ret_str += " ";
+	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
+	ret_ss << " ";
 	//add Error Message
-	ret_str += ": ";
-	ret_str += err_status.get_error_message();
-	ret_str += "\r\n";
-	return ret_str;
+	ret_ss << ": ";
+	ret_ss << err_status.get_error_message();
+	ret_ss << "\r\n";
+	return ret_ss.str();
 }
 
 bool User::is_finished() const
