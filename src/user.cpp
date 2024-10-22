@@ -88,7 +88,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	return ret_ss.str();
 }
 
-bool User::is_finished() const
+bool User::IsFinished() const
 {
 	//未実装
 	return true;
@@ -117,7 +117,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 OptionalMessage User::ExNickCommand(const Event& event){
 	(void)event;
 	std::cout << "Nick method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 
@@ -148,42 +148,42 @@ OptionalMessage User::ExUserCommand(const Event& event){
 OptionalMessage User::ExJoinCommand(const Event& event){
 	(void)event;
 	std::cout << "Join method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExInviteCommand(const Event& event){
 	(void)event;
 	std::cout << "Invite method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExKickCommand(const Event& event){
 	(void)event;
 	std::cout << "Kick method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExTopicCommand(const Event& event){
 	(void)event;
 	std::cout << "Topic method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	(void)event;
 	std::cout << "Privmsg method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExModeCommand(const Event& event){
 	(void)event;
 	std::cout << "Mode method called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
 //Execute
@@ -193,63 +193,63 @@ void User::CkPassCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Nick called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkNickCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Nick called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkUserCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check User called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkJoinCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Join called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkInviteCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check vite called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkKickCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Kick called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkTopicCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check opic called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkPrivmsgCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check vmsg called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkModeCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 //check
 
@@ -274,7 +274,7 @@ bool User::get_is_delete() const
 	return is_delete_;
 }
 
-bool	User::is_verified() const
+bool	User::IsVerified() const
 {
 	if (!this->is_password_authenticated_
 		|| this->nick_name_.empty()

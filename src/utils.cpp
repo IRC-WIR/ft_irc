@@ -3,26 +3,26 @@
 
 namespace utils{
 
-void check_digital_str(std::string num_str)
+void CheckDigitalStr(std::string num_str)
 {
 	for (int i = 0; i < (int)num_str.length(); i++)
 	{
 		if (!isdigit(num_str[i]))
 		{
 			//数字で構成されていない例外を投げる
-			throw (utilsException(kNotDigitalNumber));
+			throw (UtilsException(kNotDigitalNumber));
 		}
 	};
 }
 
-int ft_stoi(std::string num_str)
+int Stoi(std::string num_str)
 {
 	std::stringstream ss(num_str);
 	int num_int;	ss >> num_int;
 	return (num_int);
 }
 
-std::string ft_split_before(const std::string& str, const std::string& delim)
+std::string SplitBefore(const std::string& str, const std::string& delim)
 {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
@@ -30,7 +30,7 @@ std::string ft_split_before(const std::string& str, const std::string& delim)
 	return str.substr(0, n);
 }
 
-std::string ft_split_after(const std::string& str, const std::string& delim)
+std::string SplitAfter(const std::string& str, const std::string& delim)
 {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
@@ -38,7 +38,7 @@ std::string ft_split_after(const std::string& str, const std::string& delim)
 	return str.substr(n + delim.size());
 }
 
-void print_string_vector(const std::vector<std::string>& str_vec)
+void PrintStringVector(const std::vector<std::string>& str_vec)
 {
 	int i = 0;
 	for (std::vector<std::string>::const_iterator it = str_vec.begin();
@@ -51,7 +51,7 @@ void print_string_vector(const std::vector<std::string>& str_vec)
 	}
 }
 
-void erase_newline(std::string& str)
+void EraseNewline(std::string& str)
 {
 	std::string::size_type pos;
 	while ((pos = str.find("\r\n")) != std::string::npos)
@@ -60,24 +60,24 @@ void erase_newline(std::string& str)
 		str.erase(pos, 1);
 }
 
-void erase_space(std::string& str)
+void EraseSpace(std::string& str)
 {
 	std::string::size_type pos;
 	while ((pos = str.find(" ")) != std::string::npos)
 		str.erase(pos, 1);
 }
 
-bool is_ascii(char c)
+bool IsAscii(char c)
 {
 	return static_cast<unsigned char>(c) <= 127;
 }
 
-bool is_ascii_str(const std::string& str)
+bool IsAsciiStr(const std::string& str)
 {
 	std::string::const_iterator it = str.begin();
 	while (it != str.end())
 	{
-		if (!is_ascii(*it))
+		if (!IsAscii(*it))
 			return false;
 		it ++;
 	}
@@ -85,7 +85,7 @@ bool is_ascii_str(const std::string& str)
 	return true;
 }
 
-void convert_to_upper(std::string& str)
+void ConvertToUpper(std::string& str)
 {
 	std::string::iterator it = str.begin();
 	while (it != str.end())
@@ -96,7 +96,7 @@ void convert_to_upper(std::string& str)
 	}
 }
 
-bool has_newlines(const std::string& str)
+bool HasNewlines(const std::string& str)
 {
 	std::string::size_type find_n_type;
 	std::string::size_type find_r_n_type;
@@ -108,7 +108,7 @@ bool has_newlines(const std::string& str)
 	return true;
 }
 
-utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
+UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
 
 }

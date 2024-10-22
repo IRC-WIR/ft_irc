@@ -11,36 +11,25 @@
 #include <set> //for std::set
 
 namespace utils {
-	void check_digital_str(std::string num_str);
-	int	ft_stoi(std::string num_str);
-	std::string ft_split_before(const std::string& str, const std::string& delim);
-	std::string ft_split_after(const std::string& str, const std::string& delim);
-	void erase_newline(std::string& str);
-	void erase_space(std::string& str);
-	bool is_ascii(char c);
-	bool is_ascii_str(const std::string& str);
-	void convert_to_upper(std::string& str);
-	bool has_newlines(const std::string& str);
-
-	template <typename K, typename V>
-	void mergeMaps(std::map<K, V>& dest_map, const std::map<K, V>& src_map)
-	{
-		for (typename std::map<K, V>::const_iterator it = src_map.begin();
-			it != src_map.end(); it++)
-		{
-			dest_map.insert(*it);
-		}
-	}
-
+	void CheckDigitalStr(std::string num_str);
+	int	Stoi(std::string num_str);
+	std::string SplitBefore(const std::string& str, const std::string& delim);
+	std::string SplitAfter(const std::string& str, const std::string& delim);
+	void EraseNewline(std::string& str);
+	void EraseSpace(std::string& str);
+	bool IsAscii(char c);
+	bool IsAsciiStr(const std::string& str);
+	void ConvertToUpper(std::string& str);
+	bool HasNewlines(const std::string& str);
 
 	//debug
-	void print_string_vector(const std::vector<std::string>& str_vec);
+	void PrintStringVector(const std::vector<std::string>& str_vec);
 
 	//utils Exception
-	class utilsException : public std::invalid_argument
+	class UtilsException : public std::invalid_argument
 	{
 		public:
-			utilsException(const std::string& msg);
+			UtilsException(const std::string& msg);
 	};
 
 	//エラーメッセージ定数

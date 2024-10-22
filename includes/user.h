@@ -17,8 +17,8 @@ class User : public EventListener, public EventConfigurator{
 		void CheckCommand(Event& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
 		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
-		bool is_finished() const;
-		bool is_verified() const;
+		bool IsFinished() const;
+		bool IsVerified() const;
 
 		void set_server_password(const std::string& password);
 		bool get_is_password_authenticated() const;

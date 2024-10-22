@@ -45,7 +45,7 @@ MessageParser::MessageParser(const std::string& msg)
 void MessageParser::ParsingMessage(const std::string& msg)
 {
 	Init(msg);
-	if (!utils::is_ascii_str(message_))
+	if (!utils::IsAsciiStr(message_))
 	{
 		command_ = kNotFound;
 		state_ = KParseNotAscii;
@@ -70,11 +70,11 @@ void MessageParser::ParsingMessage(const std::string& msg)
 			default:
 			//debug in parsing
 				std::cout << "message_:" << message_ << std::endl;
-				last_param = utils::ft_split_after(message_, ":");
+				last_param = utils::SplitAfter(message_, ":");
 				if (!last_param.empty())
 				{
-					utils::erase_newline(last_param);
-					command = utils::ft_split_before(message_, ":");
+					utils::EraseNewline(last_param);
+					command = utils::SplitBefore(message_, ":");
 				}
 				state_ = kParseCommand;
 				break;
@@ -87,7 +87,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 	std::stringstream ss(command);
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
-		utils::erase_newline(str);
+		utils::EraseNewline(str);
 		if (!str.empty())
 			command_params_.push_back(str);
 	}
@@ -100,7 +100,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 	}
 	//find command
 	std::string command_str = command_params_[0];
-	utils::convert_to_upper(command_str);
+	utils::ConvertToUpper(command_str);
 	std::map<std::string, Command>::const_iterator it = kCommandMap.find(command_str);
 	//can't find command
 	if (it == kCommandMap.end())

@@ -76,7 +76,7 @@ OptionalMessage Channel::ExecuteCommand(const Event& event)
 	}
 }
 
-bool Channel::is_finished() const
+bool Channel::IsFinished() const
 {
 	//未実装
 	return true;
@@ -127,62 +127,62 @@ void Channel::CkPassCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Nick called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkNickCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Nick called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkUserCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check User called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkJoinCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Join called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkInviteCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check vite called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkKickCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Kick called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkTopicCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check opic called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkPrivmsgCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check vmsg called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkModeCommand(Event& event) const
 {
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
-	utils::print_string_vector(event.get_command_params());
+	utils::PrintStringVector(event.get_command_params());
 }
 //check

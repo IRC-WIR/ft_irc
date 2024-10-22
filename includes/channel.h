@@ -14,7 +14,7 @@ class Channel: public EventListener, public EventConfigurator{
 
 		void CheckCommand(Event& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-		bool is_finished() const;
+		bool IsFinished() const;
 
 	private:
 		std::string		topic_;

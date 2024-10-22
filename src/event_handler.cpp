@@ -231,7 +231,7 @@ void	EventHandler::Accept() {
 	}
 	SetNonBlockingMode(connected_socket_);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
-	add_event_socket(connected_socket_);
+	AddEventSocket(connected_socket_);
 	database_.CreateUser(connected_socket_);
 	return;
 }
@@ -259,11 +259,11 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	std::string remain_msg;
 	//request_buffer:
 	//pattern1:command1\ncommand2\ncommand3\n
-	while (utils::has_newlines(request_buffer))
+	while (utils::HasNewlines(request_buffer))
 	{
-		parsing_msg = utils::ft_split_before(request_buffer, "\n");
+		parsing_msg = utils::SplitBefore(request_buffer, "\n");
 		parsing_msg += "\n";
-		remain_msg = utils::ft_split_after(request_buffer, "\n");
+		remain_msg = utils::SplitAfter(request_buffer, "\n");
 		//eventを作成
 		Event event = Event(entry.fd, entry.revents);
 		//parse
@@ -271,7 +271,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		//debug
 		std::cout << "command:" << message::MessageParser::get_command_str_map().find(event.get_command()) -> second << std::endl;
 		std::cout << "command param:" << std::endl;
-		utils::print_string_vector(event.get_command_params());
+		utils::PrintStringVector(event.get_command_params());
 		//debug
 		//judge parse result
 		switch (parse_state)
@@ -309,7 +309,7 @@ message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event)
 //	std::cout << "state: " << message_parser.get_state() << std::endl;
 //	std::cout << "command: " << message_parser.get_command() << std::endl;
 //	std::cout << "command params: ";
-//	utils::print_string_vector(message_parser.get_params());
+//	utils::PrintStringVector(message_parser.get_params());
 //
 //	std::cout << "\n\n------debug------" << std::endl;
 //	//
@@ -324,7 +324,7 @@ void	EventHandler::Send(Event event) {
 	return ;
 }
 
-void	EventHandler::add_event_socket(int new_fd) {
+void	EventHandler::AddEventSocket(int new_fd) {
 	pollfd new_pollfd;
 	new_pollfd.fd = new_fd;
 	new_pollfd.events = POLLIN | POLLOUT;
@@ -332,7 +332,7 @@ void	EventHandler::add_event_socket(int new_fd) {
 	poll_fd_.push_back(new_pollfd);
 }
 
-void	EventHandler::add_response_map(std::map<int, std::string> new_response){
+void	EventHandler::AddResponseMap(std::map<int, std::string> new_response){
 
 	for (std::map<int, std::string>::iterator new_map_iterator =
 		new_response.begin();

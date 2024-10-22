@@ -14,8 +14,8 @@ int	main(int argc, char **argv)
 	try
 	{
 		Database			database;
-		utils::check_digital_str(argv[1]);
-		EventHandler		event_handler(database, utils::ft_stoi(argv[1]));
+		utils::CheckDigitalStr(argv[1]);
+		EventHandler		event_handler(database, utils::Stoi(argv[1]));
 		server::IrcServer	irc_server(event_handler);
 		irc_server.set_port_no(argv[1]);
 		irc_server.set_password(argv[2]);
