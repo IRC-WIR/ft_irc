@@ -31,7 +31,7 @@ class EventHandler{
 
 	private:
 		EventHandler();
-		void					Accept();
+		void				Accept();
 		void				Receive(int fd, char* buffer);
 		void				Execute(const pollfd& entry, const std::string& msg);
 		message::ParseState	Parse(const std::string& buffer, Event& event);

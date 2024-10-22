@@ -255,10 +255,10 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	}
 	request_buffer += msg;
 
-	//prepare parsing & remain message
 	std::string parsing_msg;
 	std::string remain_msg;
-	//request_buffer: command1\ncommand2\ncommand3\n
+	//request_buffer:
+	//pattern1:command1\ncommand2\ncommand3\n
 	while (utils::has_newlines(request_buffer))
 	{
 		parsing_msg = utils::ft_split_before(request_buffer, "\n");
@@ -273,7 +273,6 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		{
 			case message::kParseError:
 				std::cout << "Parse Error" <<std::endl;
-
 				break ;
 			case message::KParseNotAscii:
 				//have to define the action of inputting out range of Ascii
