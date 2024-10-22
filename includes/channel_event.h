@@ -9,6 +9,7 @@ class ChannelEvent : public Event {
         ChannelEvent(const Event&, const Channel&);
         ~ChannelEvent();
         const Channel& get_channel(void) const;
+		bool IsChannelEvent(void) const;
 
     private:
         const Channel& channel_;

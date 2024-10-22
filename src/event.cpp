@@ -60,6 +60,10 @@ bool Event::HasErrorOccurred() const {
 	return (this->error_status_ != NULL);
 }
 
+bool Event::IsChannelEvent() const {
+	return false;
+}
+
 Event::NoErrorException::NoErrorException()
 		: std::runtime_error(Event::NoErrorException::kMessage) {
 	return ;

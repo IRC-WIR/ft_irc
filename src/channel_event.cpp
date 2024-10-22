@@ -12,3 +12,7 @@ ChannelEvent::~ChannelEvent() {
 const Channel& ChannelEvent::get_channel() const {
     return this->channel_;
 }
+
+bool ChannelEvent::IsChannelEvent() const {
+    return true;
+}

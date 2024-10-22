@@ -20,6 +20,7 @@ class Event {
 		void	set_command_params(const std::vector<std::string>& commmand_params);
 		void	set_error_status(const ErrorStatus&);
 		bool	HasErrorOccurred(void) const;
+		virtual bool IsChannelEvent(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
