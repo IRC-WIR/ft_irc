@@ -94,6 +94,17 @@ void convert_to_upper(std::string& str)
 	}
 }
 
+bool has_newlines(const std::string& str)
+{
+	std::string::size_type find_n_type;
+	std::string::size_type find_r_n_type;
+	find_n_type = str.find("\n");
+	find_r_n_type = str.find("\r\n");
+
+	if (find_n_type == std::string::npos && find_r_n_type == std::string::npos)
+		return false;
+	return true;
+}
 
 utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
 

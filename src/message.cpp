@@ -37,7 +37,6 @@ std::map<Command, std::string> MessageParser::CreateCommandStrMap() {
 	return m;
 }
 
-
 MessageParser::MessageParser(const std::string& msg)
 {
 	ParsingMessage(msg);
@@ -65,11 +64,6 @@ void MessageParser::ParsingMessage(const std::string& msg)
 			case kParseParam:
 				if (!last_param.empty())
 					command_params_.push_back(last_param);
-				if (command_params_.empty())
-				{
-					state_ = kParseEmpty;
-					break;
-				}
 				state_ = kParseComplete;
 				break;
 
