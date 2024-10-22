@@ -88,9 +88,8 @@ void MessageParser::ParsingCommand(const std::string& command)
 	std::string	str;
 	while ( getline(ss, str, ' ') ){
 		utils::erase_newline(str);
-		if (str.empty())
-			continue;
-		command_params_.push_back(str);
+		if (!str.empty())
+			command_params_.push_back(str);
 	}
 	//input like "/r/n"
 	if (command_params_.size() == 0)

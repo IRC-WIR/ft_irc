@@ -268,6 +268,11 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		Event event = Event(entry.fd, entry.revents);
 		//parse
 		message::ParseState parse_state = Parse(parsing_msg, event);
+		//debug
+		std::cout << "command:" << message::MessageParser::get_command_str_map().find(event.get_command()) -> second << std::endl;
+		std::cout << "command param:" << std::endl;
+		utils::print_string_vector(event.get_command_params());
+		//debug
 		//judge parse result
 		switch (parse_state)
 		{
