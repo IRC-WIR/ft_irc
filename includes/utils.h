@@ -20,6 +20,7 @@ namespace utils {
 	bool is_ascii(char c);
 	bool is_ascii_str(const std::string& str);
 	void convert_to_upper(std::string& str);
+	bool has_newlines(const std::string& str);
 
 	template <typename K, typename V>
 	void mergeMaps(std::map<K, V>& dest_map, const std::map<K, V>& src_map)

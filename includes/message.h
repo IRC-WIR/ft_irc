@@ -8,7 +8,8 @@ namespace message
 
 enum Command
 {
-	kPass = 0,
+	kCommandDefault = 0,
+	kPass,
 	kNick,
 	kUser,
 	kJoin,

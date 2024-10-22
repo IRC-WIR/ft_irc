@@ -23,17 +23,18 @@ class EventHandler{
 		void				add_event_socket(int new_fd);
 		void				add_response_map(std::map<int, std::string> newResponse);
 		//ネスト例外クラス
-		class eventHandlerException : public std::invalid_argument
+		class EventHandlerException : public std::invalid_argument
 		{
 			public:
-				eventHandlerException(const std::string& msg);
+				EventHandlerException(const std::string& msg);
 		};
 
 	private:
 		EventHandler();
 		void				Accept();
-		void				Receive(Event event, char* buffer);
-		message::ParseState	Parse(const char *buffer, Event& event);
+		void				Receive(int fd, char* buffer);
+		void				Execute(const pollfd& entry, const std::string& msg);
+		message::ParseState	Parse(const std::string& buffer, Event& event);
 		void				Send(Event event);
 		void				Detach(pollfd entry);
 		void				HandlePollInEvent(pollfd entry);
@@ -45,6 +46,7 @@ class EventHandler{
 		std::map<int, std::vector<std::string> >	response_map_;
 		int	listening_socket_;
 		sockaddr_in	server_address_;
+		std::map<int, std::string>	request_map_;
 
 		//定数
 		static const int	kQueueLimit;

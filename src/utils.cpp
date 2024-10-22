@@ -35,17 +35,19 @@ std::string ft_split_after(const std::string& str, const std::string& delim)
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
-	return str.substr(n + 1);
+	return str.substr(n + delim.size());
 }
 
 void print_string_vector(const std::vector<std::string>& str_vec)
 {
+	int i = 0;
 	for (std::vector<std::string>::const_iterator it = str_vec.begin();
 		it != str_vec.end();
 		it ++)
 	{
-		std::cout << "size: " << it->size() << std::endl;
-		std::cout << "\"" << *it << "\"" << std::endl;
+		std::cout << "i: " << i << ", size: " << it->size();
+		std::cout << ", \"" << *it << "\"" << std::endl;
+		i ++;
 	}
 }
 
@@ -94,6 +96,17 @@ void convert_to_upper(std::string& str)
 	}
 }
 
+bool has_newlines(const std::string& str)
+{
+	std::string::size_type find_n_type;
+	std::string::size_type find_r_n_type;
+	find_n_type = str.find("\n");
+	find_r_n_type = str.find("\r\n");
+
+	if (find_n_type == std::string::npos && find_r_n_type == std::string::npos)
+		return false;
+	return true;
+}
 
 utilsException::utilsException(const std::string& msg) : std::invalid_argument(msg) {};
 

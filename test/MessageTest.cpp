@@ -183,7 +183,7 @@ TEST(MessageTest, ParsingTest10) {
   EXPECT_EQ(message::kQuit, message_lower_parser.get_command());
 }
 
-// test the endof \n parsing
+// // test the endof \n parsing
 TEST(MessageTest, ParsingTest11) {
 
   std::string raw_message =
@@ -199,7 +199,7 @@ TEST(MessageTest, ParsingTest11) {
 
 }
 
-// test lower_case parsing
+// // test lower_case parsing
 TEST(MessageTest, ParsingTest12) {
 
    std::string raw_message =
@@ -211,7 +211,7 @@ TEST(MessageTest, ParsingTest12) {
   EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
 }
 
-// test space seperate
+// // test space seperate
 TEST(MessageTest, ParsingTest13) {
 
    std::string raw_message =

@@ -37,7 +37,6 @@ std::map<Command, std::string> MessageParser::CreateCommandStrMap() {
 	return m;
 }
 
-
 MessageParser::MessageParser(const std::string& msg)
 {
 	ParsingMessage(msg);
@@ -46,16 +45,8 @@ MessageParser::MessageParser(const std::string& msg)
 void MessageParser::ParsingMessage(const std::string& msg)
 {
 	Init(msg);
-	if (message_.empty())
-	{
-		command_ = kNotFound;
-		state_ = kParseEmpty;
-		return;
-	}
-	std::cout << "message_: " << message_ << std::endl;
 	if (!utils::is_ascii_str(message_))
 	{
-		std::cout << "test in not ascii code" << std::endl;
 		command_ = kNotFound;
 		state_ = KParseNotAscii;
 		return;
@@ -73,15 +64,12 @@ void MessageParser::ParsingMessage(const std::string& msg)
 			case kParseParam:
 				if (!last_param.empty())
 					command_params_.push_back(last_param);
-				if (command_params_.empty())
-				{
-					state_ = kParseEmpty;
-					break;
-				}
 				state_ = kParseComplete;
 				break;
 
 			default:
+			//debug in parsing
+				std::cout << "message_:" << message_ << std::endl;
 				last_param = utils::ft_split_after(message_, ":");
 				if (!last_param.empty())
 				{
@@ -103,6 +91,13 @@ void MessageParser::ParsingCommand(const std::string& command)
 		if (!str.empty())
 			command_params_.push_back(str);
 	}
+	//input like "/r/n"
+	if (command_params_.size() == 0)
+	{
+		command_ = kNotFound;
+		state_ = kParseEmpty;
+		return;
+	}
 	//find command
 	std::string command_str = command_params_[0];
 	utils::convert_to_upper(command_str);
@@ -114,7 +109,6 @@ void MessageParser::ParsingCommand(const std::string& command)
 		state_ = kParseError;
 		return;
 	}
-
 	//find command, remove commmand string from commad_params vector
 	command_params_.erase(command_params_.begin());
 	command_ = it->second;
@@ -124,6 +118,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 
 void MessageParser::Init(const std::string& msg)
 {
+	command_ = kCommandDefault;
 	state_ = kParseDefault;
 	message_ = msg;
 	command_params_.clear();
