@@ -121,7 +121,7 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExUserCommand(const Event& event){
+OptionalMessage User::ExUserCommand(const Event& event) {
 	const int kParamsSize = 3;
 
 	std::pair<int, std::string> ret_pair;
@@ -203,11 +203,27 @@ void User::CkNickCommand(Event& event) const
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void User::CkUserCommand(Event& event) const
-{
-	(void)event;
-	std::cout << "Check User called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void User::CkUserCommand(Event& event) const {
+	const int kParamsSize = 3;
+
+	const std::vector<std::string>& params = event.get_command_params();
+
+	if (event.get_fd() != this->get_fd())
+		return ;
+	if (params.size() < kParamsSize)
+		ret_pair = std::make_pair(this->get_fd(), "ERR_NEEDMOREPARAMS");
+	else if (!this->user_name_.empty())
+		ret_pair = std::make_pair(this->get_fd(), "ERR_ALREADYREGISTRED");
+	else {
+		this->user_name_ = params[0];
+		// 今回は1,2番目の要素は無視する
+		for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
+			if (i != 3)
+				this->real_name_ += " ";
+			this->real_name_ += params[i];
+		}
+	}
+	return OptionalMessage::Empty();
 }
 
 void User::CkJoinCommand(Event& event) const
