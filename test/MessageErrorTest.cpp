@@ -15,6 +15,19 @@ TEST(MessageErrorTest, ParsingErrorTest1) {
 }
 
 //test empty command
+TEST(MessageErrorTest, ParsingErrorTest2) {
+
+  std::string raw_message =
+    "\n";
+  message::MessageParser message_parser(raw_message);
+
+  //Expect not found command.
+  EXPECT_EQ(message::kNotFound, message_parser.get_command());
+  //Expect ParseError state.
+  EXPECT_EQ(message::kParseEmpty, message_parser.get_state());
+}
+
+//test empty command
 TEST(MessageErrorTest, ParsingErrorTest3) {
 
   std::string raw_message =
