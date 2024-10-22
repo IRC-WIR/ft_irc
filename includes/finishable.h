@@ -6,7 +6,7 @@ class Finishable {
 	public:
 		Finishable(void) {}
 		virtual ~Finishable() {}
-		virtual bool is_finished() const = 0;
+		virtual bool IsFinished() const = 0;
 };
 
 #endif

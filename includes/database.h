@@ -26,9 +26,9 @@ class Database {
 
 		// DeleteFinishedElements内で使う、vectorから用済みのものを取り除いてsetに追加する用の関数
 		template <typename T, typename U>
-		static void erase_and_add(T& t, U& u) {
+		static void EraseAndAdd(T& t, U& u) {
 			for (typename T::iterator it = t.begin(); it != t.end();) {
-				if ((*it)->is_finished()) {
+				if ((*it)->IsFinished()) {
 					u.insert(*it);
 					it = t.erase(it);
 				} else

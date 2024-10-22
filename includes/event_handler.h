@@ -20,8 +20,8 @@ class EventHandler{
 		bool				IsListeningSocket();
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
-		void				add_event_socket(int new_fd);
-		void				add_response_map(std::map<int, std::string> newResponse);
+		void				AddEventSocket(int new_fd);
+		void				AddResponseMap(std::map<int, std::string> newResponse);
 		//ネスト例外クラス
 		class EventHandlerException : public std::invalid_argument
 		{

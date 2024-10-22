@@ -15,7 +15,7 @@ class OptionalMessage {
 		OptionalMessage(const OptionalMessage&);
 		~OptionalMessage();
 
-		bool isEmpty(void) const;
+		bool IsEmpty(void) const;
 		std::pair<int, std::string> MakePair(void) const;
 
 		//例外処理
