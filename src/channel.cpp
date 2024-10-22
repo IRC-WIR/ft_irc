@@ -50,43 +50,30 @@ void Channel::CheckCommand(Event& event) const
 	}
 }
 
-std::pair<int, std::string> Channel::ExecuteCommand(const Event& event)
+OptionalMessage Channel::ExecuteCommand(const Event& event)
 {
-	std::pair<int, std::string> ret_pair;
-
-	switch (event.get_command())
-	{
+	switch (event.get_command()) {
 		case message::kPass:
-			ret_pair = ExPassCommand(event);
-			break;
+			return ExPassCommand(event);
 		case message::kNick:
-			ret_pair = ExNickCommand(event);
-			break;
+			return ExNickCommand(event);
 		case message::kUser:
-			ret_pair = ExUserCommand(event);
-			break;
+			return ExUserCommand(event);
 		case message::kJoin:
-			ret_pair = ExJoinCommand(event);
-			break;
+			return ExJoinCommand(event);
 		case message::kInvite:
-			ret_pair = ExInviteCommand(event);
-			break;
+			return ExInviteCommand(event);
 		case message::kKick:
-			ret_pair = ExKickCommand(event);
-			break;
+			return ExKickCommand(event);
 		case message::kTopic:
-			ret_pair = ExTopicCommand(event);
-			break;
+			return ExTopicCommand(event);
 		case message::kMode:
-			ret_pair = ExModeCommand(event);
-			break;
+			return ExModeCommand(event);
 		case message::kPrivmsg:
-			ret_pair = ExPrivmsgCommand(event);
-			break;
+			return ExPrivmsgCommand(event);
 		default:
-			return ret_pair;
+			return OptionalMessage::Empty();
 	}
-	return ret_pair;
 }
 
 bool Channel::is_finished() const
@@ -96,50 +83,41 @@ bool Channel::is_finished() const
 }
 
 //Execute
-std::pair<int, std::string> Channel::ExPassCommand(const Event& event){
+OptionalMessage Channel::ExPassCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExNickCommand(const Event& event){
+OptionalMessage Channel::ExNickCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExUserCommand(const Event& event){
+OptionalMessage Channel::ExUserCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExJoinCommand(const Event& event){
+OptionalMessage Channel::ExJoinCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExInviteCommand(const Event& event){
+OptionalMessage Channel::ExInviteCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExKickCommand(const Event& event){
+OptionalMessage Channel::ExKickCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExTopicCommand(const Event& event){
+OptionalMessage Channel::ExTopicCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExModeCommand(const Event& event){
+OptionalMessage Channel::ExModeCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
-std::pair<int, std::string> Channel::ExPrivmsgCommand(const Event& event){
+OptionalMessage Channel::ExPrivmsgCommand(const Event& event){
 	(void)event;
-	std::pair<int, std::string> ret_pair;
-	return ret_pair;
+	return OptionalMessage::Empty();
 }
 //Execute
 
