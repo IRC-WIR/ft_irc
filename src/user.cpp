@@ -115,10 +115,31 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 }
 
 OptionalMessage User::ExNickCommand(const Event& event){
-	(void)event;
-	std::cout << "Nick method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
-	return OptionalMessage::Empty();
+
+	if (event.get_fd() != this->fd_)
+		return OptionalMessage::Empty();
+	if (event.get_command_params().size() == 0)
+		return OptionalMessage::Create(this->fd_, nick_name_ + ":ERR_NONICKNAMEGIVEN");
+
+	std::string new_nickname = event.get_command_params().at(0);
+	//ニックネームとして不適切
+	if (new_nickname.length() > 9){
+		return OptionalMessage::Create(this->fd_, nick_name_ + ":Erroneus nickname");
+	}
+	//既存ニックネーム：
+	//前段階でチェックするが、認証前のユーザが引数のニックネームを持つ場合はエラーとしない)
+//	if (event.get_error_status()){
+//		return OptionalMessage::Create(this->fd_, nick_name_ + " :Nickname is already in use");
+//	}
+
+	std::string ret_message;
+	if (this->nick_name_.empty()) {
+		ret_message = "Introducing new nick \"" + new_nickname + "\"";
+	} else {
+		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".";
+	}
+	this->nick_name_ = new_nickname;
+	return OptionalMessage::Create(this->fd_, ret_message);
 }
 
 OptionalMessage User::ExUserCommand(const Event& event){
