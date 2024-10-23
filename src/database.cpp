@@ -86,13 +86,21 @@ void Database::CkPassCommand(Event& event) const {
 }
 
 void Database::CkNickCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (event.get_command_params().size() == 0) {
+		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
+		return ;	
+	}
+
+	std::string new_nickname = event.get_command_params().at(0);
+	if (new_nickname.length() > 9){
+		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
+		return ;
+	}
 }
 
 void Database::CkUserCommand(Event& event) const {
-	(void)event;
+	if (event.get_command_params().size() == 0)
+
 	std::cout << "Check User called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
