@@ -151,7 +151,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				//接続切断
 				default:
 					Detach(entry);
-					Event event = Event(entry.fd, entry.revents);
+					Event event(entry.fd, entry.revents);
 					event.set_command(message::kQuit);
 					database_.ExecuteEvent(event);
 					response_map_.erase(target_fd);
@@ -265,7 +265,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		parsing_msg += "\n";
 		remain_msg = utils::SplitAfter(request_buffer, "\n");
 		//eventを作成
-		Event event = Event(entry.fd, entry.revents);
+		Event event(entry.fd, entry.revents);
 		//parse
 		message::ParseState parse_state = Parse(parsing_msg, event);
 		//debug
