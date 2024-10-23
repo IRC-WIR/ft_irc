@@ -6,8 +6,8 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
-            kErrNeedMoreParams,
-            kErrAlreadyRegistred
+            ERR_NEEDMOREPARAMS,
+            ERR_ALREADYREGISTRED
             ;
 
         const std::string& get_error_message(void) const;

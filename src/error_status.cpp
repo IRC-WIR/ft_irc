@@ -1,8 +1,8 @@
 #include "error_status.h"
 
 const ErrorStatus
-    ErrorStatus::kErrNeedMoreParams = ErrorStatus(461, "Not enough parameters."),
-    ErrorStatus::kErrAlreadyRegistred = ErrorStatus(462, "You may not reregister.")
+    ErrorStatus::ERR_NEEDMOREPARAMS(461, "Not enough parameters."),
+    ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister.")
     ;
 
 // 呼ばれない
