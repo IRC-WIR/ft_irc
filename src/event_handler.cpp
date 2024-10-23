@@ -268,7 +268,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		Event event(entry.fd, entry.revents);
 		//parse
 		message::ParseState parse_state = Parse(parsing_msg, event);
-		//debug
+		//debug print parse
 		std::cout << "command:" << message::MessageParser::get_command_str_map().find(event.get_command()) -> second << std::endl;
 		std::cout << "command param:" << std::endl;
 		utils::PrintStringVector(event.get_command_params());
@@ -288,7 +288,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 				std::cout << "Parse Empty" <<std::endl;
 				break ;
 			default:
-				AddResponseMap(database_.ExecuteEvent(event));
+				ExecuteCommand(event);
 				break;
 		}
 		request_buffer = remain_msg;
@@ -297,22 +297,16 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		request_map_.insert(std::make_pair(entry.fd, request_buffer));
 }
 
-
+void EventHandler::ExecuteCommand(Event& event)
+{
+	database_.CheckEvent(event);
+	AddResponseMap(database_.ExecuteEvent(event));
+	database_.DeleteFinishedElements();
+}
 
 message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
 	std::string str_buffer(buffer);
-
 	message::MessageParser message_parser(str_buffer);
-
-//	//debug
-//	std::cout << "------debug------" << std::endl;
-//	std::cout << "state: " << message_parser.get_state() << std::endl;
-//	std::cout << "command: " << message_parser.get_command() << std::endl;
-//	std::cout << "command params: ";
-//	utils::PrintStringVector(message_parser.get_params());
-//
-//	std::cout << "\n\n------debug------" << std::endl;
-//	//
 
 	event.set_command(message_parser.get_command());
 	event.set_command_params(message_parser.get_params());

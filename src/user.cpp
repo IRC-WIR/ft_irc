@@ -192,7 +192,7 @@ OptionalMessage User::ExModeCommand(const Event& event){
 void User::CkPassCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
+	std::cout << "Check Pass called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
