@@ -1,11 +1,9 @@
 #include "error_status.h"
 
 const ErrorStatus
-    ErrorStatus::kError = ErrorStatus(404, "Not Found"),
-    ErrorStatus::kError2 = ErrorStatus(404, "Not Found"),
-    ErrorStatus::kError3 = ErrorStatus(404, "Not Found"),
-    ErrorStatus::kError4 = ErrorStatus(404, "Not Found"),
-    ErrorStatus::kError5 = ErrorStatus(404, "Not Found");
+    ErrorStatus::kErrNeedMoreParams = ErrorStatus(461, "Not enough parameters."),
+    ErrorStatus::kErrAlreadyRegistred = ErrorStatus(462, "You may not reregister.")
+    ;
 
 // 呼ばれない
 ErrorStatus::ErrorStatus() : code_(0), message_("")

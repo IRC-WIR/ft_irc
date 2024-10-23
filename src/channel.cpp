@@ -140,8 +140,6 @@ void Channel::CkNickCommand(Event& event) const
 void Channel::CkUserCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check User called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
 }
 
 void Channel::CkJoinCommand(Event& event) const
