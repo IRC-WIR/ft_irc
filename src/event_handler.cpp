@@ -153,7 +153,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 					Detach(entry);
 					Event event = Event(entry.fd, entry.revents);
 					event.set_command(message::kQuit);
-					database_.ExecuteEvent(event);
+					AddResponseMap(database_.ExecuteEvent(event));
 					response_map_.erase(target_fd);
 					return;
 				}
@@ -288,7 +288,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 				std::cout << "Parse Empty" <<std::endl;
 				break ;
 			default:
-				database_.ExecuteEvent(event);
+				AddResponseMap(database_.ExecuteEvent(event));
 				break;
 		}
 		request_buffer = remain_msg;
