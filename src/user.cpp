@@ -96,18 +96,11 @@ bool User::IsFinished() const
 
 //Execute
 OptionalMessage User::ExPassCommand(const Event& event) {
-	std::pair<int, std::string> ret_pair;
-
-	if (event.get_command_params().size() < 1)
-	{
-		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
-	return OptionalMessage::Empty();
-	}
-	if (is_password_authenticated_)
-	{
-		ret_pair = std::make_pair(event.get_fd(), "ERR_ALREADYREGISTRED");
-	return OptionalMessage::Empty();
-	}
+	if (event.get_fd() != fd_)
+		return OptionalMessage::Empty();
+	std::cout << "pass exec is called " << std::endl;
+	if (event.get_is_err())
+		return OptionalMessage::Create(event.get_fd(), event.get_err_msg());
 	std::cout << "Pass method called!" << std::endl;
 	if (server_password_.compare(event.get_command_params()[0]) == 0)
 		is_password_authenticated_ = true;
@@ -191,9 +184,22 @@ OptionalMessage User::ExModeCommand(const Event& event){
 //Check
 void User::CkPassCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check Pass called!" << std::endl;
+	if (event.get_fd() != fd_)
+		return ;
+	std::cout << "pass check is called " << std::endl;
+	if (event.get_command_params().size() < 1)
+	{
+		event.set_user_info(true, "ERR_NEEDMOREPARAMS");
+		return ;
+	}
+	if (is_password_authenticated_)
+	{
+		event.set_user_info(true, "ERR_ALREADYREGISTRED");
+		return ;
+	}
+	//debug
 	utils::PrintStringVector(event.get_command_params());
+	return;
 }
 
 void User::CkNickCommand(Event& event) const
