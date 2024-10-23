@@ -7,10 +7,8 @@ User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(fals
 User::~User() {
 }
 
-void User::CheckCommand(Event& event) const
-{
-	switch (event.get_command())
-	{
+void User::CheckCommand(Event& event) const {
+	switch (event.get_command()) {
 		case message::kPass:
 			CkPassCommand(event);
 			break;
@@ -39,12 +37,11 @@ void User::CheckCommand(Event& event) const
 			CkPrivmsgCommand(event);
 			break;
 		default:
-			return;
+			break;
 	}
 }
 
-OptionalMessage User::ExecuteCommand(const Event& event)
-{
+OptionalMessage User::ExecuteCommand(const Event& event) {
 	switch (event.get_command()) {
 		case message::kPass:
 			return ExPassCommand(event);
@@ -69,8 +66,7 @@ OptionalMessage User::ExecuteCommand(const Event& event)
 	}
 }
 
-std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const
-{
+std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const {
 	std::stringstream ret_ss;
 	//add error no
 	ret_ss << err_status.get_error_code();
@@ -88,8 +84,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	return ret_ss.str();
 }
 
-bool User::IsFinished() const
-{
+bool User::IsFinished() const {
 	//未実装
 	return true;
 }
@@ -213,7 +208,7 @@ OptionalMessage User::ExModeCommand(const Event& event){
 void User::CkPassCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
+	std::cout << "Check Pass called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
