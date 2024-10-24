@@ -8,27 +8,32 @@
 #include <vector>
 #include <cstring> //for std::memset
 #include <utility> //for std::pair
+#include <set> //for std::set
 
-namespace utils{
+namespace utils {
+	void CheckDigitalStr(std::string num_str);
+	int	Stoi(std::string num_str);
+	std::string SplitBefore(const std::string& str, const std::string& delim);
+	std::string SplitAfter(const std::string& str, const std::string& delim);
+	void EraseNewline(std::string& str);
+	void EraseSpace(std::string& str);
+	bool IsAscii(char c);
+	bool IsAsciiStr(const std::string& str);
+	void ConvertToUpper(std::string& str);
+	bool HasNewlines(const std::string& str);
 
-	int	ft_stoi(std::string num_str);
-	std::string ft_split_before(const std::string& str, const std::string& delim);
-	std::string ft_split_after(const std::string& str, const std::string& delim);
-	template <typename K, typename V>
-	void mergeMaps(std::map<K, V>& dest_map, const std::map<K, V>& src_map)
-	{
-		for (typename std::map<K, V>::const_iterator it = src_map.begin();
-			it != src_map.end(); it++)
-		{
-			dest_map.insert(*it);
-		}
-	}
 	//debug
-	void print_string_vector(const std::vector<std::string>& str_vec);
-	bool is_same_string(const std::string& dest, const std::string& src);
-	//int count_space(const std::string& str);
-	void erase_space(std::string& str);
+	void PrintStringVector(const std::vector<std::string>& str_vec);
 
+	//utils Exception
+	class UtilsException : public std::invalid_argument
+	{
+		public:
+			UtilsException(const std::string& msg);
+	};
+
+	//エラーメッセージ定数
+	static const std::string kNotDigitalNumber = "Input Value is not digital number";
 };
 
 #endif

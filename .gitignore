@@ -14,3 +14,9 @@ ircserv
 
 #.DS_STORE
 .DS_STORE
+
+#.vscode
+.vscode
+
+#test's build file
+build

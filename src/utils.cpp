@@ -1,21 +1,28 @@
 #include "utils.h"
 
-int utils::ft_stoi(std::string num_str)
+
+namespace utils{
+
+void CheckDigitalStr(std::string num_str)
 {
 	for (int i = 0; i < (int)num_str.length(); i++)
 	{
 		if (!isdigit(num_str[i]))
 		{
 			//数字で構成されていない例外を投げる
-			//throw (IrcException(kPortErrMsg));
+			throw (UtilsException(kNotDigitalNumber));
 		}
-	}
+	};
+}
+
+int Stoi(std::string num_str)
+{
 	std::stringstream ss(num_str);
 	int num_int;	ss >> num_int;
 	return (num_int);
 }
 
-std::string utils::ft_split_before(const std::string& str, const std::string& delim)
+std::string SplitBefore(const std::string& str, const std::string& delim)
 {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
@@ -23,30 +30,85 @@ std::string utils::ft_split_before(const std::string& str, const std::string& de
 	return str.substr(0, n);
 }
 
-std::string utils::ft_split_after(const std::string& str, const std::string& delim)
+std::string SplitAfter(const std::string& str, const std::string& delim)
 {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
-	return str.substr(n);
+	return str.substr(n + delim.size());
 }
 
-void utils::print_string_vector(const std::vector<std::string>& str_vec)
+void PrintStringVector(const std::vector<std::string>& str_vec)
 {
+	int i = 0;
 	for (std::vector<std::string>::const_iterator it = str_vec.begin();
 		it != str_vec.end();
 		it ++)
 	{
-		std::cout << "size: " << it->size() << std::endl;
-		std::cout << "\"" << *it << "\"" << std::endl;
+		std::cout << "i: " << i << ", size: " << it->size();
+		std::cout << ", \"" << *it << "\"" << std::endl;
+		i ++;
 	}
 }
 
-void utils::erase_space(std::string& str)
+void EraseNewline(std::string& str)
 {
 	std::string::size_type pos;
+	while ((pos = str.find("\r\n")) != std::string::npos)
+		str.erase(pos, 2);
 	while((pos = str.find('\n')) != std::string::npos)
-	{
 		str.erase(pos, 1);
+}
+
+void EraseSpace(std::string& str)
+{
+	std::string::size_type pos;
+	while ((pos = str.find(" ")) != std::string::npos)
+		str.erase(pos, 1);
+}
+
+bool IsAscii(char c)
+{
+	return static_cast<unsigned char>(c) <= 127;
+}
+
+bool IsAsciiStr(const std::string& str)
+{
+	std::string::const_iterator it = str.begin();
+	while (it != str.end())
+	{
+		if (!IsAscii(*it))
+			return false;
+		it ++;
 	}
+
+	return true;
+}
+
+void ConvertToUpper(std::string& str)
+{
+	std::string::iterator it = str.begin();
+	while (it != str.end())
+	{
+		if ('a' <= *it && *it <= 'z')
+			*it = (*it) - ('a' - 'A');
+		it ++;
+	}
+}
+
+bool HasNewlines(const std::string& str)
+{
+	std::string::size_type find_n_type;
+	std::string::size_type find_r_n_type;
+	find_n_type = str.find("\n");
+	find_r_n_type = str.find("\r\n");
+
+	if (find_n_type == std::string::npos && find_r_n_type == std::string::npos)
+		return false;
+	return true;
+}
+
+UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
+
+
 }
