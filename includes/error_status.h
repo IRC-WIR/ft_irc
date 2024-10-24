@@ -6,8 +6,8 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
-            kError,
-            kError2,
+            ERR_NEEDMOREPARAMS,
+            ERR_ALREADYREGISTRED,
             kError3,
             kError4,
             kError5;

@@ -1,7 +1,16 @@
 #include "event.h"
 
-Event::Event(int fd, int event_type) : fd_(fd), event_type_(event_type) {
+const std::string Event::NoErrorException::kMessage = "error: there is no ErrorStatus.";
+
+Event::Event(int fd, int event_type)
+		: fd_(fd), event_type_(event_type), error_status_(NULL) {
 	return ;
+}
+
+Event::Event(const Event& src)
+		: fd_(src.get_fd()), event_type_(src.get_event_type()), error_status_(src.error_status_) {
+	this->set_command(src.get_command());
+	this->set_command_params(src.get_command_params());
 }
 
 Event::~Event() {
@@ -24,12 +33,10 @@ const std::vector<std::string>& Event::get_command_params() const {
 	return command_params_;
 }
 
-const std::string& 	Event::get_err_msg() const {
-	return error_info_.error_msg;
-}
-
-bool	Event::get_is_err() const {
-	return error_info_.is_error;
+const ErrorStatus& Event::get_error_status() const {
+	if (!this->HasErrorOccurred())
+		throw Event::NoErrorException();
+	return *this->error_status_;
 }
 
 void Event::set_command(message::Command command) {
@@ -37,13 +44,26 @@ void Event::set_command(message::Command command) {
 }
 
 void Event::set_command_params(const std::vector<std::string>& commmand_params) {
+	command_params_.clear();
 	for (std::vector<std::string>::const_iterator it = commmand_params.begin();
 		it != commmand_params.end(); it ++) {
 		command_params_.push_back(*it);
 	}
 }
 
-void Event::set_user_info(bool is_err, const std::string& msg) {
-	error_info_.is_error = is_err;
-	error_info_.error_msg = msg;
+void Event::set_error_status(const ErrorStatus& error_status) {
+	this->error_status_ = &error_status;
+}
+
+bool Event::HasErrorOccurred() const {
+	return (this->error_status_ != NULL);
+}
+
+bool Event::IsChannelEvent() const {
+	return false;
+}
+
+Event::NoErrorException::NoErrorException()
+		: std::runtime_error(Event::NoErrorException::kMessage) {
+	return ;
 }

@@ -7,10 +7,8 @@ User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(fals
 User::~User() {
 }
 
-void User::CheckCommand(Event& event) const
-{
-	switch (event.get_command())
-	{
+void User::CheckCommand(Event& event) const {
+	switch (event.get_command()) {
 		case message::kPass:
 			CkPassCommand(event);
 			break;
@@ -39,12 +37,11 @@ void User::CheckCommand(Event& event) const
 			CkPrivmsgCommand(event);
 			break;
 		default:
-			return;
+			break;
 	}
 }
 
-OptionalMessage User::ExecuteCommand(const Event& event)
-{
+OptionalMessage User::ExecuteCommand(const Event& event) {
 	switch (event.get_command()) {
 		case message::kPass:
 			return ExPassCommand(event);
@@ -69,8 +66,7 @@ OptionalMessage User::ExecuteCommand(const Event& event)
 	}
 }
 
-std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const
-{
+std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const {
 	std::stringstream ret_ss;
 	//add error no
 	ret_ss << err_status.get_error_code();
@@ -88,8 +84,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	return ret_ss.str();
 }
 
-bool User::IsFinished() const
-{
+bool User::IsFinished() const {
 	//未実装
 	return true;
 }
@@ -99,8 +94,8 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 	if (event.get_fd() != fd_)
 		return OptionalMessage::Empty();
 	std::cout << "pass exec is called " << std::endl;
-	if (event.get_is_err())
-		return OptionalMessage::Create(event.get_fd(), event.get_err_msg());
+	if (event.HasErrorOccurred())
+		return OptionalMessage::Create(event.get_fd(), event.get_error_status().get_error_message());
 	std::cout << "Pass method called!" << std::endl;
 	if (server_password_.compare(event.get_command_params()[0]) == 0)
 		is_password_authenticated_ = true;
@@ -189,12 +184,12 @@ void User::CkPassCommand(Event& event) const
 	std::cout << "pass check is called " << std::endl;
 	if (event.get_command_params().size() < 1)
 	{
-		event.set_user_info(true, "ERR_NEEDMOREPARAMS");
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return ;
 	}
 	if (is_password_authenticated_)
 	{
-		event.set_user_info(true, "ERR_ALREADYREGISTRED");
+		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 		return ;
 	}
 	//debug
