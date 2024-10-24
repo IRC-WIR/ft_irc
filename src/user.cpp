@@ -194,13 +194,6 @@ void User::CkNickCommand(Event& event) const
 }
 
 void User::CkUserCommand(Event& event) const {
-	/* ここから　EventHandlerのCheckでの実装部分
-	const int kParamsSize = 3;
-
-	const std::vector<std::string>& params = event.get_command_params();
-	if (params.size() < kParamsSize)
-		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
-	ここまで　EventHandlerのCheckでの実装部分 */
 	if (event.get_fd() != this->get_fd())
 		return ;
 	if (!event.HasErrorOccurred() && !this->user_name_.empty())
