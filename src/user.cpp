@@ -86,7 +86,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 
 bool User::IsFinished() const {
 	//未実装
-	return true;
+	return false;
 }
 
 //Execute
