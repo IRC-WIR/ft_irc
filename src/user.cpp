@@ -194,9 +194,10 @@ void User::CkNickCommand(Event& event) const
 }
 
 void User::CkUserCommand(Event& event) const {
-	if (event.get_fd() != this->get_fd())
+	if (event.get_fd() != this->get_fd()
+			|| event.HasErrorOccurred())
 		return ;
-	if (!event.HasErrorOccurred() && !this->user_name_.empty())
+	if (!this->user_name_.empty())
 		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 }
 
