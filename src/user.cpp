@@ -206,9 +206,6 @@ void User::CkPassCommand(Event& event) const
 
 void User::CkNickCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
 }
 
 void User::CkUserCommand(Event& event) const
