@@ -101,17 +101,19 @@ void Database::CkNickCommand(Event& event) const {
 	char must_not_contain[] = {' ', ',', '*', '?', '!', '@', '.'};
 	const int must_not_contain_size = sizeof(must_not_contain) / sizeof(char);
 	for (int i = 0; i < must_not_contain_size; i++) {
-		if (new_nickname.find(must_not_contain[i]) != std::string::npos)
+		if (new_nickname.find(must_not_contain[i]) != std::string::npos) {
 			event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 			return;
+		}
 	}
 
 	char must_not_start_with[] = {'$', ':', '&', '#', '~' , '%', '+'};
 	const int must_not_start_with_size = sizeof(must_not_start_with) / sizeof(char);
 	for (int i = 0; i < must_not_start_with_size; i++) {
-		if (new_nickname[0] == must_not_start_with[i])
+		if (new_nickname[0] == must_not_start_with[i]) {
 			event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);	
 			return;
+		}
 	}
 
 	return;

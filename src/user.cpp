@@ -96,7 +96,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 	if (event.get_command_params().size() < 1)
 	{
 		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
-	return OptionalMessage::Empty();
+		return OptionalMessage::Empty();
 	}
 	if (is_password_authenticated_)
 	{
