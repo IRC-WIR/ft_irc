@@ -92,7 +92,7 @@ void Database::CkNickCommand(Event& event) const {
 }
 
 void Database::CkUserCommand(Event& event) const {
-	const int kParamsSize = 3;
+	const int kParamsSize = 4;
 
 	if (event.get_command_params().size() < kParamsSize)
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
