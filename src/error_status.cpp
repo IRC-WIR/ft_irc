@@ -1,7 +1,7 @@
 #include "error_status.h"
 
 const ErrorStatus
-    ErrorStatus::ERR_NONICKNAMEGIVEN(431, " :No nickname given"),
+    ErrorStatus::ERR_NONICKNAMEGIVEN(431, ":No nickname given"),
     ErrorStatus::ERR_ERRONEUSNICKNAME(432, " :Erroneus nickname"),
     ErrorStatus::ERR_NICKNAMEINUSE(433, " :Nickname is already in use");
 
