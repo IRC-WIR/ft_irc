@@ -1,7 +1,7 @@
 #include "user.h"
 #include "channel.h"
 
-User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(false) {
+User::User(int fd) : fd_(fd), is_authenticated_(false), is_delete_(false) {
 }
 
 User::~User() {
@@ -85,20 +85,29 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 }
 
 bool User::IsFinished() const {
-	//未実装
-	return true;
+	return is_delete_;
 }
 
 //Execute
 OptionalMessage User::ExPassCommand(const Event& event) {
-	if (event.get_fd() != fd_)
+	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	std::cout << "pass exec is called " << std::endl;
-	if (event.HasErrorOccurred())
-		return OptionalMessage::Create(event.get_fd(), event.get_error_status().get_error_message());
+	if (event.HasErrorOccurred()) {
+		const std::string& message = event.get_error_status().get_error_message();
+		return OptionalMessage::Create(event.get_fd(), message);
+	}
 	std::cout << "Pass method called!" << std::endl;
+
+	std::cout << "server_password: " << server_password_ << std::endl;
+	std::cout << "server_password_.compare(event.get_command_params()[0]): " << server_password_.compare(event.get_command_params()[0]) << std::endl;
+
 	if (server_password_.compare(event.get_command_params()[0]) == 0)
-		is_password_authenticated_ = true;
+	{
+		std::cout << "set authenticated" << std::endl;
+		set_is_authenticated(true);
+	}
+	std::cout << "Test password authenticated: " << is_authenticated_ << std::endl;
 	return OptionalMessage::Empty();
 }
 
@@ -179,21 +188,17 @@ OptionalMessage User::ExModeCommand(const Event& event){
 //Check
 void User::CkPassCommand(Event& event) const
 {
-	if (event.get_fd() != fd_)
+	if (event.get_fd() != this->get_fd())
 		return ;
-	std::cout << "pass check is called " << std::endl;
-	if (event.get_command_params().size() < 1)
-	{
-		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+	std::cout << "pass check is called" << std::endl;
+	if (event.HasErrorOccurred())
 		return ;
-	}
-	if (is_password_authenticated_)
+	std::cout << "pass check is called not error in db ck " << std::endl;
+	if (get_is_authenticated())
 	{
+		std::cout << "set_error in user check" << std::endl;
 		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
-		return ;
 	}
-	//debug
-	utils::PrintStringVector(event.get_command_params());
 	return;
 }
 
@@ -254,15 +259,19 @@ void User::CkModeCommand(Event& event) const
 }
 //check
 
-
-void User::set_server_password(const std::string& password)
-{
+void User::set_server_password(const std::string& password) {
+	utils::CheckPassword(password);
 	server_password_ = password;
 }
 
-bool User::get_is_password_authenticated() const
+void User::set_is_authenticated(bool is_authenticated) {
+	is_authenticated_ = is_authenticated;
+}
+
+
+bool User::get_is_authenticated() const
 {
-	return is_password_authenticated_;
+	return is_authenticated_;
 }
 
 int User::get_fd() const
@@ -277,7 +286,7 @@ bool User::get_is_delete() const
 
 bool	User::IsVerified() const
 {
-	if (!this->is_password_authenticated_
+	if (!this->is_authenticated_
 		|| this->nick_name_.empty()
 		|| this->user_name_.empty()){
 		return false;

@@ -10,7 +10,7 @@
 class Database {
 
 	public:
-		Database(void);
+		Database(const std::string& password);
 		~Database();
 
 		void CreateUser(int fd);
@@ -21,8 +21,10 @@ class Database {
 		std::map<int, std::string> ExecuteEvent(const Event& event);
 
 	private:
+		Database();
 		std::vector<EventConfigurator*> check_element_;
 		std::vector<EventListener*> execute_element_;
+		const std::string& server_password_;
 
 		void CheckCommandAndParams(Event& event) const;
 		//check command

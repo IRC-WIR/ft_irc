@@ -11,7 +11,8 @@
 #include <set> //for std::set
 
 namespace utils {
-	void CheckDigitalStr(std::string num_str);
+	void CheckPort(std::string port);
+	void CheckPassword(std::string password);
 	int	Stoi(std::string num_str);
 	std::string SplitBefore(const std::string& str, const std::string& delim);
 	std::string SplitAfter(const std::string& str, const std::string& delim);
@@ -33,7 +34,9 @@ namespace utils {
 	};
 
 	//エラーメッセージ定数
-	static const std::string kNotDigitalNumber = "Input Value is not digital number";
+	static const std::string kNotDigitalNumber = "The input port is not digital number";
+	static const std::string kNotPrintableAscii = "The input password is out of range of printable ASCII code 33~126";
+	static const std::string kNotEnoughCharacters = "The input password is less than 8 characters";
 };
 
 #endif

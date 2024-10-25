@@ -1,23 +1,24 @@
 #include "database.h"
 #include "message.h"
 
-Database::Database(){};
+Database::Database(const std::string& password):server_password_(password){};
 Database::~Database(){};
 
 void Database::CreateUser(int fd) {
 	try {
 		User* user = new User(fd);
+		user->set_server_password(server_password_);
 		check_element_.push_back(user);
 		execute_element_.push_back(user);
 	} catch(const std::bad_alloc& e) {
-		std::cerr << "bad to alloc memory" << e.what() << '\n';
+		std::cerr << "bad to alloc memory" << e.what() << std::endl;
+	} catch(const std::invalid_argument& e) {
+		std::cerr << e.what() << std::endl;
 	}
 }
 
 void Database::CheckEvent(Event& event) const {
 	Database::CheckCommandAndParams(event);
-	if (event.HasErrorOccurred())
-		return ;
 	std::size_t vector_length = check_element_.size();
 	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
@@ -26,6 +27,7 @@ void Database::CheckEvent(Event& event) const {
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
 	std::map<int, std::string> ret;
 	std::size_t vector_length = execute_element_.size();
+	std::cout << "vector_length: " << vector_length << std::endl;
 	for (size_t i = 0; i < vector_length; i++) {
 		OptionalMessage message = execute_element_[i] -> ExecuteCommand(event);
 		if (!message.IsEmpty())
@@ -35,13 +37,15 @@ std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
 }
 
 void Database::DeleteFinishedElements() {
-	std::set<Finishable *> ptr_set;
+	std::set<const Finishable*> ptr_set;
 
 	Database::EraseAndAdd(check_element_, ptr_set);
 	Database::EraseAndAdd(execute_element_, ptr_set);
-
-	for (std::set<Finishable *>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
-		delete *it;
+	for (std::set<const Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
+	{
+		if ((*it)->IsFinished())
+			delete *it;
+	}
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
@@ -80,9 +84,15 @@ void Database::CheckCommandAndParams(Event& event) const {
 
 //Check
 void Database::CkPassCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Pass called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 1;
+
+	std::cout << "pass check in db is called " << std::endl;
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < kParamsSize)
+	{
+		std::cout << "set_error in db check" << std::endl;
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+	}
 }
 
 void Database::CkNickCommand(Event& event) const {

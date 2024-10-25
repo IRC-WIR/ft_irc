@@ -40,7 +40,8 @@ static int	SetNonBlockingMode(int socket_fd) {
 	return ret;
 }
 
-EventHandler::EventHandler(Database& database,int port_no) : database_(database) {
+EventHandler::EventHandler(Database& database,int port_no)
+	: database_(database) {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (listening_socket_ < 0) {
 		std::cout << strerror(errno) << std::endl;
