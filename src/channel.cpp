@@ -79,7 +79,7 @@ OptionalMessage Channel::ExecuteCommand(const Event& event)
 bool Channel::IsFinished() const
 {
 	//未実装
-	return true;
+	return false;
 }
 
 //Execute
