@@ -124,7 +124,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 		return OptionalMessage::Create(this->get_fd(), message);
 	}
 
-	std::vector<std::string> params = event.get_command_params();
+	const std::vector<std::string>& params = event.get_command_params();
 	// 今回は1,2番目の要素(= 2, 3番目の引数)は無視する
 	this->user_name_ = params[0];
 	for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
