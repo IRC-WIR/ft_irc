@@ -140,6 +140,7 @@ void Channel::CkNickCommand(Event& event) const
 void Channel::CkUserCommand(Event& event) const
 {
 	(void)event;
+	return ;
 }
 
 void Channel::CkJoinCommand(Event& event) const
