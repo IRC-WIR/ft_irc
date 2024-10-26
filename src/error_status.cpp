@@ -5,7 +5,8 @@ const ErrorStatus
     ErrorStatus::ERR_ERRONEUSNICKNAME(432, "Erroneus nickname"),
     ErrorStatus::ERR_NICKNAMEINUSE(433, "Nickname is already in use"),
     ErrorStatus::ERR_NEEDMOREPARAMS(461, "Not enough parameters."),
-    ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister.")
+    ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister."),
+    ErrorStatus::ERR_PASSWDMISMATCH(464, "Password incorrect")
     ;
 
 // 呼ばれない

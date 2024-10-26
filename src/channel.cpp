@@ -78,8 +78,7 @@ OptionalMessage Channel::ExecuteCommand(const Event& event)
 
 bool Channel::IsFinished() const
 {
-	//未実装
-	return false;
+	return is_delete_;
 }
 
 //Execute

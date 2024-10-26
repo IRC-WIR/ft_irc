@@ -46,8 +46,7 @@ void Event::set_command(message::Command command) {
 void Event::set_command_params(const std::vector<std::string>& commmand_params) {
 	command_params_.clear();
 	for (std::vector<std::string>::const_iterator it = commmand_params.begin();
-		it != commmand_params.end(); it ++)
-	{
+		it != commmand_params.end(); it ++) {
 		command_params_.push_back(*it);
 	}
 }

@@ -10,7 +10,8 @@ class ErrorStatus {
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
             ERR_NEEDMOREPARAMS,
-            ERR_ALREADYREGISTRED
+            ERR_ALREADYREGISTRED,
+            ERR_PASSWDMISMATCH
             ;
 
         const std::string& get_error_message(void) const;
