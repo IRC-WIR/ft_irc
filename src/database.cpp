@@ -94,7 +94,7 @@ void Database::CkNickCommand(Event& event) const {
 		return ;	
 	}
 
-	std::string new_nickname = event.get_command_params().at(0);
+	const std::string& new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
