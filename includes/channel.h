@@ -6,29 +6,50 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
+#include <stdexcept>
 
-class Channel: public EventListener, public EventConfigurator{
+class Channel: public EventListener, public EventConfigurator {
 	public:
-		Channel();
+		Channel(const User&, const std::string&);
 		~Channel();
 
 		void CheckCommand(Event& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-		bool IsFinished() const;
+		bool IsFinished(void) const;
+		void AddUser(const User&);
+		bool RemoveUser(const User&);
+		bool ContainsUser(const User&) const;
+		void set_operator(const User&);
+		const User& get_operator(void) const;
+		void set_topic(const std::string&);
+		const std::string& get_topic(void) const;
+		void set_key(const std::string&);
+		bool VerifyKey(const std::string&) const;
+		void set_max_member_num(int);
+
+		class NoOperatorException : public std::runtime_error {
+			public:
+				NoOperatorException(void);
+
+			private:
+				static const std::string kErrorMessage;
+		};
 
 	private:
-		std::string		topic_;
-		std::string		key_;
-		std::string		name_;
-		int	max_member_num_;
-		bool	i_mode;
-		bool	t_mode;
-		bool	k_mode;
-		bool	o_mode;
-		bool	l_mode;
-		bool	is_delete_;
-		std::vector<User*> users_;
-		std::vector<User*> operators_;
+		// 最初に決まる(変更不可)
+		const std::string name_;
+		std::string key_;
+		int max_member_num_;
+
+		// 変更可能
+		std::string topic_;
+		bool i_mode;
+		bool t_mode;
+		bool k_mode;
+		bool o_mode;
+		bool l_mode;
+		std::vector<const User*> users_;
+		const User* operator_;
 
 		//check command
 		void CkPassCommand(Event& event) const;

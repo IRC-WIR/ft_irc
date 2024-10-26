@@ -1,5 +1,6 @@
 #include "user.h"
 #include "channel.h"
+#include "channel_event.h"
 
 User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(false) {
 }
@@ -140,10 +141,21 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExJoinCommand(const Event& event){
-	(void)event;
-	std::cout << "Join method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+OptionalMessage User::ExJoinCommand(const Event& event) {
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			return OptionalMessage::Create(this->get_fd(), message);
+		} else
+			return OptionalMessage::Empty();
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	// channelに所属しているか
+	// 所属している -> fdが自分 -> 一行目にメンバー、二行目にエンドオブメッセージを出力
+	// 所属している -> 自分でない -> メンバーが入室したことを知らせる
+	// 所属していない -> 何もなし
 	return OptionalMessage::Empty();
 }
 
