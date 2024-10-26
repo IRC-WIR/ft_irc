@@ -98,9 +98,8 @@ void Database::CkNickCommand(Event& event) const {
 		return ;
 	}
 
-	char must_not_contain[] = {' ', ',', '*', '?', '!', '@', '.'};
-	const int must_not_contain_size = sizeof(must_not_contain) / sizeof(char);
-	for (int i = 0; i < must_not_contain_size; i++) {
+	const std::string must_not_contain = " ,*?!@.";
+	for (int i = 0; i < must_not_contain.length(); i++) {
 		if (new_nickname.find(must_not_contain[i]) != std::string::npos) {
 			event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 			return;
