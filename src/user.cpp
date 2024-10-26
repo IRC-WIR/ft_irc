@@ -151,7 +151,7 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
-	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	//const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	// channelに所属しているか
 	// 所属している -> fdが自分 -> 一行目にメンバー、二行目にエンドオブメッセージを出力
 	// 所属している -> 自分でない -> メンバーが入室したことを知らせる
