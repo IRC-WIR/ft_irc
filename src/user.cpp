@@ -121,9 +121,9 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	const std::string& new_nickname = event.get_command_params()[0];
 	std::string ret_message;
 	if (this->nick_name_.empty()) {
-		ret_message = "Introducing new nick \"" + new_nickname + "\"";
+		ret_message = "Introducing new nick \"" + new_nickname + "\"\n";
 	} else {
-		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".";
+		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
 	return OptionalMessage::Create(this->fd_, ret_message);

@@ -99,7 +99,7 @@ void Database::CkNickCommand(Event& event) const {
 	}
 
 	const std::string must_not_contain = " ,*?!@.";
-	for (int i = 0; i < must_not_contain.length(); i++) {
+	for (int i = 0; i < (int)must_not_contain.length(); i++) {
 		if (new_nickname.find(must_not_contain[i]) != std::string::npos) {
 			event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 			return;
@@ -107,8 +107,7 @@ void Database::CkNickCommand(Event& event) const {
 	}
 
 	const std::string must_not_start_with = "$:&#~%+";
-	if (must_not_start_with.find(new_nickname[0]) != std::string::npos)
-{
+	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);	
 		return ;
 	}
