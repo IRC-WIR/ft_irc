@@ -15,6 +15,7 @@ class Channel: public EventListener, public EventConfigurator{
 		void CheckCommand(Event& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
 		bool IsFinished() const;
+		void AddUser(const User&);
 
 	private:
 		std::string		topic_;
@@ -27,8 +28,8 @@ class Channel: public EventListener, public EventConfigurator{
 		bool	o_mode;
 		bool	l_mode;
 		bool	is_delete_;
-		std::vector<User*> users_;
-		std::vector<User*> operators_;
+		std::vector<const User*> users_;
+		const User* operator_;
 
 		//check command
 		void CkPassCommand(Event& event) const;

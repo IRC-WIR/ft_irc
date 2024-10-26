@@ -14,6 +14,10 @@ Channel::~Channel(){
 
 }
 
+void Channel::AddUser(const User& user) {
+	this->users_.push_back(&user);
+}
+
 void Channel::CheckCommand(Event& event) const
 {
 	switch (event.get_command())
