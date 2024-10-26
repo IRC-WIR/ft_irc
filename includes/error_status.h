@@ -6,6 +6,9 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
+            ERR_NONICKNAMEGIVEN,
+            ERR_ERRONEUSNICKNAME,
+            ERR_NICKNAMEINUSE,
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED
             ;

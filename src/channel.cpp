@@ -79,7 +79,7 @@ OptionalMessage Channel::ExecuteCommand(const Event& event)
 bool Channel::IsFinished() const
 {
 	//未実装
-	return true;
+	return false;
 }
 
 //Execute
@@ -133,8 +133,7 @@ void Channel::CkPassCommand(Event& event) const
 void Channel::CkNickCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	return ;
 }
 
 void Channel::CkUserCommand(Event& event) const
