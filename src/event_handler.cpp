@@ -164,7 +164,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			}
 		}
 		//対象ソケットへの、メッセージを送信し切った場合
-		if (response_map_[target_fd].empty()){
+		if (response_map_[target_fd].empty()) {
 			std::cout << "erase from Database::response_map_" << std::endl;
 			response_map_.erase(target_fd);
 		}

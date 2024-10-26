@@ -43,15 +43,12 @@ const std::string& Database::get_server_password() const {
 
 
 void Database::DeleteFinishedElements() {
-	std::set<const Finishable*> ptr_set;
+	std::set<Finishable*> ptr_set;
 
 	Database::EraseAndAdd(check_element_, ptr_set);
 	Database::EraseAndAdd(execute_element_, ptr_set);
-	for (std::set<const Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
-	{
-		if ((*it)->IsFinished())
-			delete *it;
-	}
+	for (std::set<Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
+		delete *it;
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
@@ -93,13 +90,14 @@ void Database::CkPassCommand(Event& event) const {
 	const int kParamsSize = 1;
 
 	const std::vector<std::string>& params = event.get_command_params();
-	if (params.size() < kParamsSize)
-	{
+	if (params.size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return;
 	}
-	if (params[0].compare(get_server_password()) != 0)
+	if (params[0] != get_server_password()) {
 		event.set_error_status(ErrorStatus::ERR_PASSWDMISMATCH);
+		return;
+	}
 }
 
 void Database::CkNickCommand(Event& event) const {

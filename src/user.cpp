@@ -96,7 +96,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
 		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
-	if (server_password_.compare(event.get_command_params()[0]) == 0)
+	if (server_password_ == event.get_command_params()[0])
 		set_is_password_authenticated(true);
 	return OptionalMessage::Empty();
 }
