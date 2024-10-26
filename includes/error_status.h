@@ -25,4 +25,7 @@ class ErrorStatus {
         ~ErrorStatus();
 };
 
+bool operator ==(const ErrorStatus&, const ErrorStatus&);
+bool operator !=(const ErrorStatus&, const ErrorStatus&);
+
 #endif
