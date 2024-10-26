@@ -1,27 +1,73 @@
 #include "channel.h"
+#include <algorithm>
 
-Channel::Channel() : is_delete_(false){
-		(void)max_member_num_;
-		(void)i_mode;
-		(void)t_mode;
-		(void)k_mode;
-		(void)o_mode;
-		(void)l_mode;
-		(void)is_delete_;
+const std::string Channel::NoOperatorException::kErrorMessage("Channel has no operator");
+
+Channel::Channel(const User& op, const std::string& name)
+		: operator_(&op), name_(name), max_member_num_(10) {
+	return ;
 }
 
-Channel::~Channel(){
-
+Channel::~Channel() {
+	return ;
 }
 
 void Channel::AddUser(const User& user) {
 	this->users_.push_back(&user);
 }
 
-void Channel::CheckCommand(Event& event) const
-{
-	switch (event.get_command())
-	{
+bool Channel::RemoveUser(const User& user) {
+	std::vector<const User*>::iterator it = std::find(this->users_.begin(), this->users_.end(), &user);
+	if (it == this->users_.end())
+		return false;
+	this->users_.erase(it);
+	if (this->operator_ == &user) {
+		if (this->users_.empty())
+			this->operator_ = NULL;
+		else
+			this->operator_ = this->users_[0];
+	}
+	return true;
+}
+
+bool Channel::ContainsUser(const User& user) const {
+	return std::find(this->users_.begin(), this->users_.end(), &user) != this->users_.end();
+}
+
+void Channel::set_operator(const User& user) {
+	if (!this->ContainsUser(user))
+		this->AddUser(user);
+	this->operator_ = &user;
+}
+
+const User& Channel::get_operator() const {
+	if (this->operator_ == NULL)
+		throw Channel::NoOperatorException();
+	return *this->operator_;
+}
+
+void Channel::set_topic(const std::string& topic) {
+	this->topic_ = topic;
+}
+
+const std::string& Channel::get_topic() const {
+	return this->topic_;
+}
+
+void Channel::set_key(const std::string& key) {
+	this->key_ = key;
+}
+
+bool Channel::VerifyKey(const std::string& key) const {
+	return (this->key_ == key);
+}
+
+void Channel::set_max_member_num(int num) {
+	this->max_member_num_ = num;
+}
+
+void Channel::CheckCommand(Event& event) const {
+	switch (event.get_command()) {
 		case message::kPass:
 			CkPassCommand(event);
 			break;
@@ -54,8 +100,7 @@ void Channel::CheckCommand(Event& event) const
 	}
 }
 
-OptionalMessage Channel::ExecuteCommand(const Event& event)
-{
+OptionalMessage Channel::ExecuteCommand(const Event& event) {
 	switch (event.get_command()) {
 		case message::kPass:
 			return ExPassCommand(event);
@@ -80,110 +125,112 @@ OptionalMessage Channel::ExecuteCommand(const Event& event)
 	}
 }
 
-bool Channel::IsFinished() const
-{
-	return is_delete_;
+bool Channel::IsFinished() const {
+	return this->users_.empty();
 }
 
 //Execute
-OptionalMessage Channel::ExPassCommand(const Event& event){
+OptionalMessage Channel::ExPassCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExNickCommand(const Event& event){
+
+OptionalMessage Channel::ExNickCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExUserCommand(const Event& event){
+
+OptionalMessage Channel::ExUserCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExJoinCommand(const Event& event){
+
+OptionalMessage Channel::ExJoinCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExInviteCommand(const Event& event){
+
+OptionalMessage Channel::ExInviteCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExKickCommand(const Event& event){
+
+OptionalMessage Channel::ExKickCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExTopicCommand(const Event& event){
+
+OptionalMessage Channel::ExTopicCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExModeCommand(const Event& event){
+
+OptionalMessage Channel::ExModeCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
-OptionalMessage Channel::ExPrivmsgCommand(const Event& event){
+
+OptionalMessage Channel::ExPrivmsgCommand(const Event& event) {
 	(void)event;
 	return OptionalMessage::Empty();
 }
 //Execute
-
 
 //Check
-void Channel::CkPassCommand(Event& event) const
-{
+void Channel::CkPassCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Nick called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkNickCommand(Event& event) const
-{
+void Channel::CkNickCommand(Event& event) const {
 	(void)event;
 	return ;
 }
 
-void Channel::CkUserCommand(Event& event) const
-{
+void Channel::CkUserCommand(Event& event) const {
 	(void)event;
 	return ;
 }
 
-void Channel::CkJoinCommand(Event& event) const
-{
+void Channel::CkJoinCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Join called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkInviteCommand(Event& event) const
-{
+void Channel::CkInviteCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check vite called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkKickCommand(Event& event) const
-{
+void Channel::CkKickCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Kick called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkTopicCommand(Event& event) const
-{
+void Channel::CkTopicCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check opic called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkPrivmsgCommand(Event& event) const
-{
+void Channel::CkPrivmsgCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check vmsg called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkModeCommand(Event& event) const
-{
+void Channel::CkModeCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
 //check
+
+Channel::NoOperatorException::NoOperatorException()
+		: std::runtime_error(Channel::NoOperatorException::kErrorMessage) {
+	return ;
+}
