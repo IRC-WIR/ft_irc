@@ -115,7 +115,7 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		return OptionalMessage::Empty();
 
 	if (event.HasErrorOccurred()) {
-		return OptionalMessage::Create(this->get_fd(), this->nick_name_ + event.get_error_status().get_error_message());
+		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command(), event.get_error_status()));
 	}
 
 	std::string new_nickname = event.get_command_params().at(0);
