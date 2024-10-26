@@ -8,7 +8,10 @@ class ErrorStatus {
         static const ErrorStatus
             ERR_NONICKNAMEGIVEN,
             ERR_ERRONEUSNICKNAME,
-            ERR_NICKNAMEINUSE;
+            ERR_NICKNAMEINUSE,
+            ERR_NEEDMOREPARAMS,
+            ERR_ALREADYREGISTRED
+            ;
 
         const std::string& get_error_message(void) const;
         int get_error_code(void) const;

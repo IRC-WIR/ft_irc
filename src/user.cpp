@@ -129,26 +129,21 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	return OptionalMessage::Create(this->fd_, ret_message);
 }
 
-OptionalMessage User::ExUserCommand(const Event& event){
-	const int kParamsSize = 3;
-
-	std::pair<int, std::string> ret_pair;
-	std::vector<std::string> params = event.get_command_params();
-
+OptionalMessage User::ExUserCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
-	if (params.size() < kParamsSize)
-		ret_pair = std::make_pair(this->get_fd(), "ERR_NEEDMOREPARAMS");
-	else if (!this->user_name_.empty())
-		ret_pair = std::make_pair(this->get_fd(), "ERR_ALREADYREGISTRED");
-	else {
-		this->user_name_ = params[0];
-		// 今回は1,2番目の要素は無視する
-		for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
-			if (i != 3)
-				this->real_name_ += " ";
-			this->real_name_ += params[i];
-		}
+	if (event.HasErrorOccurred()) {
+		const std::string& message = this->CreateErrorMessage(event.get_command(), event.get_error_status());
+		return OptionalMessage::Create(this->get_fd(), message);
+	}
+
+	const std::vector<std::string>& params = event.get_command_params();
+	// 今回は1,2番目の要素(= 2, 3番目の引数)は無視する
+	this->user_name_ = params[0];
+	for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
+		if (i != 3)
+			this->real_name_ += " ";
+		this->real_name_ += params[i];
 	}
 	return OptionalMessage::Empty();
 }
@@ -215,11 +210,12 @@ void User::CkNickCommand(Event& event) const
 	return ;
 }
 
-void User::CkUserCommand(Event& event) const
-{
-	(void)event;
-	std::cout << "Check User called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void User::CkUserCommand(Event& event) const {
+	if (event.get_fd() != this->get_fd()
+			|| event.HasErrorOccurred())
+		return ;
+	if (!this->user_name_.empty())
+		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 }
 
 void User::CkJoinCommand(Event& event) const
@@ -264,7 +260,6 @@ void User::CkModeCommand(Event& event) const
 	utils::PrintStringVector(event.get_command_params());
 }
 //check
-
 
 void User::set_server_password(const std::string& password)
 {
