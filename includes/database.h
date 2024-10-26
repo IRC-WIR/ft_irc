@@ -19,7 +19,7 @@ class Database {
 
 		void CheckEvent(Event& event) const;
 		std::map<int, std::string> ExecuteEvent(const Event& event);
-
+		const std::string& get_server_password() const;
 	private:
 		Database();
 		std::vector<EventConfigurator*> check_element_;

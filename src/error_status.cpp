@@ -3,7 +3,7 @@
 const ErrorStatus
     ErrorStatus::ERR_NEEDMOREPARAMS(461, "Not enough parameters."),
     ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister"),
-    ErrorStatus::kError3(404, "Not Found"),
+    ErrorStatus::ERR_PASSWDMISMATCH(464, "Password incorrect"),
     ErrorStatus::kError4(404, "Not Found"),
     ErrorStatus::kError5(404, "Not Found");
 

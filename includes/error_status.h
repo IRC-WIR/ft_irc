@@ -8,7 +8,7 @@ class ErrorStatus {
         static const ErrorStatus
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
-            kError3,
+            ERR_PASSWDMISMATCH,
             kError4,
             kError5;
 

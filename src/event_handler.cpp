@@ -270,7 +270,10 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		//parse
 		message::ParseState parse_state = Parse(parsing_msg, event);
 		//debug print parse
-		std::cout << "command:" << message::MessageParser::get_command_str_map().find(event.get_command()) -> second << std::endl;
+
+		const std::map<message::Command, std::string> &str_map = message::MessageParser::get_command_str_map();
+		if (str_map.find(event.get_command()) != str_map.end())
+			std::cout << "command:" << str_map.find(event.get_command()) -> second << std::endl;
 		std::cout << "command param:" << std::endl;
 		utils::PrintStringVector(event.get_command_params());
 		//debug

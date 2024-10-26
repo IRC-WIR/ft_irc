@@ -20,6 +20,7 @@ void Database::CreateUser(int fd) {
 void Database::CheckEvent(Event& event) const {
 	Database::CheckCommandAndParams(event);
 	std::size_t vector_length = check_element_.size();
+
 	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
 }
@@ -35,6 +36,11 @@ std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
 	}
 	return ret;
 }
+
+const std::string& Database::get_server_password() const {
+	return server_password_;
+}
+
 
 void Database::DeleteFinishedElements() {
 	std::set<const Finishable*> ptr_set;
@@ -86,13 +92,14 @@ void Database::CheckCommandAndParams(Event& event) const {
 void Database::CkPassCommand(Event& event) const {
 	const int kParamsSize = 1;
 
-	std::cout << "pass check in db is called " << std::endl;
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize)
 	{
-		std::cout << "set_error in db check" << std::endl;
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return;
 	}
+	if (params[0].compare(get_server_password()) != 0)
+		event.set_error_status(ErrorStatus::ERR_PASSWDMISMATCH);
 }
 
 void Database::CkNickCommand(Event& event) const {
