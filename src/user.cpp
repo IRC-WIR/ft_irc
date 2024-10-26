@@ -96,7 +96,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 	if (event.get_command_params().size() < 1)
 	{
 		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
-	return OptionalMessage::Empty();
+		return OptionalMessage::Empty();
 	}
 	if (is_password_authenticated_)
 	{
@@ -110,10 +110,23 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 }
 
 OptionalMessage User::ExNickCommand(const Event& event){
-	(void)event;
-	std::cout << "Nick method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
-	return OptionalMessage::Empty();
+
+	if (event.get_fd() != this->get_fd())
+		return OptionalMessage::Empty();
+
+	if (event.HasErrorOccurred()) {
+		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command(), event.get_error_status()));
+	}
+
+	const std::string& new_nickname = event.get_command_params()[0];
+	std::string ret_message;
+	if (this->nick_name_.empty()) {
+		ret_message = "Introducing new nick \"" + new_nickname + "\"\n";
+	} else {
+		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
+	}
+	this->nick_name_ = new_nickname;
+	return OptionalMessage::Create(this->fd_, ret_message);
 }
 
 OptionalMessage User::ExUserCommand(const Event& event){
@@ -193,9 +206,13 @@ void User::CkPassCommand(Event& event) const
 
 void User::CkNickCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+		if (event.HasErrorOccurred())
+			return ;
+		const std::string& new_nickname = event.get_command_params()[0];
+		if (this->nick_name_ == new_nickname){
+			event.set_error_status(ErrorStatus::ERR_NICKNAMEINUSE);
+		}
+	return ;
 }
 
 void User::CkUserCommand(Event& event) const

@@ -6,11 +6,9 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
-            kError,
-            kError2,
-            kError3,
-            kError4,
-            kError5;
+            ERR_NONICKNAMEGIVEN,
+            ERR_ERRONEUSNICKNAME,
+            ERR_NICKNAMEINUSE;
 
         const std::string& get_error_message(void) const;
         int get_error_code(void) const;
