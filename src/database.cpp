@@ -122,8 +122,7 @@ void Database::CkNickCommand(Event& event) const {
 }
 
 void Database::CkUserCommand(Event& event) const {
-	if (event.get_command_params().size() == 0)
-
+	(void)event;
 	std::cout << "Check User called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
