@@ -152,11 +152,12 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	// channelに所属しているか
-	// 所属している -> fdが自分 -> 一行目にメンバー、二行目にエンドオブメッセージを出力
-	// 所属している -> 自分でない -> メンバーが入室したことを知らせる
-	// 所属していない -> 何もなし
-	return OptionalMessage::Empty();
+	if (!channel.ContainsUser(*this))
+		return OptionalMessage::Empty();
+	if (event.get_fd() == this->fd_)
+		return OptionalMessage::Create(this->fd_, "めんば\nめっせーじ");
+	else
+		return OptionalMessage::Create(this->fd_, "入ってきたお");
 }
 
 OptionalMessage User::ExInviteCommand(const Event& event){
@@ -226,11 +227,8 @@ void User::CkUserCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 }
 
-void User::CkJoinCommand(Event& event) const
-{
-	(void)event;
-	std::cout << "Check Join called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void User::CkJoinCommand(Event& event) const {
+	
 }
 
 void User::CkInviteCommand(Event& event) const

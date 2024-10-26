@@ -140,9 +140,11 @@ void Database::CkUserCommand(Event& event) const {
 }
 
 void Database::CkJoinCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Join called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 1;
+
+	if (event.get_command_params().size() < kParamsSize)
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+	
 }
 
 void Database::CkInviteCommand(Event& event) const {
