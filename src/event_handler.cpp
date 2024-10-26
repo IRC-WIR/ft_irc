@@ -40,7 +40,8 @@ static int	SetNonBlockingMode(int socket_fd) {
 	return ret;
 }
 
-EventHandler::EventHandler(Database& database,int port_no) : database_(database) {
+EventHandler::EventHandler(Database& database,int port_no)
+	: database_(database) {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (listening_socket_ < 0) {
 		std::cout << strerror(errno) << std::endl;
@@ -163,7 +164,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			}
 		}
 		//対象ソケットへの、メッセージを送信し切った場合
-		if (response_map_[target_fd].empty()){
+		if (response_map_[target_fd].empty()) {
 			std::cout << "erase from Database::response_map_" << std::endl;
 			response_map_.erase(target_fd);
 		}
@@ -269,7 +270,10 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		//parse
 		message::ParseState parse_state = Parse(parsing_msg, event);
 		//debug print parse
-		std::cout << "command:" << message::MessageParser::get_command_str_map().find(event.get_command()) -> second << std::endl;
+
+		const std::map<message::Command, std::string> &str_map = message::MessageParser::get_command_str_map();
+		if (str_map.find(event.get_command()) != str_map.end())
+			std::cout << "command:" << str_map.find(event.get_command()) -> second << std::endl;
 		std::cout << "command param:" << std::endl;
 		utils::PrintStringVector(event.get_command_params());
 		//debug

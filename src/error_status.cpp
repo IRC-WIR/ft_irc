@@ -5,7 +5,8 @@ const ErrorStatus
     ErrorStatus::ERR_ERRONEUSNICKNAME(432, "Erroneus nickname"),
     ErrorStatus::ERR_NICKNAMEINUSE(433, "Nickname is already in use"),
     ErrorStatus::ERR_NEEDMOREPARAMS(461, "Not enough parameters."),
-    ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister.")
+    ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister."),
+    ErrorStatus::ERR_PASSWDMISMATCH(464, "Password incorrect")
     ;
 
 // 呼ばれない
@@ -32,4 +33,12 @@ const std::string& ErrorStatus::get_error_message() const
 int ErrorStatus::get_error_code() const
 {
     return this->code_;
+}
+
+bool operator ==(const ErrorStatus& status1, const ErrorStatus& status2) {
+    return (&status1 == &status2);
+}
+
+bool operator !=(const ErrorStatus& status1, const ErrorStatus& status2) {
+    return !(status1 == status2);
 }

@@ -9,7 +9,7 @@
 
 class Channel;
 
-class User : public EventListener, public EventConfigurator{
+class User : public EventListener, public EventConfigurator {
 	public:
 		User(int fd);
 		~User();
@@ -21,6 +21,7 @@ class User : public EventListener, public EventConfigurator{
 		bool IsVerified() const;
 
 		void set_server_password(const std::string& password);
+		void set_is_password_authenticated(bool is_authenticated);
 		bool get_is_password_authenticated() const;
 		int get_fd() const;
 		bool get_is_delete() const;

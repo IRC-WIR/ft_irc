@@ -73,7 +73,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	ret_ss << err_status.get_error_code();
 	ret_ss << " ";
 	//add nick name
-	ret_ss << nick_name_;
+	ret_ss << (nick_name_.empty()? "*" : nick_name_) ;
 	ret_ss << " ";
 	//add command
 	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
@@ -86,27 +86,19 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 }
 
 bool User::IsFinished() const {
-	//未実装
-	return false;
+	return is_delete_;
 }
 
 //Execute
 OptionalMessage User::ExPassCommand(const Event& event) {
-	std::pair<int, std::string> ret_pair;
-
-	if (event.get_command_params().size() < 1)
-	{
-		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
+	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
+	if (event.HasErrorOccurred()) {
+		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
-	if (is_password_authenticated_)
-	{
-		ret_pair = std::make_pair(event.get_fd(), "ERR_ALREADYREGISTRED");
-	return OptionalMessage::Empty();
-	}
-	std::cout << "Pass method called!" << std::endl;
-	if (server_password_.compare(event.get_command_params()[0]) == 0)
-		is_password_authenticated_ = true;
+	if (server_password_ == event.get_command_params()[0])
+		set_is_password_authenticated(true);
 	return OptionalMessage::Empty();
 }
 
@@ -206,9 +198,13 @@ OptionalMessage User::ExModeCommand(const Event& event){
 //Check
 void User::CkPassCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check Pass called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (event.get_fd() != this->get_fd())
+		return ;
+	if (event.HasErrorOccurred())
+		return ;
+	if (get_is_password_authenticated())
+		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+	return;
 }
 
 void User::CkNickCommand(Event& event) const
@@ -272,11 +268,15 @@ void User::CkModeCommand(Event& event) const
 	utils::PrintStringVector(event.get_command_params());
 }
 //check
-
-void User::set_server_password(const std::string& password)
-{
+void User::set_server_password(const std::string& password) {
+	utils::CheckPassword(password);
 	server_password_ = password;
 }
+
+void User::set_is_password_authenticated(bool is_authenticated) {
+	is_password_authenticated_ = is_authenticated;
+}
+
 
 bool User::get_is_password_authenticated() const
 {

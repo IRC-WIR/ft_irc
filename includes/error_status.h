@@ -10,7 +10,8 @@ class ErrorStatus {
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
             ERR_NEEDMOREPARAMS,
-            ERR_ALREADYREGISTRED
+            ERR_ALREADYREGISTRED,
+            ERR_PASSWDMISMATCH
             ;
 
         const std::string& get_error_message(void) const;
@@ -24,5 +25,8 @@ class ErrorStatus {
         ErrorStatus(int, const std::string&);
         ~ErrorStatus();
 };
+
+bool operator ==(const ErrorStatus&, const ErrorStatus&);
+bool operator !=(const ErrorStatus&, const ErrorStatus&);
 
 #endif

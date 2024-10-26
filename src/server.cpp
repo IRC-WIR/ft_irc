@@ -26,18 +26,7 @@ std::string	IrcServer::get_password(){
 
 void	IrcServer::set_password(std::string password)
 {
-	//printable ASCII code 33~126, at least 8 characters
-	const char* input_chr_ptr = password.c_str();
-	int i = 0;
-	while (*input_chr_ptr)
-	{
-		if (*input_chr_ptr < 33 || *input_chr_ptr > 126)
-			throw(IrcException(kPasswordErrMsg));
-		input_chr_ptr ++;
-		i ++;
-	}
-	if (i < 8)
-		throw(IrcException(kPasswordErrMsg));
+	utils::CheckPassword(password);
 	password_ = password;
 }
 
