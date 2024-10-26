@@ -16,8 +16,6 @@ void Database::CreateUser(int fd) {
 
 void Database::CheckEvent(Event& event) const {
 	Database::CheckCommandAndParams(event);
-	if (event.HasErrorOccurred())
-		return ;
 	std::size_t vector_length = check_element_.size();
 	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
