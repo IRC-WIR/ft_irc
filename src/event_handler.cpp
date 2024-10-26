@@ -111,8 +111,6 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 		char receive_buffer[kBufferSize + 1];
 		std::memset(receive_buffer, 0, kBufferSize + 1);
 		Receive(entry.fd, receive_buffer);
-		if (receive_buffer[0] == '\0')
-			Detach(entry);
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << receive_buffer << std::endl;
 		Execute(entry, receive_buffer);
 	}
@@ -178,16 +176,18 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 	}
 }
 
-void	EventHandler::Detach(pollfd event) {
-	std::cout << "connection hang up " << event.fd << std::endl;
+Event&	EventHandler::Detach(pollfd entry) {
+	std::cout << "connection hang up " << entry.fd << std::endl;
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
 	{
-		if (poll_fd_[i].fd == event.fd)
+		if (poll_fd_[i].fd == entry.fd)
 			target_index = i;
 	}
 	poll_fd_.erase(poll_fd_.begin() + target_index);
-	return ;
+	Event* event = new Event(entry.fd, entry.revents);
+	event->set_command(message::kQuit);
+	return *event;
 }
 
 void	EventHandler::WaitMillSecond(int ms) {
@@ -244,6 +244,11 @@ void	EventHandler::Receive(int fd, char* buffer) {
 
 
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
+	//EOFの場合
+	if (msg[0] == '\0') {
+		ExecuteCommand(Detach(entry));
+		return ;
+	}
 	std::string request_buffer;
 	//prepare request_buffer
 	//find request fd's remain msg
