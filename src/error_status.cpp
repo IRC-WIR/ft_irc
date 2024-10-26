@@ -33,3 +33,11 @@ int ErrorStatus::get_error_code() const
 {
     return this->code_;
 }
+
+bool operator ==(const ErrorStatus& status1, const ErrorStatus& status2) {
+    return (&status1 == &status2);
+}
+
+bool operator !=(const ErrorStatus& status1, const ErrorStatus& status2) {
+    return !(status1 == status2);
+}
