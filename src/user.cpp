@@ -36,6 +36,9 @@ void User::CheckCommand(Event& event) const {
 		case message::kPrivmsg:
 			CkPrivmsgCommand(event);
 			break;
+		case message::kQuit:
+			CkQuitCommand(event);
+			break;
 		default:
 			break;
 	}
@@ -61,6 +64,8 @@ OptionalMessage User::ExecuteCommand(const Event& event) {
 			return ExModeCommand(event);
 		case message::kPrivmsg:
 			return ExPrivmsgCommand(event);
+		case message::kQuit:
+			return ExQuitCommand(event);
 		default:
 			return OptionalMessage::Empty();
 	}
@@ -189,6 +194,11 @@ OptionalMessage User::ExModeCommand(const Event& event){
 	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
+OptionalMessage User::ExQuitCommand(const Event& event){
+	if (event.get_fd() == this->get_fd())
+		this->is_delete_ = true;
+	return OptionalMessage::Empty();
+}
 //Execute
 
 //Check
@@ -258,6 +268,12 @@ void User::CkModeCommand(Event& event) const
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
+}
+
+void User::CkQuitCommand(Event& event) const
+{
+	(void)event;
+	return ;
 }
 //check
 

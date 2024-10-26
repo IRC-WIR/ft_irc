@@ -35,6 +35,7 @@ class Database {
 		void CkTopicCommand(Event& event) const;
 		void CkModeCommand(Event& event) const;
 		void CkPrivmsgCommand(Event& event) const;
+		void CkQuitCommand(Event& event) const;
 
 		// DeleteFinishedElements内で使う、vectorから用済みのものを取り除いてsetに追加する用の関数
 		template <typename T, typename U>

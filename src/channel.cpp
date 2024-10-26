@@ -45,6 +45,9 @@ void Channel::CheckCommand(Event& event) const
 		case message::kPrivmsg:
 			CkPrivmsgCommand(event);
 			break;
+		case message::kQuit:
+			CkQuitCommand(event);
+			break;
 		default:
 			return;
 	}
@@ -71,6 +74,8 @@ OptionalMessage Channel::ExecuteCommand(const Event& event)
 			return ExModeCommand(event);
 		case message::kPrivmsg:
 			return ExPrivmsgCommand(event);
+		case message::kQuit:
+			return ExQuitCommand(event);
 		default:
 			return OptionalMessage::Empty();
 	}
@@ -116,6 +121,11 @@ OptionalMessage Channel::ExModeCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExPrivmsgCommand(const Event& event){
+	(void)event;
+	return OptionalMessage::Empty();
+}
+OptionalMessage Channel::ExQuitCommand(const Event& event){
+	//fdを元にUserをRemoveする処理を書く
 	(void)event;
 	return OptionalMessage::Empty();
 }
@@ -182,5 +192,11 @@ void Channel::CkModeCommand(Event& event) const
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
+}
+
+void Channel::CkQuitCommand(Event& event) const
+{
+	(void)event;
+	return ;
 }
 //check
