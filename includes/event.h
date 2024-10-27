@@ -11,7 +11,6 @@ class User;
 class Event {
 	public:
 		Event(int fd, int event_type);
-		Event(const Event&);
 		virtual ~Event();
 		int		get_fd(void) const;
 		int		get_event_type(void) const;
@@ -47,6 +46,9 @@ class Event {
 			private:
 				static const std::string kMessage;
 		};
+
+	protected:
+		Event(const Event&);
 
 	private:
 		const int	fd_;
