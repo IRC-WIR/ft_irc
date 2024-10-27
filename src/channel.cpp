@@ -112,9 +112,9 @@ void Channel::CheckCommand(Event& event) const {
 		case message::kMode:
 			CkModeCommand(event);
 			break;
-		case message::kPrivmsg:
-			CkPrivmsgCommand(event);
-			break;
+		// case message::kPrivmsg:
+		// 	CkPrivmsgCommand(event);
+		// 	break;
 		default:
 			return;
 	}
@@ -237,21 +237,16 @@ void Channel::CkTopicCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkPrivmsgCommand(Event& event) const {
-	const ErrorStatus& err = event.get_error_status();
+void Channel::CkPrivmsgCommand(Event*& event) const {
+	if (!event->get_executer().IsVerified())
+		return;
+	const ErrorStatus& err = event->get_error_status();
 	if (err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
 		return;
-	const std::string& targe = event.get_command_params().front();
-	if (targe == this->get_name())
-	{
-		event.erase_error_status();
-		// ChannelEvent channel_event(event, *this);
-		// const Event* event_ptr = dynamic_cast<const Event*>(&channel_event);
-		// if (!event_ptr) {
-		// 	throw std::bad_cast();
-		// }
-		// event = *event_ptr;
-	}
+	event->erase_error_status();
+	//チャンネルイベントを作成する
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	event = channel_event;
 }
 
 void Channel::CkModeCommand(Event& event) const {

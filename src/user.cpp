@@ -101,7 +101,8 @@ std::string User::CreateMessage(const std::string& to, const message::Command& c
 	ret_ss << " ";
 	//add message
 	ret_ss << ":";
-	for (std::vector<std::string>::const_iterator it = params.begin();
+	//パラメータ１個目を飛ばす（ターゲットになるので）
+	for (std::vector<std::string>::const_iterator it = ++params.begin();
 		it != params.end();
 		it ++) {
 			ret_ss << *it <<  " ";
@@ -204,6 +205,10 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
+
+//toUserの条件を修正する
+
+
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	//eventのuserが認証されないと処理しないように修正する
 	if (!this->IsVerified())
@@ -216,9 +221,15 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	//送信相手確認
 	const std::vector<std::string>& params = event.get_command_params();
 	const std::string& target = params.front();
+	if (event.IsChannelEvent()) {
+		const ChannelEvent* channel_event = dynamic_cast<const ChannelEvent*>(&event);
+		if (channel_event->get_channel().ContainsUser(*this)) {
+			const std::string& send_msg = CreateMessage(target, event.get_command(), params);
+			return OptionalMessage::Create(this->get_fd(), send_msg);
+		}
+	}
 	if (target == this->get_nick_name()) {
 		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
-		//return target User's FD
 		return OptionalMessage::Create(this->get_fd(), send_msg);
 	}
 	return OptionalMessage::Empty();
@@ -294,13 +305,12 @@ void User::CkTopicCommand(Event& event) const
 void User::CkPrivmsgCommand(Event& event) const
 {
 	std::cout << "---ck in user---" << std::endl;
-	//eventを発生したユーザーが認証されたか確認(修正)
-	if (!IsVerified())
+	if (!event.get_executer().IsVerified())
 		return;
 	const ErrorStatus& err = event.get_error_status();
 	if (err != ErrorStatus::ERR_NOSUCHNICK)
 		return;
-	//送信相手確認
+	//送信相手存在確認
 	const std::string& target = event.get_command_params().front();
 	if (target == this->get_nick_name())
 		event.erase_error_status();
