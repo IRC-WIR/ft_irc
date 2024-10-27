@@ -57,7 +57,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkPassCommand(Event& event) const;
 		void CkNickCommand(Event& event) const;
 		void CkUserCommand(Event& event) const;
-		void CkJoinCommand(Event& event) const;
+		void CkJoinCommand(Event*& event) const;
 		void CkInviteCommand(Event& event) const;
 		void CkKickCommand(Event& event) const;
 		void CkTopicCommand(Event& event) const;

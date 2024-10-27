@@ -1,4 +1,5 @@
 #include "channel.h"
+#include "channel_event.h"
 #include <algorithm>
 
 const std::string Channel::NoOperatorException::kErrorMessage("Channel has no operator");
@@ -79,7 +80,7 @@ const std::string& Channel::get_topic() const {
 }
 
 bool Channel::VerifyKey(const std::string& key) const {
-	return (this->key_ == key);
+	return (this->key_.empty() || this->key_ == key);
 }
 
 void Channel::CheckCommand(Event*& event) const {
@@ -94,7 +95,7 @@ void Channel::CheckCommand(Event*& event) const {
 			CkUserCommand(*event);
 			break;
 		case message::kJoin:
-			CkJoinCommand(*event);
+			CkJoinCommand(event);
 			break;
 		case message::kInvite:
 			CkInviteCommand(*event);
@@ -209,10 +210,21 @@ void Channel::CkUserCommand(Event& event) const {
 	return ;
 }
 
-void Channel::CkJoinCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Join called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkJoinCommand(Event*& event) const {
+	if (event->HasErrorOccurred())
+		return ;
+
+	const std::vector<std::string> params = event->get_command_params();
+	if (params[0] == this->name_) {
+		const std::string key = params.size() >= 2 ? params[1] : "";
+		if (!this->VerifyKey(key)) {
+			event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+			return ;
+		}
+		ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+		delete event;
+		event = channel_event;
+	}
 }
 
 void Channel::CkInviteCommand(Event& event) const {

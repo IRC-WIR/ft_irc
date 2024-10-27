@@ -1,4 +1,5 @@
 #include "event_handler.h"
+#include "message.h"
 #include <errno.h>
 
 const	int	EventHandler::kQueueLimit = 10;

@@ -230,7 +230,7 @@ void User::CkUserCommand(Event& event) const {
 }
 
 void User::CkJoinCommand(Event& event) const {
-	
+	(void)event;
 }
 
 void User::CkInviteCommand(Event& event) const
