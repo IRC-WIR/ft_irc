@@ -207,18 +207,18 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 		this->is_delete_ = true;
 		return OptionalMessage::Empty();
 	}
-	//実行者以外
-	if (event.IsChannelEvent()) {
-		Channel channel = event.get_channel();
-		//チャンネルメンバ
-		if (channel.ContainsUser(*this)){
-			std::string message = event.get_executer().get_nick_name()
-				+ " in " 
-				+ channel.get_name() 
-				+ "left from the server.";
-			return OptionalMessage::Create(this->fd_, message);
-		}
-	}
+//	//実行者以外
+//	if (event.IsChannelEvent()) {
+//		Channel channel = event.get_channel();
+//		//チャンネルメンバ
+//		if (channel.ContainsUser(*this)){
+//			std::string message = event.get_executer().get_nick_name()
+//				+ " in " 
+//				+ channel.get_name() 
+//				+ "left from the server.";
+//			return OptionalMessage::Create(this->fd_, message);
+//		}
+//	}
 	return OptionalMessage::Empty();
 }
 //Execute

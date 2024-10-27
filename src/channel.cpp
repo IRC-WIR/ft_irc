@@ -201,8 +201,7 @@ OptionalMessage Channel::ExPrivmsgCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExQuitCommand(const Event& event){
-	//fdを元にUserをRemoveする処理を書く
-	(void)event;
+	RemoveUser(event.get_executer());
 	return OptionalMessage::Empty();
 }
 //Execute
