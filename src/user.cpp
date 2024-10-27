@@ -181,11 +181,12 @@ OptionalMessage User::ExKickCommand(const Event& event){
 		if (!event.IsChannelEvent())
 			return OptionalMessage::Empty();
 		//成功
-		Channel channel = event.get_channel();
+		const ChannelEvent& channelEvent = dynamic_cast<const ChannelEvent&>(event);
+		Channel channel = channelEvent.get_channel();
 		//メンバ以外
-		//std::string target_user_name = event.get_command_params()[1];
-		//if (!channel.ContainsUserByNickname(target_user_name))
-		//	return OptionalMessage::Empty();
+		std::string target_user_name = event.get_command_params()[1];
+		if (!channel.ContainsUserByNickname(target_user_name))
+			return OptionalMessage::Empty();
 		//メンバ
 		std::string quit_message = this->nick_name_ + " left from the Channel.\r\n";
 		if (event.get_command_params().size() > 2)

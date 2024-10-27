@@ -12,7 +12,6 @@ class Event {
 		virtual ~Event();
 		int		get_fd(void) const;
 		int		get_event_type(void) const;
-    virtual const Channel& get_channel(void) const = 0;
 		message::Command	get_command(void) const;
 		const std::vector<std::string>&	get_command_params(void) const;
 		const ErrorStatus& get_error_status(void) const;
