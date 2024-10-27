@@ -300,8 +300,14 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
-	AddResponseMap(database_.ExecuteEvent(*event));
-	database_.DeleteFinishedElements();
+	if ((event->get_command() == message::Command::kPass
+			|| event->get_command() == message::Command::kNick
+			|| event->get_command() == message::Command::kUser
+			|| event->get_command() == message::Command::kQuit)
+					|| event->get_executer().IsVerified()) {
+		AddResponseMap(database_.ExecuteEvent(*event));
+		database_.DeleteFinishedElements();
+	}
 }
 
 message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
