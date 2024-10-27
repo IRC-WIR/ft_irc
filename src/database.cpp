@@ -152,9 +152,9 @@ void Database::CkInviteCommand(Event& event) const {
 }
 
 void Database::CkKickCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Kick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 2;
+	if (event.get_command_params().size() < kParamsSize)
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 }
 
 void Database::CkTopicCommand(Event& event) const {
