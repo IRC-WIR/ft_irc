@@ -246,6 +246,7 @@ void Channel::CkPrivmsgCommand(Event*& event) const {
 	event->erase_error_status();
 	//チャンネルイベントを作成する
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
 	event = channel_event;
 }
 
