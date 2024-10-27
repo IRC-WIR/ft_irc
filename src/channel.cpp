@@ -224,12 +224,19 @@ void Channel::CkTopicCommand(Event& event) const {
 }
 
 void Channel::CkPrivmsgCommand(Event& event) const {
+	const ErrorStatus& err = event.get_error_status();
+	if (err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
+		return;
 	const std::string& targe = event.get_command_params().front();
 	if (targe == this->get_name())
 	{
 		event.erase_error_status();
-		//channelイベントはどこに渡せる？
-		ChannelEvent(event, *this);
+		// ChannelEvent channel_event(event, *this);
+		// const Event* event_ptr = dynamic_cast<const Event*>(&channel_event);
+		// if (!event_ptr) {
+		// 	throw std::bad_cast();
+		// }
+		// event = *event_ptr;
 	}
 }
 

@@ -97,6 +97,7 @@ std::string User::CreateMessage(const std::string& to, const message::Command& c
 	ret_ss << to;
 	ret_ss << " ";
 	//add message
+	ret_ss << ":";
 	for (std::vector<std::string>::const_iterator it = params.begin();
 		it != params.end();
 		it ++) {
@@ -202,8 +203,10 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
-	if (!IsVerified())
+	//eventのuserが認証されないと処理しないように修正する
+	if (!this->IsVerified())
 		return OptionalMessage::Empty();
+	std::cout << "pass the vertified" << std::endl;
 	if (event.HasErrorOccurred()) {
 		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
 		return OptionalMessage::Create(event.get_fd(), err_msg);
@@ -213,7 +216,8 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	const std::string& target = params.front();
 	if (target == this->get_nick_name()) {
 		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
-		return OptionalMessage::Create(event.get_fd(), send_msg);
+		//return target User's FD
+		return OptionalMessage::Create(this->get_fd(), send_msg);
 	}
 	return OptionalMessage::Empty();
 }
@@ -287,16 +291,18 @@ void User::CkTopicCommand(Event& event) const
 
 void User::CkPrivmsgCommand(Event& event) const
 {
+	std::cout << "---ck in user---" << std::endl;
+	//eventを発生したユーザーが認証されたか確認(修正)
 	if (!IsVerified())
 		return;
 	const ErrorStatus& err = event.get_error_status();
-	if (err != ErrorStatus::ERR_NOSUCHNICK && err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
+	if (err != ErrorStatus::ERR_NOSUCHNICK)
 		return;
-	//送信相手か確認
+	//送信相手確認
 	const std::string& target = event.get_command_params().front();
 	if (target == this->get_nick_name())
 		event.erase_error_status();
-
+	std::cout << "---ck in user finished---" << std::endl;
 }
 
 void User::CkModeCommand(Event& event) const
