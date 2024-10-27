@@ -155,7 +155,7 @@ TEST(MessageTest, ParsingTest9) {
   std::string raw_upper_message =
     "PRIVMSG user : test_to_send\r\n";
   std::string raw_lower_message =
-    "PRIVmsg #ch1 : test_to_send\r\n";
+    "PRIVmsg #ch1 :\r\n";
   message::MessageParser message_upper_parser(raw_upper_message);
   message::MessageParser message_lower_parser(raw_lower_message);
   // Expect PRIVMSG command.
@@ -166,6 +166,8 @@ TEST(MessageTest, ParsingTest9) {
   EXPECT_EQ("user", message_upper_parser.get_params()[0]);
   // Expect PRIVMSG last command param
   EXPECT_EQ(" test_to_send", message_upper_parser.get_params()[1]);
+  // Expect PRIVMSG last empty command param
+  EXPECT_EQ("", message_lower_parser.get_params()[1]);
 }
 
 //test QUIT command

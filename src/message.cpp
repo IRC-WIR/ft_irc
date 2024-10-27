@@ -62,8 +62,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			case kParseParam:
-				if (!last_param.empty())
-					command_params_.push_back(last_param);
+				command_params_.push_back(last_param);
 				state_ = kParseComplete;
 				break;
 
@@ -86,7 +85,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 {
 	std::stringstream ss(command);
 	std::string	str;
-	while ( getline(ss, str, ' ') ){
+	while ( getline(ss, str, ' ') ) {
 		utils::EraseNewline(str);
 		if (!str.empty())
 			command_params_.push_back(str);
