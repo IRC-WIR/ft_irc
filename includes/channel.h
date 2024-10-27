@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
+#include "channel_event.h"
 #include <stdexcept>
 
 class Channel: public EventListener, public EventConfigurator {

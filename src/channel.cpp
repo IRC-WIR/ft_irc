@@ -205,10 +205,15 @@ void Channel::CkInviteCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkKickCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Kick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+//Parameters: <channel> <user> [<comment>]
+void Channel::CkKickCommand(Event* event) const {
+	//自身がターゲットChannelの場合
+	if (event.get_command_params()[0] == this->name_) {
+		//eventをchannel_eventに上書き
+		ChannelEvent channelEvent(event, *this);
+		event = static_cast<Event&>(channelEvent);
+		//
+	}
 }
 
 void Channel::CkTopicCommand(Event& event) const {
