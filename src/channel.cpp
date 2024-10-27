@@ -117,7 +117,7 @@ void Channel::CheckCommand(Event*& event) const {
 			CkPrivmsgCommand(*event);
 			break;
 		case message::kQuit:
-			CkQuitCommand(event);
+			CkQuitCommand(*event);
 			break;
 		default:
 			return;

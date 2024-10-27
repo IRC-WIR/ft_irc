@@ -41,7 +41,7 @@ void User::CheckCommand(Event*& event) const {
 			CkPrivmsgCommand(*event);
 			break;
 		case message::kQuit:
-			CkQuitCommand(event);
+			CkQuitCommand(*event);
 			break;
 		default:
 			break;
@@ -202,7 +202,6 @@ OptionalMessage User::ExModeCommand(const Event& event){
 }
 
 OptionalMessage User::ExQuitCommand(const Event& event){
-
 	if (event.get_executer().get_fd() == this->get_fd())
 		this->is_delete_ = true;
 	return OptionalMessage::Empty();
@@ -284,7 +283,7 @@ void User::CkModeCommand(Event& event) const
 
 void User::CkQuitCommand(Event& event) const
 {
-	event.set_executer(*this);
+	(void)event;
 	return ;
 }
 //check

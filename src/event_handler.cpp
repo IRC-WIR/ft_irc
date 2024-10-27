@@ -149,10 +149,8 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 					break ;
 				//接続切断
 				default:
-					Detach(entry);
-					Event event(entry.fd, entry.revents);
-					event.set_command(message::kQuit);
-					AddResponseMap(database_.ExecuteEvent(event));
+					Event* event = Detach(entry);
+					AddResponseMap(database_.ExecuteEvent(*event));
 					response_map_.erase(target_fd);
 					return;
 				}
@@ -177,7 +175,7 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 	}
 }
 
-Event&	EventHandler::Detach(pollfd entry) {
+Event*	EventHandler::Detach(pollfd entry) {
 	std::cout << "connection hang up " << entry.fd << std::endl;
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
@@ -188,7 +186,7 @@ Event&	EventHandler::Detach(pollfd entry) {
 	poll_fd_.erase(poll_fd_.begin() + target_index);
 	Event* event = new Event(entry.fd, entry.revents);
 	event->set_command(message::kQuit);
-	return *event;
+	return event;
 }
 
 void	EventHandler::WaitMillSecond(int ms) {
@@ -247,7 +245,8 @@ void	EventHandler::Receive(int fd, char* buffer) {
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
-		ExecuteCommand(Detach(entry));
+		Event *event = Detach(entry);
+		ExecuteCommand(event);
 		return ;
 	}
 	std::string request_buffer;
