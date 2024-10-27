@@ -238,9 +238,11 @@ void Channel::CkTopicCommand(Event& event) const {
 }
 
 void Channel::CkPrivmsgCommand(Event*& event) const {
-	const ErrorStatus& err = event->get_error_status();
-	if (err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
-		return;
+	if (event->IsErrorOccurred()) {
+		const ErrorStatus& err = event->get_error_status();
+		if (err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
+			return;
+	}
 	event->erase_error_status();
 	//チャンネルイベントを作成する
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
