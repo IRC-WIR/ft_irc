@@ -4,13 +4,22 @@
 
 const std::string Channel::NoOperatorException::kErrorMessage("Channel has no operator");
 
-Channel::Channel(const User& op, const std::string& name, const std::string& key, int max_num)
-		: name_(name), key_(key), max_member_num_(max_num), operator_(&op) {
-	return ;
+Channel::Channel(const User& op, const std::string& name)
+		: name_(name), operator_(&op) {
+	this->InitModeMap();
 }
 
 Channel::~Channel() {
 	return ;
+}
+
+void Channel::InitModeMap() {
+	this->mode_map.clear();
+	this->mode_map['i'] = false;
+	this->mode_map['t'] = false;
+	this->mode_map['k'] = false;
+	this->mode_map['o'] = false;
+	this->mode_map['l'] = false;
 }
 
 void Channel::AddUser(const User& user) {
@@ -80,7 +89,7 @@ const std::string& Channel::get_topic() const {
 }
 
 bool Channel::VerifyKey(const std::string& key) const {
-	return (this->key_.empty() || this->key_ == key);
+	return (!this->mode_map.find('k')->second || this->key_ == key);
 }
 
 void Channel::CheckCommand(Event*& event) const {
@@ -221,6 +230,7 @@ void Channel::CkJoinCommand(Event*& event) const {
 			event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 			return ;
 		}
+		if 
 		ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 		delete event;
 		event = channel_event;

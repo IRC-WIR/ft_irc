@@ -7,12 +7,11 @@
 #include "user.h"
 #include "optional_message.h"
 #include <stdexcept>
+#include <map>
 
 class Channel: public EventListener, public EventConfigurator {
 	public:
-		// max_numは仮
-		Channel(const User& op, const std::string& name,
-				const std::string& key = "", int max_num = 10);
+		Channel(const User& op, const std::string& name);
 		~Channel();
 
 		void CheckCommand(Event*& event) const;
@@ -40,18 +39,16 @@ class Channel: public EventListener, public EventConfigurator {
 
 	private:
 		const std::string name_;
-		const std::string key_;
-		const int max_member_num_;
 		std::string topic_;
-		//bool i_mode;
-		//bool t_mode;
-		//bool k_mode;
-		//bool o_mode;
-		//bool l_mode;
+		// i,t,k,o,lは少なくとも実装
+		std::map<char, bool> mode_map;
+		std::string key_;
+		int max_member_num_;
 		std::vector<const User*> users_;
 		const User* operator_;
 
 		void RemoveUserBasic(std::vector<const User*>::iterator&);
+		void InitModeMap(void);
 
 		//check command
 		void CkPassCommand(Event& event) const;

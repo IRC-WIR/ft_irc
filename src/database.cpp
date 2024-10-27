@@ -1,5 +1,6 @@
 #include "database.h"
 #include "message.h"
+#include "channel.h"
 
 Database::Database(const std::string& password):server_password_(password){};
 Database::~Database(){};
@@ -14,6 +15,13 @@ void Database::CreateUser(int fd) {
 	} catch(const std::invalid_argument& e) {
 		std::cerr << e.what() << std::endl;
 	}
+}
+
+const Channel& Database::CreateChannel(const User& op, const std::string& name) {
+	Channel* channel = new Channel(op, name);
+	this->check_element_.push_back(channel);
+	this->execute_element_.push_back(channel);
+	return *channel;
 }
 
 void Database::CheckEvent(Event*& event) const {
