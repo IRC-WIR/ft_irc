@@ -1,14 +1,16 @@
 #include "event.h"
 
-const std::string Event::NoErrorException::kMessage = "error: there is no ErrorStatus.";
+const std::string Event::NoErrorException::kMessage = "there is no ErrorStatus.";
+const std::string Event::NoExecuterException::kMessage = "there is no executer.";
+const std::string Event::AlreadySetException::kMessage = "already exists executer.";
 
 Event::Event(int fd, int event_type)
-		: fd_(fd), event_type_(event_type), error_status_(NULL) {
+		: fd_(fd), event_type_(event_type), error_status_(NULL), executer_(NULL) {
 	return ;
 }
 
 Event::Event(const Event& src)
-		: fd_(src.get_fd()), event_type_(src.get_event_type()), error_status_(src.error_status_) {
+		: fd_(src.get_fd()), event_type_(src.get_event_type()), error_status_(src.error_status_), executer_(src.executer_) {
 	this->set_command(src.get_command());
 	this->set_command_params(src.get_command_params());
 }
@@ -63,7 +65,29 @@ bool Event::IsChannelEvent() const {
 	return false;
 }
 
+void Event::set_executer(const User& user) {
+	if (this->executer_ != NULL)
+		throw Event::AlreadySetException();
+	this->executer_ = &user;
+}
+
+const User& Event::get_executer() const {
+	if (this->executer_ == NULL)
+		throw Event::NoExecuterException();
+	return *(this->executer_);
+}
+
 Event::NoErrorException::NoErrorException()
 		: std::runtime_error(Event::NoErrorException::kMessage) {
+	return ;
+}
+
+Event::NoExecuterException::NoExecuterException()
+		: std::runtime_error(Event::NoExecuterException::kMessage) {
+	return ;
+}
+
+Event::AlreadySetException::AlreadySetException()
+		: std::runtime_error(Event::AlreadySetException::kMessage) {
 	return ;
 }

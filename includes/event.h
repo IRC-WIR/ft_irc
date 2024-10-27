@@ -5,6 +5,7 @@
 #include <string>
 #include "message.h"
 #include "error_status.h"
+#include "user.h"
 
 class Event {
 	public:
@@ -20,10 +21,26 @@ class Event {
 		void	set_error_status(const ErrorStatus&);
 		bool	HasErrorOccurred(void) const;
 		virtual bool IsChannelEvent(void) const;
+		void set_executer(const User&);
+		const User& get_executer(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
 				NoErrorException(void);
+
+			private:
+				static const std::string kMessage;
+		};
+		class NoExecuterException : public std::runtime_error {
+			public:
+				NoExecuterException(void);
+
+			private:
+				static const std::string kMessage;
+		};
+		class AlreadySetException : public std::runtime_error {
+			public:
+				AlreadySetException(void);
 
 			private:
 				static const std::string kMessage;
@@ -39,6 +56,7 @@ class Event {
 		message::Command command_;
 		std::vector<std::string>	command_params_;
 		const ErrorStatus* error_status_;
+		const User* executer_;
 };
 
 #endif
