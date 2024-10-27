@@ -201,6 +201,7 @@ OptionalMessage Channel::ExPrivmsgCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 OptionalMessage Channel::ExQuitCommand(const Event& event){
+
 	RemoveUser(event.get_executer());
 	return OptionalMessage::Empty();
 }
