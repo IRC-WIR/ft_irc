@@ -86,35 +86,35 @@ bool Channel::VerifyKey(const std::string& key) const {
 	return (this->key_ == key);
 }
 
-void Channel::CheckCommand(Event& event) const {
-	switch (event.get_command()) {
+void Channel::CheckCommand(Event*& event) const {
+	switch (event->get_command()) {
 		case message::kPass:
-			CkPassCommand(event);
+			CkPassCommand(*event);
 			break;
 		case message::kNick:
-			CkNickCommand(event);
+			CkNickCommand(*event);
 			break;
 		case message::kUser:
-			CkUserCommand(event);
+			CkUserCommand(*event);
 			break;
 		case message::kJoin:
-			CkJoinCommand(event);
+			CkJoinCommand(*event);
 			break;
 		case message::kInvite:
-			CkInviteCommand(event);
+			CkInviteCommand(*event);
 			break;
 		case message::kKick:
-			CkKickCommand(event);
+			CkKickCommand(*event);
 			break;
 		case message::kTopic:
-			CkTopicCommand(event);
+			CkTopicCommand(*event);
 			break;
 		case message::kMode:
-			CkModeCommand(event);
+			CkModeCommand(*event);
 			break;
-		// case message::kPrivmsg:
-		// 	CkPrivmsgCommand(event);
-		// 	break;
+		case message::kPrivmsg:
+			CkPrivmsgCommand(event);
+			break;
 		default:
 			return;
 	}

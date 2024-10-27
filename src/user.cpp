@@ -8,37 +8,37 @@ User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(fals
 User::~User() {
 }
 
-void User::CheckCommand(Event& event) const {
-	if (event.get_fd() == this->get_fd())
-		event.set_executer(*this);
+void User::CheckCommand(Event*& event) const {
+	if (event->get_fd() == this->get_fd())
+		event->set_executer(*this);
 
-	switch (event.get_command()) {
+	switch (event->get_command()) {
 		case message::kPass:
-			CkPassCommand(event);
+			CkPassCommand(*event);
 			break;
 		case message::kNick:
-			CkNickCommand(event);
+			CkNickCommand(*event);
 			break;
 		case message::kUser:
-			CkUserCommand(event);
+			CkUserCommand(*event);
 			break;
 		case message::kJoin:
-			CkJoinCommand(event);
+			CkJoinCommand(*event);
 			break;
 		case message::kInvite:
-			CkInviteCommand(event);
+			CkInviteCommand(*event);
 			break;
 		case message::kKick:
-			CkKickCommand(event);
+			CkKickCommand(*event);
 			break;
 		case message::kTopic:
-			CkTopicCommand(event);
+			CkTopicCommand(*event);
 			break;
 		case message::kMode:
-			CkModeCommand(event);
+			CkModeCommand(*event);
 			break;
 		case message::kPrivmsg:
-			CkPrivmsgCommand(event);
+			CkPrivmsgCommand(*event);
 			break;
 		default:
 			break;
@@ -205,14 +205,10 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
-
 //toUserの条件を修正する
 
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
-	//eventのuserが認証されないと処理しないように修正する
-	if (!this->IsVerified())
-		return OptionalMessage::Empty();
 	std::cout << "pass the vertified" << std::endl;
 	if (event.HasErrorOccurred()) {
 		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
@@ -221,14 +217,7 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	//送信相手確認
 	const std::vector<std::string>& params = event.get_command_params();
 	const std::string& target = params.front();
-	if (event.IsChannelEvent()) {
-		const ChannelEvent* channel_event = dynamic_cast<const ChannelEvent*>(&event);
-		if (channel_event->get_channel().ContainsUser(*this)) {
-			const std::string& send_msg = CreateMessage(target, event.get_command(), params);
-			return OptionalMessage::Create(this->get_fd(), send_msg);
-		}
-	}
-	if (target == this->get_nick_name()) {
+	if (IsRecipient(target, event)) {
 		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
 		return OptionalMessage::Create(this->get_fd(), send_msg);
 	}
@@ -305,8 +294,6 @@ void User::CkTopicCommand(Event& event) const
 void User::CkPrivmsgCommand(Event& event) const
 {
 	std::cout << "---ck in user---" << std::endl;
-	if (!event.get_executer().IsVerified())
-		return;
 	const ErrorStatus& err = event.get_error_status();
 	if (err != ErrorStatus::ERR_NOSUCHNICK)
 		return;
@@ -355,7 +342,7 @@ const std::string& User::get_real_name() const {
 	return this->real_name_;
 }
 
-bool	User::IsVerified() const
+bool User::IsVerified() const
 {
 	if (!this->is_password_authenticated_
 		|| this->nick_name_.empty()
@@ -363,4 +350,16 @@ bool	User::IsVerified() const
 		return false;
 	}
 	return true;
+}
+
+
+bool User::IsRecipient(const std::string& target, const Event& event) const
+{
+	if (target == this->get_nick_name())
+		return true;
+	if (event.IsChannelEvent()) {
+		const ChannelEvent* channel_event = dynamic_cast<const ChannelEvent*>(&event);
+		return channel_event->get_channel().ContainsUser(*this);
+	}
+	return false;
 }
