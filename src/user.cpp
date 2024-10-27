@@ -9,6 +9,9 @@ User::~User() {
 }
 
 void User::CheckCommand(Event& event) const {
+	if (event.get_fd() == this->get_fd())
+		event.set_executer(*this);
+
 	switch (event.get_command()) {
 		case message::kPass:
 			CkPassCommand(event);
