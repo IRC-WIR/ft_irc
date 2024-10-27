@@ -219,7 +219,7 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	//送信相手確認
 	const std::vector<std::string>& params = event.get_command_params();
 	const std::string& target = params.front();
-	if (IsRecipient(target, event)) {
+	if (IsTarget(target, event)) {
 		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
 		return OptionalMessage::Create(this->get_fd(), send_msg);
 	}
@@ -356,7 +356,7 @@ bool User::IsVerified() const
 }
 
 
-bool User::IsRecipient(const std::string& target, const Event& event) const
+bool User::IsTarget(const std::string& target, const Event& event) const
 {
 	if (target == this->get_nick_name())
 		return true;
