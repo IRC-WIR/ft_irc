@@ -18,15 +18,15 @@ class User : public EventListener, public EventConfigurator {
 		OptionalMessage ExecuteCommand(const Event& event);
 		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
 		std::string CreateMessage(const std::string& to, const message::Command& cmd, const std::vector<std::string>& params) const;
-		bool IsFinished() const;
-		bool IsVerified() const;
-
-		void set_server_password(const std::string& password);
+		bool IsFinished(void) const;
+		bool IsVerified(void) const;
 		void set_is_password_authenticated(bool is_authenticated);
-		bool get_is_password_authenticated() const;
-		int get_fd() const;
-		bool get_is_delete() const;
-		const std::string& get_nick_name() const;
+		bool get_is_password_authenticated(void) const;
+		int get_fd(void) const;
+		bool get_is_delete(void) const;
+		const std::string& get_nick_name(void) const;
+		const std::string& get_user_name(void) const;
+		const std::string& get_real_name(void) const;
 
 	private:
 		User();
@@ -36,8 +36,6 @@ class User : public EventListener, public EventConfigurator {
 		std::string	nick_name_;
 		std::string	user_name_;
 		std::string	real_name_;
-		std::string server_password_;
-		std::vector<Channel>	channels_;
 		bool is_delete_;
 
 		//check command

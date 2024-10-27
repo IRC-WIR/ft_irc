@@ -40,7 +40,7 @@ class EventHandler{
 		void				HandlePollInEvent(pollfd entry);
 		void				HandlePollOutEvent(pollfd entry);
 		void				HandlePollHupEvent(pollfd entry);
-		void				ExecuteCommand(Event& event);
+		void				ExecuteCommand(Event event);
 
 		Database&	database_;
 		std::vector<struct pollfd>	poll_fd_;

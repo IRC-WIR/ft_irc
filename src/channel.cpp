@@ -3,8 +3,8 @@
 
 const std::string Channel::NoOperatorException::kErrorMessage("Channel has no operator");
 
-Channel::Channel(const User& op, const std::string& name)
-		: name_(name),  max_member_num_(10), operator_(&op) {
+Channel::Channel(const User& op, const std::string& name, const std::string& key, int max_num)
+		: name_(name), key_(key), max_member_num_(max_num), operator_(&op) {
 	return ;
 }
 
@@ -16,22 +16,46 @@ void Channel::AddUser(const User& user) {
 	this->users_.push_back(&user);
 }
 
-bool Channel::RemoveUser(const User& user) {
-	std::vector<const User*>::iterator it = std::find(this->users_.begin(), this->users_.end(), &user);
-	if (it == this->users_.end())
-		return false;
+void Channel::RemoveUserBasic(std::vector<const User*>::iterator& it) {
+	const User* user = *it;
+
 	this->users_.erase(it);
-	if (this->operator_ == &user) {
+	if (this->operator_ == user) {
 		if (this->users_.empty())
 			this->operator_ = NULL;
 		else
 			this->operator_ = this->users_[0];
 	}
+}
+
+bool Channel::RemoveUser(const User& user) {
+	std::vector<const User*>::iterator it = std::find(this->users_.begin(), this->users_.end(), &user);
+	if (it == this->users_.end())
+		return false;
+	this->RemoveUserBasic(it);
 	return true;
+}
+
+bool Channel::RemoveUserByNick(const std::string& nick_name) {
+	for (std::vector<const User*>::iterator it = this->users_.begin(); it != this->users_.end(); ++it) {
+		if ((*it)->get_nick_name() == nick_name) {
+			this->RemoveUserBasic(it);
+			return true;
+		}
+	}
+	return false;
 }
 
 bool Channel::ContainsUser(const User& user) const {
 	return std::find(this->users_.begin(), this->users_.end(), &user) != this->users_.end();
+}
+
+bool Channel::ContainsUserByNick(const std::string& nick_name) const {
+	for (std::vector<const User*>::const_iterator it = this->users_.begin(); it != this->users_.end(); ++it) {
+		if ((*it)->get_nick_name() == nick_name)
+			return true;
+	}
+	return false;
 }
 
 void Channel::set_operator(const User& user) {
@@ -54,22 +78,12 @@ const std::string& Channel::get_topic() const {
 	return this->topic_;
 }
 
-const std::string& Channel::get_name() const {
+const std::string& Channel::get_name(void) const {
 	return name_;
-}
-
-
-
-void Channel::set_key(const std::string& key) {
-	this->key_ = key;
 }
 
 bool Channel::VerifyKey(const std::string& key) const {
 	return (this->key_ == key);
-}
-
-void Channel::set_max_member_num(int num) {
-	this->max_member_num_ = num;
 }
 
 void Channel::CheckCommand(Event& event) const {
