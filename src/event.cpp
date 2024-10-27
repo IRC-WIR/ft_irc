@@ -1,4 +1,5 @@
 #include "event.h"
+#include "user.h"
 
 const std::string Event::NoErrorException::kMessage = "there is no ErrorStatus.";
 const std::string Event::NoExecuterException::kMessage = "there is no executer.";

@@ -5,7 +5,8 @@
 #include <string>
 #include "message.h"
 #include "error_status.h"
-#include "user.h"
+
+class User;
 
 class Event {
 	public:
