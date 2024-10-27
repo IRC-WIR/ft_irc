@@ -6,9 +6,12 @@
 #include "message.h"
 #include "error_status.h"
 
+class User;
+
 class Event {
 	public:
 		Event(int fd, int event_type);
+		Event(const Event&);
 		virtual ~Event();
 		int		get_fd(void) const;
 		int		get_event_type(void) const;
@@ -20,6 +23,8 @@ class Event {
 		void	set_error_status(const ErrorStatus&);
 		bool	HasErrorOccurred(void) const;
 		virtual bool IsChannelEvent(void) const;
+		void set_executer(const User&);
+		const User& get_executer(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
@@ -28,10 +33,20 @@ class Event {
 			private:
 				static const std::string kMessage;
 		};
+		class NoExecuterException : public std::runtime_error {
+			public:
+				NoExecuterException(void);
 
-	protected:
-		Event(const Event&);
+			private:
+				static const std::string kMessage;
+		};
+		class AlreadySetException : public std::runtime_error {
+			public:
+				AlreadySetException(void);
 
+			private:
+				static const std::string kMessage;
+		};
 
 	private:
 		const int	fd_;
@@ -39,6 +54,7 @@ class Event {
 		message::Command command_;
 		std::vector<std::string>	command_params_;
 		const ErrorStatus* error_status_;
+		const User* executer_;
 };
 
 #endif

@@ -292,7 +292,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 				std::cout << "Parse Empty" <<std::endl;
 				break ;
 			default:
-				ExecuteCommand(event);
+				this->ExecuteCommand(event);
 				break;
 		}
 		request_buffer = remain_msg;
@@ -301,10 +301,12 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		request_map_.insert(std::make_pair(entry.fd, request_buffer));
 }
 
-void EventHandler::ExecuteCommand(Event& event)
+void EventHandler::ExecuteCommand(Event event)
 {
 	database_.CheckEvent(event);
 	AddResponseMap(database_.ExecuteEvent(event));
+	if (event.IsChannelEvent())
+		delete &event;
 	database_.DeleteFinishedElements();
 }
 
