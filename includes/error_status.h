@@ -6,12 +6,16 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
+            ERR_NOSUCHCHANNEL,
             ERR_NONICKNAMEGIVEN,
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
+            ERR_USERNOTINCHANNEL,
+            ERR_NOTONCHANNEL,
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
-            ERR_PASSWDMISMATCH
+            ERR_PASSWDMISMATCH,
+            ERR_CHANOPRIVSNEEDED
             ;
 
         const std::string& get_error_message(void) const;

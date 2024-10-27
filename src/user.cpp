@@ -167,11 +167,33 @@ OptionalMessage User::ExInviteCommand(const Event& event){
 }
 
 OptionalMessage User::ExKickCommand(const Event& event){
-	(void)event;
-	std::cout << "Kick method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
-	return OptionalMessage::Empty();
+	//実行者
+	if (event.get_fd() == this->fd_) {
+		if (event.HasErrorOccurred()) {
+			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			return OptionalMessage::Create(this->fd_, message);
+		}
+	//実行者以外
+	} else {
+		//失敗
+		if (event.HasErrorOccurred())
+			return OptionalMessage::Empty();
+		if (!event.IsChannelEvent())
+			return OptionalMessage::Empty();
+		//成功
+		Channel channel = event.get_channel();
+		//メンバ以外
+		//std::string target_user_name = event.get_command_params()[1];
+		//if (!channel.ContainsUserByNickname(target_user_name))
+		//	return OptionalMessage::Empty();
+		//メンバ
+		std::string quit_message = this->nick_name_ + " left from the Channel.\r\n";
+		if (event.get_command_params().size() > 2)
+			quit_message = event.get_command_params()[3];
+		return OptionalMessage::Create(this->fd_, quit_message);
+	}
 }
+
 
 OptionalMessage User::ExTopicCommand(const Event& event){
 	(void)event;

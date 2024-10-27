@@ -206,14 +206,37 @@ void Channel::CkInviteCommand(Event& event) const {
 }
 
 //Parameters: <channel> <user> [<comment>]
-void Channel::CkKickCommand(Event* event) const {
+void Channel::CkKickCommand(Event& event) const {
+
+	if (event.get_command_params()[0] != this->name_)
+		return ;
+
 	//自身がターゲットChannelの場合
-	if (event.get_command_params()[0] == this->name_) {
-		//eventをchannel_eventに上書き
-		ChannelEvent channelEvent(event, *this);
-		event = static_cast<Event&>(channelEvent);
-		//
+	////eventをchannel_eventに上書き
+	//ChannelEvent* channelEvent = new ChannelEvent(event, *this);
+	//event = channelEvent;
+
+	//実行者がこのChannelのメンバでない場合
+	//eventの持つユーザを引数に与えChannelのContainメソッドで判定
+	if (false) {
+		event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		return ;
 	}
+		
+	//実行者がこのChannelのオペレータでない場合
+	if (event.get_fd() != this->get_operator().get_fd()) {
+		event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+		return ;
+	}
+
+	//ターゲットユーザがこのChannelのメンバでない場合
+	//nicknameを条件に検索可能なContainメソッドにより判定
+	if (false) {
+		event.set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
+		return ;
+	}
+
+	return ;
 }
 
 void Channel::CkTopicCommand(Event& event) const {
