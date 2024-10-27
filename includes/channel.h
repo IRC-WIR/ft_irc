@@ -15,7 +15,7 @@ class Channel: public EventListener, public EventConfigurator {
 				const std::string& key = "", int max_num = 10);
 		~Channel();
 
-		void CheckCommand(Event& event) const;
+		void CheckCommand(Event*& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
 		bool IsFinished(void) const;
 		void AddUser(const User&);

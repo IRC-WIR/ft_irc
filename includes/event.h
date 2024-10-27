@@ -50,7 +50,6 @@ class Event {
 	protected:
 		Event(const Event&);
 
-
 	private:
 		const int	fd_;
 		const int	event_type_;

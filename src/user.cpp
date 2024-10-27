@@ -8,37 +8,37 @@ User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(fals
 User::~User() {
 }
 
-void User::CheckCommand(Event& event) const {
-	if (event.get_fd() == this->get_fd())
-		event.set_executer(*this);
+void User::CheckCommand(Event*& event) const {
+	if (event->get_fd() == this->get_fd())
+		event->set_executer(*this);
 
-	switch (event.get_command()) {
+	switch (event->get_command()) {
 		case message::kPass:
-			CkPassCommand(event);
+			CkPassCommand(*event);
 			break;
 		case message::kNick:
-			CkNickCommand(event);
+			CkNickCommand(*event);
 			break;
 		case message::kUser:
-			CkUserCommand(event);
+			CkUserCommand(*event);
 			break;
 		case message::kJoin:
-			CkJoinCommand(event);
+			CkJoinCommand(*event);
 			break;
 		case message::kInvite:
-			CkInviteCommand(event);
+			CkInviteCommand(*event);
 			break;
 		case message::kKick:
-			CkKickCommand(event);
+			CkKickCommand(*event);
 			break;
 		case message::kTopic:
-			CkTopicCommand(event);
+			CkTopicCommand(*event);
 			break;
 		case message::kMode:
-			CkModeCommand(event);
+			CkModeCommand(*event);
 			break;
 		case message::kPrivmsg:
-			CkPrivmsgCommand(event);
+			CkPrivmsgCommand(*event);
 			break;
 		case message::kQuit:
 			CkQuitCommand(event);

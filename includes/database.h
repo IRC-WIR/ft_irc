@@ -17,7 +17,7 @@ class Database {
 		void CreateChannel(void);
 		void DeleteFinishedElements(void);
 
-		void CheckEvent(Event& event) const;
+		void CheckEvent(Event*& event) const;
 		std::map<int, std::string> ExecuteEvent(const Event& event);
 		const std::string& get_server_password() const;
 	private:
