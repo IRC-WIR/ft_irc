@@ -11,7 +11,9 @@
 
 class Channel: public EventListener, public EventConfigurator {
 	public:
-		Channel(const User&, const std::string&);
+		// max_numは仮
+		Channel(const User& op, const std::string& name,
+				const std::string& key = "", int max_num = 10);
 		~Channel();
 
 		void CheckCommand(Event& event) const;
@@ -19,14 +21,15 @@ class Channel: public EventListener, public EventConfigurator {
 		bool IsFinished(void) const;
 		void AddUser(const User&);
 		bool RemoveUser(const User&);
+		// 最初にnicknameが一致したUserを削除
+		bool RemoveUserByNick(const std::string&);
 		bool ContainsUser(const User&) const;
+		bool ContainsUserByNick(const std::string&) const;
 		void set_operator(const User&);
 		const User& get_operator(void) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
-		void set_key(const std::string&);
 		bool VerifyKey(const std::string&) const;
-		void set_max_member_num(int);
 
 		class NoOperatorException : public std::runtime_error {
 			public:
@@ -37,12 +40,9 @@ class Channel: public EventListener, public EventConfigurator {
 		};
 
 	private:
-		// 最初に決まる(変更不可)
 		const std::string name_;
-		std::string key_;
-		int max_member_num_;
-
-		// 変更可能
+		const std::string key_;
+		const int max_member_num_;
 		std::string topic_;
 		//bool i_mode;
 		//bool t_mode;
@@ -51,6 +51,8 @@ class Channel: public EventListener, public EventConfigurator {
 		//bool l_mode;
 		std::vector<const User*> users_;
 		const User* operator_;
+
+		void RemoveUserBasic(std::vector<const User*>::iterator&);
 
 		//check command
 		void CkPassCommand(Event& event) const;

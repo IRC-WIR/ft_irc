@@ -9,6 +9,9 @@ User::~User() {
 }
 
 void User::CheckCommand(Event& event) const {
+	if (event.get_fd() == this->get_fd())
+		event.set_executer(*this);
+
 	switch (event.get_command()) {
 		case message::kPass:
 			CkPassCommand(event);
@@ -97,8 +100,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
 		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
-	if (server_password_ == event.get_command_params()[0])
-		set_is_password_authenticated(true);
+	set_is_password_authenticated(true);
 	return OptionalMessage::Empty();
 }
 
@@ -291,10 +293,6 @@ void User::CkModeCommand(Event& event) const
 	utils::PrintStringVector(event.get_command_params());
 }
 //check
-void User::set_server_password(const std::string& password) {
-	utils::CheckPassword(password);
-	server_password_ = password;
-}
 
 void User::set_is_password_authenticated(bool is_authenticated) {
 	is_password_authenticated_ = is_authenticated;
@@ -314,6 +312,18 @@ int User::get_fd() const
 bool User::get_is_delete() const
 {
 	return is_delete_;
+}
+
+const std::string& User::get_nick_name() const {
+	return this->nick_name_;
+}
+
+const std::string& User::get_user_name() const {
+	return this->user_name_;
+}
+
+const std::string& User::get_real_name() const {
+	return this->real_name_;
 }
 
 bool	User::IsVerified() const
