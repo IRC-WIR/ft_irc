@@ -43,11 +43,11 @@ class Channel: public EventListener, public EventConfigurator {
 
 		// 変更可能
 		std::string topic_;
-		bool i_mode;
-		bool t_mode;
-		bool k_mode;
-		bool o_mode;
-		bool l_mode;
+		//bool i_mode;
+		//bool t_mode;
+		//bool k_mode;
+		//bool o_mode;
+		//bool l_mode;
 		std::vector<const User*> users_;
 		const User* operator_;
 

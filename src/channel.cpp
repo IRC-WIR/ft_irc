@@ -4,7 +4,7 @@
 const std::string Channel::NoOperatorException::kErrorMessage("Channel has no operator");
 
 Channel::Channel(const User& op, const std::string& name)
-		: operator_(&op), name_(name), max_member_num_(10) {
+		: name_(name),  max_member_num_(10), operator_(&op) {
 	return ;
 }
 
