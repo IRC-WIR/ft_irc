@@ -211,8 +211,10 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	std::cout << "pass the vertified" << std::endl;
 	if (event.HasErrorOccurred()) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
 		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
-		return OptionalMessage::Create(event.get_fd(), err_msg);
+		return OptionalMessage::Create(this->get_fd(), err_msg);
 	}
 	//送信相手確認
 	const std::vector<std::string>& params = event.get_command_params();
