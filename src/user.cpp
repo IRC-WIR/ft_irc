@@ -85,6 +85,27 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	return ret_ss.str();
 }
 
+std::string User::CreateMessage(const std::string& to, const message::Command& cmd, const std::vector<std::string>& params) const {
+	std::stringstream ret_ss;
+	//add msg from name
+	// ret_ss << ":";
+	// ret_ss << " ";
+	//add command
+	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
+	ret_ss << " ";
+	//add the to subject
+	ret_ss << to;
+	ret_ss << " ";
+	//add message
+	for (std::vector<std::string>::const_iterator it = params.begin();
+		it != params.end();
+		it ++) {
+			ret_ss << *it <<  " ";
+		}
+	ret_ss << "\r\n";
+	return ret_ss.str();
+}
+
 bool User::IsFinished() const {
 	return is_delete_;
 }
@@ -181,9 +202,19 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
-	(void)event;
-	std::cout << "Privmsg method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (!IsVerified())
+		return OptionalMessage::Empty();
+	if (event.HasErrorOccurred()) {
+		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		return OptionalMessage::Create(event.get_fd(), err_msg);
+	}
+	//送信相手確認
+	const std::vector<std::string>& params = event.get_command_params();
+	const std::string& target = params.front();
+	if (target == this->get_nick_name()) {
+		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
+		return OptionalMessage::Create(event.get_fd(), send_msg);
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -256,9 +287,16 @@ void User::CkTopicCommand(Event& event) const
 
 void User::CkPrivmsgCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (!IsVerified())
+		return;
+	const ErrorStatus& err = event.get_error_status();
+	if (err != ErrorStatus::ERR_NOSUCHNICK && err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
+		return;
+	//送信相手か確認
+	const std::string& target = event.get_command_params().front();
+	if (target == this->get_nick_name())
+		event.erase_error_status();
+
 }
 
 void User::CkModeCommand(Event& event) const
@@ -283,18 +321,20 @@ bool User::get_is_password_authenticated() const
 	return is_password_authenticated_;
 }
 
-int User::get_fd() const
-{
+int User::get_fd() const {
 	return fd_;
 }
 
-bool User::get_is_delete() const
-{
+bool User::get_is_delete() const {
 	return is_delete_;
 }
 
-bool	User::IsVerified() const
-{
+const std::string& User::get_nick_name() const {
+	return nick_name_;
+}
+
+
+bool	User::IsVerified() const {
 	if (!this->is_password_authenticated_
 		|| this->nick_name_.empty()
 		|| this->user_name_.empty()){

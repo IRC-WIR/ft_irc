@@ -106,7 +106,7 @@ void Database::CkNickCommand(Event& event) const {
 
 	if (event.get_command_params().size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
-		return ;	
+		return ;
 	}
 
 	const std::string& new_nickname = event.get_command_params().at(0);
@@ -125,7 +125,7 @@ void Database::CkNickCommand(Event& event) const {
 
 	const std::string must_not_start_with = "$:&#~%+";
 	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
-		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);	
+		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
 
@@ -164,9 +164,23 @@ void Database::CkTopicCommand(Event& event) const {
 }
 
 void Database::CkPrivmsgCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const std::vector<std::string> &params = event.get_command_params();
+
+	if (params.size() <  2) {
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return;
+	}
+	if (params.back().empty()) {
+		event.set_error_status(ErrorStatus::ERR_NOTEXTTOSEND);
+		return;
+	}
+	const char& target = params.front()[0];
+	//channel's fornt charactor is '#'
+	if (target == '#') {
+		event.set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
+		return;
+	}
+	event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
 }
 
 void Database::CkModeCommand(Event& event) const {

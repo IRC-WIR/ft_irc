@@ -1,6 +1,9 @@
 #include "error_status.h"
 
 const ErrorStatus
+    ErrorStatus::ERR_NOSUCHNICK(401, "No such nick"),
+    ErrorStatus::ERR_CANNOTSENDTOCHAN(401, "No such channel"),
+    ErrorStatus::ERR_NOTEXTTOSEND(412, "No text to send"),
     ErrorStatus::ERR_NONICKNAMEGIVEN(431, "No nickname given"),
     ErrorStatus::ERR_ERRONEUSNICKNAME(432, "Erroneus nickname"),
     ErrorStatus::ERR_NICKNAMEINUSE(433, "Nickname is already in use"),

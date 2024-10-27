@@ -55,6 +55,10 @@ void Event::set_error_status(const ErrorStatus& error_status) {
 	this->error_status_ = &error_status;
 }
 
+void Event::erase_error_status() {
+	error_status_ = NULL;
+}
+
 bool Event::HasErrorOccurred() const {
 	return (this->error_status_ != NULL);
 }

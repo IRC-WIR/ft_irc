@@ -54,6 +54,12 @@ const std::string& Channel::get_topic() const {
 	return this->topic_;
 }
 
+const std::string& Channel::get_name() const {
+	return name_;
+}
+
+
+
 void Channel::set_key(const std::string& key) {
 	this->key_ = key;
 }
@@ -218,9 +224,13 @@ void Channel::CkTopicCommand(Event& event) const {
 }
 
 void Channel::CkPrivmsgCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const std::string& targe = event.get_command_params().front();
+	if (targe == this->get_name())
+	{
+		event.erase_error_status();
+		//channelイベントはどこに渡せる？
+		ChannelEvent(event, *this);
+	}
 }
 
 void Channel::CkModeCommand(Event& event) const {

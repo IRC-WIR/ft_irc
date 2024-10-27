@@ -18,6 +18,7 @@ class Event {
 		void	set_command(message::Command command);
 		void	set_command_params(const std::vector<std::string>& commmand_params);
 		void	set_error_status(const ErrorStatus&);
+		void	erase_error_status();
 		bool	HasErrorOccurred(void) const;
 		virtual bool IsChannelEvent(void) const;
 
@@ -31,7 +32,6 @@ class Event {
 
 	protected:
 		Event(const Event&);
-
 
 	private:
 		const int	fd_;

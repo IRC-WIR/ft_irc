@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
+#include "channel_event.h"
 #include <stdexcept>
 
 class Channel: public EventListener, public EventConfigurator {
@@ -23,6 +24,7 @@ class Channel: public EventListener, public EventConfigurator {
 		const User& get_operator(void) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
+		const std::string& get_name() const;
 		void set_key(const std::string&);
 		bool VerifyKey(const std::string&) const;
 		void set_max_member_num(int);
