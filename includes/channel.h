@@ -28,6 +28,7 @@ class Channel: public EventListener, public EventConfigurator {
 		const User& get_operator(void) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
+		const std::string& get_name(void) const;
 		bool VerifyKey(const std::string&) const;
 
 		class NoOperatorException : public std::runtime_error {

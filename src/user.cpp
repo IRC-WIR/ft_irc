@@ -200,9 +200,25 @@ OptionalMessage User::ExModeCommand(const Event& event){
 	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
+
 OptionalMessage User::ExQuitCommand(const Event& event){
-	if (event.get_fd() == this->get_fd())
+	//実行者
+	if (event.get_executer().get_fd() == this->get_fd()) {
 		this->is_delete_ = true;
+		return OptionalMessage::Empty();
+	}
+	//実行者以外
+	if (event.IsChannelEvent()) {
+		Channel channel = event.get_channel();
+		//チャンネルメンバ
+		if (channel.ContainsUser(*this)){
+			std::string message = event.get_executer().get_nick_name()
+				+ " in " 
+				+ channel.get_name() 
+				+ "left from the server.";
+			return OptionalMessage::Create(this->fd_, message);
+		}
+	}
 	return OptionalMessage::Empty();
 }
 //Execute
@@ -282,7 +298,7 @@ void User::CkModeCommand(Event& event) const
 
 void User::CkQuitCommand(Event& event) const
 {
-	(void)event;
+	event.set_executer(*this);
 	return ;
 }
 //check

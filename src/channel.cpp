@@ -79,6 +79,10 @@ const std::string& Channel::get_topic() const {
 	return this->topic_;
 }
 
+const std::string& Channel::get_name() const {
+	return this->name_;
+}
+
 bool Channel::VerifyKey(const std::string& key) const {
 	return (this->key_ == key);
 }
