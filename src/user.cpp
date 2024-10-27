@@ -302,7 +302,7 @@ void User::CkPrivmsgCommand(Event& event) const
 			return;
 		const std::string& target = event.get_command_params().front();
 		if (target == this->get_nick_name())
-			event.erase_error_status();
+			event.ResetErrorStatus();
 		//送信相手存在確認
 	}
 }
