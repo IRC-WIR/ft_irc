@@ -7,7 +7,6 @@ Database::~Database(){};
 void Database::CreateUser(int fd) {
 	try {
 		User* user = new User(fd);
-		//user->set_server_password(server_password_);
 		check_element_.push_back(user);
 		execute_element_.push_back(user);
 	} catch(const std::bad_alloc& e) {

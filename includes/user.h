@@ -36,7 +36,6 @@ class User : public EventListener, public EventConfigurator {
 		std::string	nick_name_;
 		std::string	user_name_;
 		std::string	real_name_;
-		std::string server_password_;
 		bool is_delete_;
 
 		//check command
