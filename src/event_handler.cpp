@@ -300,10 +300,10 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
-	if ((event->get_command() == message::Command::kPass
-			|| event->get_command() == message::Command::kNick
-			|| event->get_command() == message::Command::kUser
-			|| event->get_command() == message::Command::kQuit)
+	if ((event->get_command() == message::kPass
+			|| event->get_command() == message::kNick
+			|| event->get_command() == message::kUser
+			|| event->get_command() == message::kQuit)
 					|| event->get_executer().IsVerified()) {
 		AddResponseMap(database_.ExecuteEvent(*event));
 		database_.DeleteFinishedElements();
@@ -332,7 +332,7 @@ void	EventHandler::AddEventSocket(int new_fd) {
 	poll_fd_.push_back(new_pollfd);
 }
 
-void	EventHandler::AddResponseMap(std::map<int, std::string> new_response){
+void	EventHandler::AddResponseMap(std::map<int, std::string> new_response) {
 
 	for (std::map<int, std::string>::iterator new_map_iterator =
 		new_response.begin();

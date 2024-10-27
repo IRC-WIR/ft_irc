@@ -293,15 +293,16 @@ void User::CkTopicCommand(Event& event) const
 
 void User::CkPrivmsgCommand(Event& event) const
 {
-	std::cout << "---ck in user---" << std::endl;
-	const ErrorStatus& err = event.get_error_status();
-	if (err != ErrorStatus::ERR_NOSUCHNICK)
-		return;
-	//送信相手存在確認
-	const std::string& target = event.get_command_params().front();
-	if (target == this->get_nick_name())
-		event.erase_error_status();
-	std::cout << "---ck in user finished---" << std::endl;
+	if (event.HasErrorOccurred())
+	{
+		const ErrorStatus& err = event.get_error_status();
+		if (err != ErrorStatus::ERR_NOSUCHNICK)
+			return;
+		const std::string& target = event.get_command_params().front();
+		if (target == this->get_nick_name())
+			event.erase_error_status();
+		//送信相手存在確認
+	}
 }
 
 void User::CkModeCommand(Event& event) const
