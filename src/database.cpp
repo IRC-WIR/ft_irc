@@ -169,7 +169,7 @@ void Database::CkPrivmsgCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return;
 	}
-	if (params.back().empty()) {
+	if (params[1].empty()) {
 		event.set_error_status(ErrorStatus::ERR_NOTEXTTOSEND);
 		return;
 	}
