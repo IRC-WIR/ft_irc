@@ -238,8 +238,6 @@ void Channel::CkTopicCommand(Event& event) const {
 }
 
 void Channel::CkPrivmsgCommand(Event*& event) const {
-	if (!event->get_executer().IsVerified())
-		return;
 	const ErrorStatus& err = event->get_error_status();
 	if (err != ErrorStatus::ERR_CANNOTSENDTOCHAN)
 		return;
