@@ -51,7 +51,7 @@ bool Channel::ContainsUser(const User& user) const {
 }
 
 bool Channel::ContainsUserByNick(const std::string& nick_name) const {
-	for (std::vector<const User*>::const_iterator it = this->users_.cbegin(); it != this->users_.cend(); ++it) {
+	for (std::vector<const User*>::const_iterator it = this->users_.begin(); it != this->users_.end(); ++it) {
 		if ((*it)->get_nick_name() == nick_name)
 			return true;
 	}
