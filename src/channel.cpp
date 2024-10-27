@@ -5,6 +5,7 @@ const std::string Channel::NoOperatorException::kErrorMessage("Channel has no op
 
 Channel::Channel(const User& op, const std::string& name, const std::string& key, int max_num)
 		: name_(name), key_(key), max_member_num_(max_num), operator_(&op) {
+	(void)max_member_num_;
 	return ;
 }
 
