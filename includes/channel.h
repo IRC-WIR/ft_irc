@@ -6,29 +6,52 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
+#include <stdexcept>
 
-class Channel: public EventListener, public EventConfigurator{
+class Channel: public EventListener, public EventConfigurator {
 	public:
-		Channel();
+		// max_numは仮
+		Channel(const User& op, const std::string& name,
+				const std::string& key = "", int max_num = 10);
 		~Channel();
 
 		void CheckCommand(Event& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-		bool IsFinished() const;
+		bool IsFinished(void) const;
+		void AddUser(const User&);
+		bool RemoveUser(const User&);
+		// 最初にnicknameが一致したUserを削除
+		bool RemoveUserByNick(const std::string&);
+		bool ContainsUser(const User&) const;
+		bool ContainsUserByNick(const std::string&) const;
+		void set_operator(const User&);
+		const User& get_operator(void) const;
+		void set_topic(const std::string&);
+		const std::string& get_topic(void) const;
+		bool VerifyKey(const std::string&) const;
+
+		class NoOperatorException : public std::runtime_error {
+			public:
+				NoOperatorException(void);
+
+			private:
+				static const std::string kErrorMessage;
+		};
 
 	private:
-		std::string		topic_;
-		std::string		key_;
-		std::string		name_;
-		int	max_member_num_;
-		bool	i_mode;
-		bool	t_mode;
-		bool	k_mode;
-		bool	o_mode;
-		bool	l_mode;
-		bool	is_delete_;
-		std::vector<User*> users_;
-		std::vector<User*> operators_;
+		const std::string name_;
+		const std::string key_;
+		const int max_member_num_;
+		std::string topic_;
+		//bool i_mode;
+		//bool t_mode;
+		//bool k_mode;
+		//bool o_mode;
+		//bool l_mode;
+		std::vector<const User*> users_;
+		const User* operator_;
+
+		void RemoveUserBasic(std::vector<const User*>::iterator&);
 
 		//check command
 		void CkPassCommand(Event& event) const;

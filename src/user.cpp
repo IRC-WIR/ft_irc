@@ -1,5 +1,6 @@
 #include "user.h"
 #include "channel.h"
+#include "channel_event.h"
 
 User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(false) {
 }
@@ -8,6 +9,9 @@ User::~User() {
 }
 
 void User::CheckCommand(Event& event) const {
+	if (event.get_fd() == this->get_fd())
+		event.set_executer(*this);
+
 	switch (event.get_command()) {
 		case message::kPass:
 			CkPassCommand(event);
@@ -77,7 +81,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	ret_ss << err_status.get_error_code();
 	ret_ss << " ";
 	//add nick name
-	ret_ss << nick_name_;
+	ret_ss << (nick_name_.empty()? "*" : nick_name_) ;
 	ret_ss << " ";
 	//add command
 	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
@@ -90,27 +94,18 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 }
 
 bool User::IsFinished() const {
-	//未実装
-	return false;
+	return is_delete_;
 }
 
 //Execute
 OptionalMessage User::ExPassCommand(const Event& event) {
-	std::pair<int, std::string> ret_pair;
-
-	if (event.get_command_params().size() < 1)
-	{
-		ret_pair = std::make_pair(event.get_fd(), "ERR_NEEDMOREPARAMS");
+	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
+	if (event.HasErrorOccurred()) {
+		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
-	if (is_password_authenticated_)
-	{
-		ret_pair = std::make_pair(event.get_fd(), "ERR_ALREADYREGISTRED");
-	return OptionalMessage::Empty();
-	}
-	std::cout << "Pass method called!" << std::endl;
-	if (server_password_.compare(event.get_command_params()[0]) == 0)
-		is_password_authenticated_ = true;
+	set_is_password_authenticated(true);
 	return OptionalMessage::Empty();
 }
 
@@ -153,10 +148,21 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExJoinCommand(const Event& event){
-	(void)event;
-	std::cout << "Join method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+OptionalMessage User::ExJoinCommand(const Event& event) {
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			return OptionalMessage::Create(this->get_fd(), message);
+		} else
+			return OptionalMessage::Empty();
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	//const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	// channelに所属しているか
+	// 所属している -> fdが自分 -> 一行目にメンバー、二行目にエンドオブメッセージを出力
+	// 所属している -> 自分でない -> メンバーが入室したことを知らせる
+	// 所属していない -> 何もなし
 	return OptionalMessage::Empty();
 }
 
@@ -204,9 +210,13 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 //Check
 void User::CkPassCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check Pass called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (event.get_fd() != this->get_fd())
+		return ;
+	if (event.HasErrorOccurred())
+		return ;
+	if (get_is_password_authenticated())
+		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+	return;
 }
 
 void User::CkNickCommand(Event& event) const
@@ -277,10 +287,10 @@ void User::CkQuitCommand(Event& event) const
 }
 //check
 
-void User::set_server_password(const std::string& password)
-{
-	server_password_ = password;
+void User::set_is_password_authenticated(bool is_authenticated) {
+	is_password_authenticated_ = is_authenticated;
 }
+
 
 bool User::get_is_password_authenticated() const
 {
@@ -295,6 +305,18 @@ int User::get_fd() const
 bool User::get_is_delete() const
 {
 	return is_delete_;
+}
+
+const std::string& User::get_nick_name() const {
+	return this->nick_name_;
+}
+
+const std::string& User::get_user_name() const {
+	return this->user_name_;
+}
+
+const std::string& User::get_real_name() const {
+	return this->real_name_;
 }
 
 bool	User::IsVerified() const

@@ -3,8 +3,7 @@
 
 namespace utils{
 
-void CheckDigitalStr(std::string num_str)
-{
+void CheckPort(std::string num_str) {
 	for (int i = 0; i < (int)num_str.length(); i++)
 	{
 		if (!isdigit(num_str[i]))
@@ -15,31 +14,43 @@ void CheckDigitalStr(std::string num_str)
 	};
 }
 
-int Stoi(std::string num_str)
-{
+void CheckPassword(std::string password) {
+	//printable ASCII code 33~126, at least 8 characters
+	const char* input_chr_ptr = password.c_str();
+	int i = 0;
+	while (*input_chr_ptr)
+	{
+		if (*input_chr_ptr < 33 || *input_chr_ptr > 126)
+			throw(UtilsException(kNotPrintableAscii));
+		input_chr_ptr ++;
+		i ++;
+	}
+	if (i < 8)
+		throw(UtilsException(kNotEnoughCharacters));
+}
+
+
+int Stoi(std::string num_str) {
 	std::stringstream ss(num_str);
 	int num_int;	ss >> num_int;
 	return (num_int);
 }
 
-std::string SplitBefore(const std::string& str, const std::string& delim)
-{
+std::string SplitBefore(const std::string& str, const std::string& delim) {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
 	return str.substr(0, n);
 }
 
-std::string SplitAfter(const std::string& str, const std::string& delim)
-{
+std::string SplitAfter(const std::string& str, const std::string& delim) {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
 	return str.substr(n + delim.size());
 }
 
-void PrintStringVector(const std::vector<std::string>& str_vec)
-{
+void PrintStringVector(const std::vector<std::string>& str_vec) {
 	int i = 0;
 	for (std::vector<std::string>::const_iterator it = str_vec.begin();
 		it != str_vec.end();
@@ -51,8 +62,7 @@ void PrintStringVector(const std::vector<std::string>& str_vec)
 	}
 }
 
-void EraseNewline(std::string& str)
-{
+void EraseNewline(std::string& str) {
 	std::string::size_type pos;
 	while ((pos = str.find("\r\n")) != std::string::npos)
 		str.erase(pos, 2);
@@ -60,20 +70,17 @@ void EraseNewline(std::string& str)
 		str.erase(pos, 1);
 }
 
-void EraseSpace(std::string& str)
-{
+void EraseSpace(std::string& str) {
 	std::string::size_type pos;
 	while ((pos = str.find(" ")) != std::string::npos)
 		str.erase(pos, 1);
 }
 
-bool IsAscii(char c)
-{
+bool IsAscii(char c) {
 	return static_cast<unsigned char>(c) <= 127;
 }
 
-bool IsAsciiStr(const std::string& str)
-{
+bool IsAsciiStr(const std::string& str) {
 	std::string::const_iterator it = str.begin();
 	while (it != str.end())
 	{
@@ -85,8 +92,7 @@ bool IsAsciiStr(const std::string& str)
 	return true;
 }
 
-void ConvertToUpper(std::string& str)
-{
+void ConvertToUpper(std::string& str) {
 	std::string::iterator it = str.begin();
 	while (it != str.end())
 	{
@@ -96,8 +102,7 @@ void ConvertToUpper(std::string& str)
 	}
 }
 
-bool HasNewlines(const std::string& str)
-{
+bool HasNewlines(const std::string& str) {
 	std::string::size_type find_n_type;
 	std::string::size_type find_r_n_type;
 	find_n_type = str.find("\n");
@@ -109,6 +114,5 @@ bool HasNewlines(const std::string& str)
 }
 
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
-
 
 }
