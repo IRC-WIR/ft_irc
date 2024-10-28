@@ -82,7 +82,7 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
 	ret_ss << " ";
 	//add Error Message
-	ret_ss << ": ";
+	ret_ss << ":";
 	ret_ss << err_status.get_error_message();
 	ret_ss << "\r\n";
 	return ret_ss.str();

@@ -7,6 +7,7 @@ class ErrorStatus {
     public:
         static const ErrorStatus
             ERR_NOSUCHNICK,
+            ERR_NOSUCHCHANNEL,
             ERR_CANNOTSENDTOCHAN,
             ERR_NOTEXTTOSEND,
             ERR_NONICKNAMEGIVEN,

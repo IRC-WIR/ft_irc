@@ -2,6 +2,7 @@
 
 const ErrorStatus
     ErrorStatus::ERR_NOSUCHNICK(401, "No such nick"),
+    ErrorStatus::ERR_NOSUCHCHANNEL(403, "No such channel"),
     ErrorStatus::ERR_CANNOTSENDTOCHAN(404, "Cannot send to channel"),
     ErrorStatus::ERR_NOTEXTTOSEND(412, "No text to send"),
     ErrorStatus::ERR_NONICKNAMEGIVEN(431, "No nickname given"),
