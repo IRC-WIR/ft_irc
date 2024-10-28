@@ -307,8 +307,6 @@ bool EventHandler::IsAuthenticated(const Event& event) {
 			|| event.get_executer().IsVerified());
 }
 
-
-
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
 	if (IsAuthenticated(*event)) {
