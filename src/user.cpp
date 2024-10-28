@@ -205,11 +205,7 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
-//toUserの条件を修正する
-
-
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
-	std::cout << "pass the vertified" << std::endl;
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();

@@ -298,13 +298,20 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		request_map_.insert(std::make_pair(entry.fd, request_buffer));
 }
 
+bool EventHandler::IsAuthenticated(const Event& event) {
+	//認証したか確認、kPass、kNick、kUser、kQuit認証前でも実装できる
+	return (event.get_command() == message::kPass
+			|| event.get_command() == message::kNick
+			|| event.get_command() == message::kUser
+			|| event.get_command() == message::kQuit
+			|| event.get_executer().IsVerified());
+}
+
+
+
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
-	if ((event->get_command() == message::kPass
-			|| event->get_command() == message::kNick
-			|| event->get_command() == message::kUser
-			|| event->get_command() == message::kQuit)
-					|| event->get_executer().IsVerified()) {
+	if (IsAuthenticated(*event)) {
 		AddResponseMap(database_.ExecuteEvent(*event));
 		database_.DeleteFinishedElements();
 	}
