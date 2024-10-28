@@ -151,6 +151,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				default:
 					Event* event = Detach(entry);
 					AddResponseMap(database_.ExecuteEvent(*event));
+					delete event;
 					response_map_.erase(target_fd);
 					return;
 				}
@@ -247,6 +248,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	if (msg[0] == '\0') {
 		Event *event = Detach(entry);
 		ExecuteCommand(event);
+		delete event;
 		return ;
 	}
 	std::string request_buffer;
