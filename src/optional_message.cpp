@@ -1,7 +1,7 @@
 #include "optional_message.h"
 
 const std::string OptionalMessage::EmptyMessageException::kErrorMessage("failed making pair: empty message");
-const std::string OptionalMessage::kFilePath("../conf/ircserv.motd");
+const std::string OptionalMessage::kFilePath("./conf/ircserv.motd");
 
 OptionalMessage OptionalMessage::Empty() {
 	return OptionalMessage();
@@ -40,7 +40,8 @@ OptionalMessage OptionalMessage::AndThen(bool b){
 	if (!b)
 		return Empty();
 
-	std::fstream s{kFilePath, s.binary | s.trunc | s.out};
+	std::fstream s;
+	s.open(kFilePath.c_str(), std::ios::in);
 	if (!s.is_open()) {
 		std::cerr << "Could not open file : " << kFilePath << std::endl;
 		return Empty();
@@ -48,6 +49,7 @@ OptionalMessage OptionalMessage::AndThen(bool b){
 	std::string ret_message;
 	for (std::string line; std::getline(s, line); ) {
 		ret_message += line;
+		ret_message += "\n";
 	}
 	return Create(fd_, ret_message);
 }
