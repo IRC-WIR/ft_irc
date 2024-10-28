@@ -1,6 +1,7 @@
 #include "database.h"
 #include "message.h"
 #include "channel.h"
+#include "channel_event.h"
 
 Database::Database(const std::string& password):server_password_(password){};
 Database::~Database(){};
@@ -30,6 +31,8 @@ void Database::CheckEvent(Event*& event) const {
 
 	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
+
+	this->AfterCheck(*event);
 }
 
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
@@ -92,6 +95,17 @@ void Database::CheckCommandAndParams(Event& event) const {
 	}
 }
 
+void Database::AfterCheck(Event& event) const {
+	if (event.get_command() == message::kJoin) {
+		if (!event.HasErrorOccurred() && event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (channel.ContainsUser(event.get_executer()))
+				event.set_do_nothing(true);
+		}
+		return ;
+	}
+}
+
 //Check
 void Database::CkPassCommand(Event& event) const {
 	const int kParamsSize = 1;
@@ -148,10 +162,25 @@ void Database::CkUserCommand(Event& event) const {
 
 void Database::CkJoinCommand(Event& event) const {
 	const int kParamsSize = 1;
+	const int kNameMaxLength = 50;
+	const char kStartChar = '#';
+	const std::string kMustNotContain(" \7,:"); // \7 == Ctrl+G
 
-	if (event.get_command_params().size() < kParamsSize)
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
-	
+		return ;
+	}
+	if (params[0].empty() || params[0][0] != kStartChar || params[0].length() > kNameMaxLength) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+		return ;
+	}
+	for (std::size_t i = 0; i < params.size(); i++) {
+		if (kMustNotContain.find(params[i]) != std::string::npos) {
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+			return ;
+		}
+	}
 }
 
 void Database::CkInviteCommand(Event& event) const {

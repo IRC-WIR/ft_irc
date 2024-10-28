@@ -14,6 +14,7 @@ Event::Event(const Event& src)
 		: fd_(src.get_fd()), event_type_(src.get_event_type()), error_status_(src.error_status_), executer_(src.executer_) {
 	this->set_command(src.get_command());
 	this->set_command_params(src.get_command_params());
+	this->set_do_nothing(src.is_do_nothing());
 }
 
 Event::~Event() {
@@ -76,6 +77,14 @@ const User& Event::get_executer() const {
 	if (this->executer_ == NULL)
 		throw Event::NoExecuterException();
 	return *(this->executer_);
+}
+
+void Event::set_do_nothing(bool is_do_nothing) {
+	this->is_do_nothing_ = is_do_nothing;
+}
+
+bool Event::is_do_nothing() const {
+	return this->is_do_nothing_;
 }
 
 Event::NoErrorException::NoErrorException()

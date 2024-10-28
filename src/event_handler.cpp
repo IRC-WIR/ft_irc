@@ -303,6 +303,8 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 
 void EventHandler::ExecuteCommand(Event*& event_ptr) {
 	database_.CheckEvent(event_ptr);
+	if (event_ptr->is_do_nothing())
+		return ;
 	if (EventHandler::CheckNewChannel(*event_ptr))
 		this->AddNewChannel(event_ptr);
 	AddResponseMap(database_.ExecuteEvent(*event_ptr));

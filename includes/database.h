@@ -28,6 +28,7 @@ class Database {
 		const std::string& server_password_;
 
 		void CheckCommandAndParams(Event& event) const;
+		void AfterCheck(Event&) const;
 		//check command
 		void CkPassCommand(Event& event) const;
 		void CkNickCommand(Event& event) const;

@@ -11,6 +11,8 @@
 
 class Channel: public EventListener, public EventConfigurator {
 	public:
+		static const int kMaxJoiningChannels = 10;
+
 		Channel(const User& op, const std::string& name);
 		~Channel();
 
@@ -23,19 +25,13 @@ class Channel: public EventListener, public EventConfigurator {
 		bool RemoveUserByNick(const std::string&);
 		bool ContainsUser(const User&) const;
 		bool ContainsUserByNick(const std::string&) const;
-		void set_operator(const User&);
-		const User& get_operator(void) const;
+		bool GiveOperator(const User&);
+		bool TakeOperator(const User&);
+		bool IsOperator(const User&) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
-		bool VerifyKey(const std::string&) const;
-
-		class NoOperatorException : public std::runtime_error {
-			public:
-				NoOperatorException(void);
-
-			private:
-				static const std::string kErrorMessage;
-		};
+		const std::string& get_name(void) const;
+		std::string GenerateMemberList(void) const;
 
 	private:
 		template <typename T, typename U>
@@ -49,13 +45,12 @@ class Channel: public EventListener, public EventConfigurator {
 		const std::string name_;
 		std::string topic_;
 		// i,t,k,o,lは少なくとも実装
-		MyMap<char, bool> mode_map;
+		MyMap<char, bool> mode_map_;
 		std::string key_;
-		int max_member_num_;
-		std::vector<const User*> users_;
-		const User* operator_;
+		std::size_t max_member_num_;
+		utils::MyVector<const User*> operators_;
+		utils::MyVector<const User*> members_;
 
-		void RemoveUserBasic(std::vector<const User*>::iterator&);
 		void InitModeMap(void);
 
 		//check command

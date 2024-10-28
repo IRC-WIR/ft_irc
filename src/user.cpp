@@ -128,7 +128,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		const std::string& message = this->CreateErrorMessage(event.get_command(), event.get_error_status());
+		const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
 		return OptionalMessage::Create(this->get_fd(), message);
 	}
 
@@ -143,6 +143,35 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
+static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
+	std::stringstream ss;
+	ss << target.get_nick_name() << " "
+		<< message::MessageParser::get_command_str_map().find(message::kJoin)->second << " :"
+		<< channel.get_name() << "\r\n";
+	return ss.str();
+}
+
+std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
+	std::stringstream ss;
+	// topic
+	if (!channel.get_topic().empty())
+		ss << 332 << " "
+			<< this->get_nick_name() << " "
+			<< channel.get_name() << " :"
+			<< channel.get_topic() << "\r\n";
+	// メンバーリスト
+	ss << 353 << " "
+		<< this->get_nick_name() << " = "
+		<< channel.get_name() << " :"
+		<< channel.GenerateMemberList() << "\r\n";
+	// End of NAMES list
+	ss << 366 << " "
+		<< this->get_nick_name() << " "
+		<< channel.get_name() << " :"
+		<< "End of /NAMES list." << "\r\n";
+	return ss.str();
+}
+
 OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
@@ -154,12 +183,15 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	if (!channel.ContainsUser(*this))
-		return OptionalMessage::Empty();
-	if (event.get_fd() == this->fd_)
-		return OptionalMessage::Create(this->fd_, "めんば\nめっせーじ");
+	const std::string common_message = GenerateJoinCommonMessage(event.get_executer(), channel);
+	if (event.get_fd() == this->get_fd()) {
+		this->joining_channels_.push_back(&channel);
+		return OptionalMessage::Create(this->get_fd(), common_message + this->GenerateJoinDetailMessage(channel));
+	}
+	if (this->joining_channels_.Contains(&channel))
+		return OptionalMessage::Create(this->get_fd(), common_message);
 	else
-		return OptionalMessage::Create(this->fd_, "入ってきたお");
+		return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExInviteCommand(const Event& event){
@@ -230,7 +262,13 @@ void User::CkUserCommand(Event& event) const {
 }
 
 void User::CkJoinCommand(Event& event) const {
-	(void)event;
+	if (event.get_fd() != this->get_fd()
+			|| event.HasErrorOccurred())
+		return ;
+	if (this->joining_channels_.size() >= Channel::kMaxJoiningChannels) {
+		event.set_error_status(ErrorStatus::ERR_TOOMANYCHANNELS);
+		return ;
+	}
 }
 
 void User::CkInviteCommand(Event& event) const

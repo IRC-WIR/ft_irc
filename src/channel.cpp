@@ -1,11 +1,11 @@
 #include "channel.h"
 #include "channel_event.h"
+#include "utils.h"
 #include <algorithm>
 
-const std::string Channel::NoOperatorException::kErrorMessage("Channel has no operator");
-
 Channel::Channel(const User& op, const std::string& name)
-		: name_(name), operator_(&op) {
+		: name_(name) {
+	this->operators_.push_back(&op);
 	this->InitModeMap();
 }
 
@@ -14,70 +14,79 @@ Channel::~Channel() {
 }
 
 void Channel::InitModeMap() {
-	this->mode_map.clear();
-	this->mode_map['i'] = false;
-	this->mode_map['t'] = false;
-	this->mode_map['k'] = false;
-	this->mode_map['o'] = false;
-	this->mode_map['l'] = false;
+	this->mode_map_.clear();
+	this->mode_map_['i'] = false;
+	this->mode_map_['t'] = false;
+	this->mode_map_['k'] = false;
+	this->mode_map_['o'] = false;
+	this->mode_map_['l'] = false;
 }
 
 void Channel::AddUser(const User& user) {
-	this->users_.push_back(&user);
-}
-
-void Channel::RemoveUserBasic(std::vector<const User*>::iterator& it) {
-	const User* user = *it;
-
-	this->users_.erase(it);
-	if (this->operator_ == user) {
-		if (this->users_.empty())
-			this->operator_ = NULL;
-		else
-			this->operator_ = this->users_[0];
-	}
+	this->members_.push_back(&user);
 }
 
 bool Channel::RemoveUser(const User& user) {
-	std::vector<const User*>::iterator it = std::find(this->users_.begin(), this->users_.end(), &user);
-	if (it == this->users_.end())
-		return false;
-	this->RemoveUserBasic(it);
-	return true;
+	if (this->operators_.Contains(&user)) {
+		this->operators_.Remove(&user);
+		return true;
+	} else if (this->members_.Contains(&user)) {
+		this->members_.Remove(&user);
+		return true;
+	}
+	return false;
+}
+
+static const User* SearchByNick(const utils::MyVector<const User*>& vector, const std::string& nick_name) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if (utils::StrToLower((*it)->get_nick_name()) == utils::StrToLower(nick_name))
+			return *it;
+	}
+	return NULL;
 }
 
 bool Channel::RemoveUserByNick(const std::string& nick_name) {
-	for (std::vector<const User*>::iterator it = this->users_.begin(); it != this->users_.end(); ++it) {
-		if ((*it)->get_nick_name() == nick_name) {
-			this->RemoveUserBasic(it);
-			return true;
-		}
+	const User* user_ptr = SearchByNick(this->operators_, nick_name);
+	if (user_ptr != NULL) {
+		this->operators_.Remove(user_ptr);
+		return true;
+	}
+	user_ptr = SearchByNick(this->members_, nick_name);
+	if (user_ptr != NULL) {
+		this->members_.Remove(user_ptr);
+		return true;
 	}
 	return false;
 }
 
 bool Channel::ContainsUser(const User& user) const {
-	return std::find(this->users_.begin(), this->users_.end(), &user) != this->users_.end();
+	return this->operators_.Contains(&user) || this->members_.Contains(&user);
 }
 
 bool Channel::ContainsUserByNick(const std::string& nick_name) const {
-	for (std::vector<const User*>::const_iterator it = this->users_.begin(); it != this->users_.end(); ++it) {
-		if ((*it)->get_nick_name() == nick_name)
-			return true;
+	return (SearchByNick(this->operators_, nick_name) != NULL || SearchByNick(this->members_, nick_name) != NULL);
+}
+
+bool Channel::GiveOperator(const User& user) {
+	if (this->members_.Contains(&user)) {
+		this->members_.Remove(&user);
+		this->operators_.push_back(&user);
+		return true;
 	}
 	return false;
 }
 
-void Channel::set_operator(const User& user) {
-	if (!this->ContainsUser(user))
-		this->AddUser(user);
-	this->operator_ = &user;
+bool Channel::TakeOperator(const User& user) {
+	if (this->operators_.Contains(&user)) {
+		this->operators_.Remove(&user);
+		this->members_.push_back(&user);
+		return true;
+	}
+	return false;
 }
 
-const User& Channel::get_operator() const {
-	if (this->operator_ == NULL)
-		throw Channel::NoOperatorException();
-	return *this->operator_;
+bool Channel::IsOperator(const User& user) const {
+	return this->operators_.Contains(&user);
 }
 
 void Channel::set_topic(const std::string& topic) {
@@ -88,8 +97,23 @@ const std::string& Channel::get_topic() const {
 	return this->topic_;
 }
 
-bool Channel::VerifyKey(const std::string& key) const {
-	return (!this->mode_map('k') || this->key_ == key);
+const std::string& Channel::get_name() const {
+	return this->name_;
+}
+
+std::string Channel::GenerateMemberList() const {
+	std::stringstream ss;
+	for (std::size_t i = 0; i < this->operators_.size(); i++) {
+		if (i != 0)
+			ss << " ";
+		ss << "@" << this->operators_[i];
+	}
+	for (std::size_t i = 0; i < this->members_.size(); i++) {
+		if (!this->operators_.empty() || i != 0)
+			ss << " ";
+		ss << this->members_[i];
+	}
+	return ss.str();
 }
 
 void Channel::CheckCommand(Event*& event) const {
@@ -152,7 +176,7 @@ OptionalMessage Channel::ExecuteCommand(const Event& event) {
 }
 
 bool Channel::IsFinished() const {
-	return this->users_.empty();
+	return this->operators_.empty() && this->members_.empty();
 }
 
 //Execute
@@ -172,7 +196,14 @@ OptionalMessage Channel::ExUserCommand(const Event& event) {
 }
 
 OptionalMessage Channel::ExJoinCommand(const Event& event) {
-	(void)event;
+	if (event.HasErrorOccurred()
+			|| event.is_do_nothing()
+			|| !event.IsChannelEvent())
+		return OptionalMessage::Empty();
+
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this == &channel)
+		this->AddUser(event.get_executer());
 	return OptionalMessage::Empty();
 }
 
@@ -222,18 +253,17 @@ void Channel::CkUserCommand(Event& event) const {
 void Channel::CkJoinCommand(Event*& event) const {
 	if (event->HasErrorOccurred())
 		return ;
-
 	const std::vector<std::string> params = event->get_command_params();
-	if (params[0] != this->name_)
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
 
 	const std::string key = params.size() >= 2 ? params[1] : "";
-	if (!this->VerifyKey(key))
-		event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
-	else if (mode_map('i'))
-		event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
-	else if (mode_map('l') && this->users_.size() == this->max_member_num_)
-		event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+	if (this->mode_map_('k') && this->key_ != key)
+		event->set_error_status(ErrorStatus::ERR_BADCHANNELKEY);
+	else if (this->mode_map_('i'))
+		event->set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
+	else if (this->mode_map_('l') && this->operators_.size() + this->members_.size() >= this->max_member_num_)
+		event->set_error_status(ErrorStatus::ERR_CHANNELISFULL);
 	else {
 		ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 		delete event;
@@ -271,8 +301,3 @@ void Channel::CkModeCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 //check
-
-Channel::NoOperatorException::NoOperatorException()
-		: std::runtime_error(Channel::NoOperatorException::kErrorMessage) {
-	return ;
-}
