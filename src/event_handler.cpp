@@ -134,28 +134,13 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			}
 			//送信失敗
 			if (sent_msg_length < 0) {
-
-				switch (errno) {
-				//プログラム終了
-				case EFAULT:
-				case EMSGSIZE:
-					std::cout <<  strerror(errno) << std::endl;
-					std::exit(EXIT_FAILURE);
-				//次回POLLOUT発生時に再送
-				case EWOULDBLOCK:
-					return;
-				//直ちに再送
-			  case EINTR:
-					break ;
-				//接続切断
-				default:
-					Event* event = Detach(entry);
-					AddResponseMap(database_.ExecuteEvent(*event));
-					delete event;
-					response_map_.erase(target_fd);
-					return;
-				}
-				continue;
+				Detach(entry);
+				Event event(entry.fd, entry.revents);
+				Event* event_ptr = &event;;
+				event_ptr->set_command(message::kQuit);
+				ExecuteCommand(event_ptr);
+				response_map_.erase(target_fd);
+				return;
 			} else {
 				it = response_map_[target_fd].erase(it);
 			}
@@ -176,7 +161,7 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 	}
 }
 
-Event*	EventHandler::Detach(pollfd entry) {
+void	EventHandler::Detach(pollfd entry) {
 	std::cout << "connection hang up " << entry.fd << std::endl;
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
@@ -185,9 +170,7 @@ Event*	EventHandler::Detach(pollfd entry) {
 			target_index = i;
 	}
 	poll_fd_.erase(poll_fd_.begin() + target_index);
-	Event* event = new Event(entry.fd, entry.revents);
-	event->set_command(message::kQuit);
-	return event;
+	return ;
 }
 
 void	EventHandler::WaitMillSecond(int ms) {
@@ -246,9 +229,11 @@ void	EventHandler::Receive(int fd, char* buffer) {
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
-		Event *event = Detach(entry);
-		ExecuteCommand(event);
-		delete event;
+		Detach(entry);
+		Event event(entry.fd, entry.revents);
+		Event* event_ptr = &event;
+		event_ptr->set_command(message::kQuit);
+		ExecuteCommand(event_ptr);
 		return ;
 	}
 	std::string request_buffer;
