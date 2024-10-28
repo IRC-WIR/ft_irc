@@ -121,7 +121,8 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
-	return OptionalMessage::Create(this->fd_, ret_message);
+	set_is_authenticated(IsVerified());
+	return OptionalMessage::Create(this->fd_, ret_message).AndThen(this->get_is_authenticated());
 }
 
 OptionalMessage User::ExUserCommand(const Event& event) {
@@ -140,7 +141,8 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 			this->real_name_ += " ";
 		this->real_name_ += params[i];
 	}
-	return OptionalMessage::Empty();
+	set_is_authenticated(IsVerified());
+	return OptionalMessage::Create(this->fd_, "").AndThen(this->get_is_authenticated());
 }
 
 OptionalMessage User::ExJoinCommand(const Event& event) {
@@ -271,14 +273,20 @@ void User::CkModeCommand(Event& event) const
 }
 //check
 
-void User::set_is_password_authenticated(bool is_authenticated) {
-	is_password_authenticated_ = is_authenticated;
+void User::set_is_password_authenticated(bool is_pw_authenticated) {
+	is_password_authenticated_ = is_pw_authenticated;
 }
 
-
-bool User::get_is_password_authenticated() const
-{
+bool User::get_is_password_authenticated() const {
 	return is_password_authenticated_;
+}
+
+void User::set_is_authenticated(bool is_verified) {
+	is_authenticated_ = is_verified;
+}
+
+bool User::get_is_authenticated(void) const {
+	return is_authenticated_;
 }
 
 int User::get_fd() const

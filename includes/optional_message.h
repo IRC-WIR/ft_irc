@@ -4,6 +4,8 @@
 # include <string>
 # include <stdexcept>
 # include <utility>
+# include <fstream>
+# include <iostream>
 
 // Javaにある「Optional」クラスを参考にしました。
 // c++にも「std::optional」という似た仕組みがあるようです。
@@ -17,6 +19,10 @@ class OptionalMessage {
 
 		bool IsEmpty(void) const;
 		std::pair<int, std::string> MakePair(void) const;
+		OptionalMessage AndThen(bool b);
+
+
+
 
 		//例外処理
 		class EmptyMessageException : public std::runtime_error {
@@ -28,6 +34,8 @@ class OptionalMessage {
 		};
 
 	private:
+		static const std::string kFilePath;
+
 		const bool is_empty_;
 		const int fd_;
 		const std::string message_;
