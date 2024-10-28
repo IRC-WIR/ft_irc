@@ -311,7 +311,7 @@ void EventHandler::ExecuteCommand(Event*& event_ptr) {
 
 bool EventHandler::CheckNewChannel(const Event& event) {
 	return (!event.HasErrorOccurred()
-			&& event.get_command() == message::Command::kJoin
+			&& event.get_command() == message::kJoin
 			&& !event.IsChannelEvent());
 }
 

@@ -89,7 +89,7 @@ const std::string& Channel::get_topic() const {
 }
 
 bool Channel::VerifyKey(const std::string& key) const {
-	return (!this->mode_map.find('k')->second || this->key_ == key);
+	return (!this->mode_map('k') || this->key_ == key);
 }
 
 void Channel::CheckCommand(Event*& event) const {
@@ -224,13 +224,17 @@ void Channel::CkJoinCommand(Event*& event) const {
 		return ;
 
 	const std::vector<std::string> params = event->get_command_params();
-	if (params[0] == this->name_) {
-		const std::string key = params.size() >= 2 ? params[1] : "";
-		if (!this->VerifyKey(key)) {
-			event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
-			return ;
-		}
-		if 
+	if (params[0] != this->name_)
+		return ;
+
+	const std::string key = params.size() >= 2 ? params[1] : "";
+	if (!this->VerifyKey(key))
+		event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+	else if (mode_map('i'))
+		event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+	else if (mode_map('l') && this->users_.size() == this->max_member_num_)
+		event->set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+	else {
 		ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 		delete event;
 		event = channel_event;

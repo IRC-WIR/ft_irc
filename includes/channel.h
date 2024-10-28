@@ -38,10 +38,18 @@ class Channel: public EventListener, public EventConfigurator {
 		};
 
 	private:
+		template <typename T, typename U>
+		class MyMap : public std::map<T, U> {
+			public:
+				const U& operator() (const U& key) const {
+					return this->find(key)->second;
+				}
+		};
+
 		const std::string name_;
 		std::string topic_;
 		// i,t,k,o,lは少なくとも実装
-		std::map<char, bool> mode_map;
+		MyMap<char, bool> mode_map;
 		std::string key_;
 		int max_member_num_;
 		std::vector<const User*> users_;
