@@ -53,6 +53,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	}
 	std::string last_param;
 	std::string command = message_;
+	bool has_delim = utils::HasDelimator(message_, ":");
 	while (!IsFinishParsing())
 	{
 		switch (state_)
@@ -62,7 +63,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			case kParseParam:
-				if (message_.find(":") != message_.npos)
+				if (has_delim)
 					command_params_.push_back(last_param);
 				state_ = kParseComplete;
 				break;

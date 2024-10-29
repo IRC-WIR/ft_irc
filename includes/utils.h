@@ -22,6 +22,7 @@ namespace utils {
 	bool IsAsciiStr(const std::string& str);
 	void ConvertToUpper(std::string& str);
 	bool HasNewlines(const std::string& str);
+	bool HasDelimator(const std::string& str, const std::string& delim);
 
 	//debug
 	void PrintStringVector(const std::vector<std::string>& str_vec);

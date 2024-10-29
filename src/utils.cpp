@@ -113,6 +113,10 @@ bool HasNewlines(const std::string& str) {
 	return true;
 }
 
+bool HasDelimator(const std::string& str, const std::string& delim) {
+	return str.find(delim) != str.npos;
+}
+
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
 }
