@@ -309,8 +309,6 @@ bool EventHandler::IsAuthenticated(const Event& event) {
 
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
-	if (!event->IsChannelEvent())
-		event->set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 	if (IsAuthenticated(*event)) {
 		AddResponseMap(database_.ExecuteEvent(*event));
 		database_.DeleteFinishedElements();
