@@ -62,7 +62,8 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			case kParseParam:
-				command_params_.push_back(last_param);
+				if (message_.find(":") != message_.npos)
+					command_params_.push_back(last_param);
 				state_ = kParseComplete;
 				break;
 
