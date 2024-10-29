@@ -307,9 +307,18 @@ bool EventHandler::IsAuthenticated(const Event& event) {
 			|| event.get_executer().IsVerified());
 }
 
+void EventHandler::CheckChannelTarget(Event& event) {
+	const std::string& target = event.get_command_params()[0];
+	//is channel but not but cannot find channel target
+	if (*target.c_str() == '#' && !event.IsChannelEvent()) {
+		event.set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
+	}
+}
+
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
 	if (IsAuthenticated(*event)) {
+		CheckChannelTarget(*event);
 		AddResponseMap(database_.ExecuteEvent(*event));
 		database_.DeleteFinishedElements();
 	}

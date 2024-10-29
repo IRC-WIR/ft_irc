@@ -297,9 +297,9 @@ void User::CkPrivmsgCommand(Event& event) const
 		if (err != ErrorStatus::ERR_NOSUCHNICK)
 			return;
 		const std::string& target = event.get_command_params().front();
+		//送信相手存在確認
 		if (target == this->get_nick_name())
 			event.ResetErrorStatus();
-		//送信相手存在確認
 	}
 }
 
