@@ -121,10 +121,11 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
-	const OptionalMessage& ret = OptionalMessage::Create(this->fd_, ret_message).AndThen(IsVerified() && !this->get_is_displayed_welcome());
-	if (IsVerified())
+	if (IsVerified() && !this->get_is_displayed_welcome()) {
 		set_is_displayed_welcome(true);
-	return ret;
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+	}
+	return OptionalMessage::Create(get_fd(), ret_message);
 }
 
 OptionalMessage User::ExUserCommand(const Event& event) {
@@ -143,8 +144,11 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 			this->real_name_ += " ";
 		this->real_name_ += params[i];
 	}
-	set_is_authenticated(IsVerified());
-	return OptionalMessage::Create(this->fd_, "").AndThen(this->get_is_authenticated());
+	if (IsVerified() && !this->get_is_displayed_welcome()) {
+		set_is_displayed_welcome(true);
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+	}
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExJoinCommand(const Event& event) {

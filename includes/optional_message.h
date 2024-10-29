@@ -19,7 +19,6 @@ class OptionalMessage {
 
 		bool IsEmpty(void) const;
 		std::pair<int, std::string> MakePair(void) const;
-		OptionalMessage AndThen(bool b);
 
 		//例外処理
 		class EmptyMessageException : public std::runtime_error {

@@ -9,6 +9,7 @@
 #include <cstring> //for std::memset
 #include <utility> //for std::pair
 #include <set> //for std::set
+#include "optional_message.h"
 
 namespace utils {
 	void CheckPort(std::string port);
@@ -22,6 +23,7 @@ namespace utils {
 	bool IsAsciiStr(const std::string& str);
 	void ConvertToUpper(std::string& str);
 	bool HasNewlines(const std::string& str);
+	std::string GetWelcomeString();
 
 	//debug
 	void PrintStringVector(const std::vector<std::string>& str_vec);
@@ -37,6 +39,10 @@ namespace utils {
 	static const std::string kNotDigitalNumber = "The input port is not digital number";
 	static const std::string kNotPrintableAscii = "The input password is out of range of printable ASCII code 33~126";
 	static const std::string kNotEnoughCharacters = "The input password is less than 8 characters";
+	//FilePath
+	static const std::string kFilePath = "./conf/ircserv.motd";
+	//NewLine in IRC server
+	static const std::string kNewLine = "\r\n";
 };
 
 #endif
