@@ -2,7 +2,10 @@
 #include "channel.h"
 #include "channel_event.h"
 
-User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(false) {
+User::User(int fd) :
+	fd_(fd), is_password_authenticated_(false),
+	is_delete_(false),
+	is_displayed_welcome_(false) {
 }
 
 User::~User() {
