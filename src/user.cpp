@@ -121,8 +121,10 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
-	set_is_authenticated(IsVerified());
-	return OptionalMessage::Create(this->fd_, ret_message).AndThen(this->get_is_authenticated());
+	const OptionalMessage& ret = OptionalMessage::Create(this->fd_, ret_message).AndThen(IsVerified() && !this->get_is_displayed_welcome());
+	if (IsVerified())
+		set_is_displayed_welcome(true);
+	return ret;
 }
 
 OptionalMessage User::ExUserCommand(const Event& event) {
@@ -281,12 +283,12 @@ bool User::get_is_password_authenticated() const {
 	return is_password_authenticated_;
 }
 
-void User::set_is_authenticated(bool is_verified) {
-	is_authenticated_ = is_verified;
+void User::set_is_displayed_welcome(bool is_verified) {
+	is_displayed_welcome_ = is_verified;
 }
 
-bool User::get_is_authenticated(void) const {
-	return is_authenticated_;
+bool User::get_is_displayed_welcome(void) const {
+	return is_displayed_welcome_;
 }
 
 int User::get_fd() const

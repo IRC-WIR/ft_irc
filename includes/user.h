@@ -22,8 +22,8 @@ class User : public EventListener, public EventConfigurator {
 
 		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
-		void set_is_authenticated(bool is_verified);
-		bool get_is_authenticated(void) const;
+		void set_is_displayed_welcome(bool is_verified);
+		bool get_is_displayed_welcome(void) const;
 
 		int get_fd(void) const;
 		bool get_is_delete(void) const;
@@ -40,7 +40,7 @@ class User : public EventListener, public EventConfigurator {
 		std::string	user_name_;
 		std::string	real_name_;
 		bool is_delete_;
-		bool is_authenticated_;
+		bool is_displayed_welcome_;
 
 		//check command
 		void CkPassCommand(Event& event) const;
