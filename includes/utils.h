@@ -9,6 +9,7 @@
 #include <cstring> //for std::memset
 #include <utility> //for std::pair
 #include <set> //for std::set
+#include <algorithm> // for std::find
 
 namespace utils {
 	void CheckPort(std::string port);
@@ -22,6 +23,22 @@ namespace utils {
 	bool IsAsciiStr(const std::string& str);
 	void ConvertToUpper(std::string& str);
 	bool HasNewlines(const std::string& str);
+	std::string StrToLower(const std::string&);
+
+	template <typename T>
+	class MyVector : public std::vector<T> {
+		public:
+			bool Contains(const T& t) const {
+				return (std::find(this->begin(), this->end(), t) != this->end());
+			}
+			bool Remove(const T& t) {
+				typename MyVector<T>::iterator it = std::find(this->begin(), this->end(), t);
+				if (it == this->end())
+					return false;
+				this->erase(it);
+				return true;
+			}
+	};
 
 	//debug
 	void PrintStringVector(const std::vector<std::string>& str_vec);
