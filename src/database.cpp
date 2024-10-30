@@ -1,5 +1,7 @@
 #include "database.h"
 #include "message.h"
+#include "channel.h"
+#include "channel_event.h"
 
 Database::Database(const std::string& password):server_password_(password){};
 Database::~Database(){};
@@ -16,12 +18,21 @@ void Database::CreateUser(int fd) {
 	}
 }
 
+const Channel& Database::CreateChannel(const User& op, const std::string& name) {
+	Channel* channel = new Channel(op, name);
+	this->check_element_.push_back(channel);
+	this->execute_element_.push_back(channel);
+	return *channel;
+}
+
 void Database::CheckEvent(Event*& event) const {
 	Database::CheckCommandAndParams(*event);
 	std::size_t vector_length = check_element_.size();
 
 	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
+
+	this->AfterCheck(*event);
 }
 
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
@@ -87,6 +98,17 @@ void Database::CheckCommandAndParams(Event& event) const {
 	}
 }
 
+void Database::AfterCheck(Event& event) const {
+	if (event.get_command() == message::kJoin) {
+		if (!event.HasErrorOccurred() && event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (channel.ContainsUser(event.get_executer()))
+				event.set_do_nothing(true);
+		}
+		return ;
+	}
+}
+
 //Check
 void Database::CkPassCommand(Event& event) const {
 	const int kParamsSize = 1;
@@ -142,9 +164,27 @@ void Database::CkUserCommand(Event& event) const {
 }
 
 void Database::CkJoinCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Join called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 1;
+	const int kNameMaxLength = 50;
+	const char kStartChar = '#';
+	const std::string kMustNotContain(" \7,:"); // \7 == Ctrl+G
+
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < kParamsSize) {
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return ;
+	}
+	const std::string& channel_name = params[0];
+	if (channel_name.empty() || channel_name[0] != kStartChar || channel_name.length() > kNameMaxLength) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+		return ;
+	}
+	for (std::size_t i = 0; i < kMustNotContain.length(); i++) {
+		if (channel_name.find(kMustNotContain[i]) != std::string::npos) {
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+			return ;
+		}
+	}
 }
 
 void Database::CkInviteCommand(Event& event) const {

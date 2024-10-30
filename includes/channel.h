@@ -7,12 +7,13 @@
 #include "user.h"
 #include "optional_message.h"
 #include <stdexcept>
+#include <map>
 
 class Channel: public EventListener, public EventConfigurator {
 	public:
-		// max_numは仮
-		Channel(const User& op, const std::string& name,
-				const std::string& key = "", int max_num = 10);
+		static const int kMaxJoiningChannels = 10;
+
+		Channel(const User& op, const std::string& name);
 		~Channel();
 
 		void CheckCommand(Event*& event) const;
@@ -24,41 +25,44 @@ class Channel: public EventListener, public EventConfigurator {
 		bool RemoveUserByNick(const std::string&);
 		bool ContainsUser(const User&) const;
 		bool ContainsUserByNick(const std::string&) const;
-		void set_operator(const User&);
-		const User& get_operator(void) const;
+		bool GiveOperator(const User&);
+		bool TakeOperator(const User&);
+		bool IsOperator(const User&) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
-		bool VerifyKey(const std::string&) const;
-
-		class NoOperatorException : public std::runtime_error {
-			public:
-				NoOperatorException(void);
-
-			private:
-				static const std::string kErrorMessage;
-		};
+		std::string GenerateMemberList(void) const;
 
 	private:
-		const std::string name_;
-		const std::string key_;
-		const int max_member_num_;
-		std::string topic_;
-		//bool i_mode;
-		//bool t_mode;
-		//bool k_mode;
-		//bool o_mode;
-		//bool l_mode;
-		std::vector<const User*> users_;
-		const User* operator_;
+		template <typename T, typename U>
+		class MyMap : public std::map<T, U> {
+			public:
+				const U& operator() (const U& key) const {
+					const typename MyMap<T, U>::const_iterator it = this->find(key);
+					if (it == this->end())
+						throw std::out_of_range(MyMap<T, U>::kErrMsg);
+					return it->second;
+				}
+			private:
+				static const std::string kErrMsg;
+		};
 
-		void RemoveUserBasic(std::vector<const User*>::iterator&);
+		const std::string name_;
+		std::string topic_;
+		// i,t,k,o,lは少なくとも実装
+		MyMap<char, bool> mode_map_;
+		std::string key_;
+		std::size_t max_member_num_;
+		utils::MyVector<const User*> operators_;
+		utils::MyVector<const User*> members_;
+
+		void InitModeMap(void);
 
 		//check command
 		void CkPassCommand(Event& event) const;
 		void CkNickCommand(Event& event) const;
 		void CkUserCommand(Event& event) const;
-		void CkJoinCommand(Event& event) const;
+		void CkJoinCommand(Event*& event) const;
 		void CkInviteCommand(Event& event) const;
 		void CkKickCommand(Event& event) const;
 		void CkTopicCommand(Event& event) const;
