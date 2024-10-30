@@ -171,12 +171,13 @@ void Database::CkJoinCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return ;
 	}
-	if (params[0].empty() || params[0][0] != kStartChar || params[0].length() > kNameMaxLength) {
+	const std::string& channel_name = params[0];
+	if (channel_name.empty() || channel_name[0] != kStartChar || channel_name.length() > kNameMaxLength) {
 		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 		return ;
 	}
-	for (std::size_t i = 0; i < params.size(); i++) {
-		if (kMustNotContain.find(params[i]) != std::string::npos) {
+	for (std::size_t i = 0; i < kMustNotContain.length(); i++) {
+		if (channel_name.find(kMustNotContain[i]) != std::string::npos) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
