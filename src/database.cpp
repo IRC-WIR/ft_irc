@@ -127,7 +127,7 @@ void Database::CkNickCommand(Event& event) const {
 
 	if (event.get_command_params().size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
-		return ;	
+		return ;
 	}
 
 	const std::string& new_nickname = event.get_command_params().at(0);
@@ -146,7 +146,7 @@ void Database::CkNickCommand(Event& event) const {
 
 	const std::string must_not_start_with = "$:&#~%+";
 	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
-		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);	
+		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
 
@@ -165,7 +165,7 @@ void Database::CkJoinCommand(Event& event) const {
 	const int kNameMaxLength = 50;
 	const char kStartChar = '#';
 	const std::string kMustNotContain(" \7,:"); // \7 == Ctrl+G
-
+	
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
@@ -196,9 +196,14 @@ void Database::CkKickCommand(Event& event) const {
 }
 
 void Database::CkTopicCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 1;
+
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < kParamsSize) {
+		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
+		return ;
+	}
+
 }
 
 void Database::CkPrivmsgCommand(Event& event) const {

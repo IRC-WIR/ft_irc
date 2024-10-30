@@ -209,9 +209,10 @@ OptionalMessage User::ExKickCommand(const Event& event){
 }
 
 OptionalMessage User::ExTopicCommand(const Event& event){
-	(void)event;
-	std::cout << "Topic method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (event.HasErrorOccurred()) {
+		std::string error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		return OptionalMessage::Create(event.get_fd(), error_msg);
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -288,8 +289,7 @@ void User::CkKickCommand(Event& event) const
 void User::CkTopicCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+
 }
 
 void User::CkPrivmsgCommand(Event& event) const
