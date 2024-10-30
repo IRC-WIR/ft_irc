@@ -3,6 +3,9 @@
 #include "utils.h"
 #include <algorithm>
 
+template <typename T, typename U>
+const std::string Channel::MyMap<T, U>::kErrMsg("not found the key");
+
 Channel::Channel(const User& op, const std::string& name)
 		: name_(name) {
 	this->operators_.push_back(&op);
@@ -197,7 +200,6 @@ OptionalMessage Channel::ExUserCommand(const Event& event) {
 
 OptionalMessage Channel::ExJoinCommand(const Event& event) {
 	if (event.HasErrorOccurred()
-			|| event.is_do_nothing()
 			|| !event.IsChannelEvent())
 		return OptionalMessage::Empty();
 
