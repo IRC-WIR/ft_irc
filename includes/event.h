@@ -26,7 +26,6 @@ class Event {
 		const User& get_executer(void) const;
 		void set_do_nothing(bool);
 		bool is_do_nothing(void) const;
-		bool IsExecutable(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
