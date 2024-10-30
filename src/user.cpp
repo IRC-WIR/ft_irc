@@ -145,9 +145,22 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 
 static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
 	std::stringstream ss;
+	std::cout << "test1-1" << std::endl;
+	const std::string& t = target.get_nick_name();
+	std::cout << "test1-2" << std::endl;
+	const std::string& c = channel.get_name();
+	std::cout << "test1-3" << std::endl;
+	std::map<message::Command, std::string> map = message::MessageParser::get_command_str_map();
+	std::cout << "test1-4" << std::endl;
+	std::map<message::Command, std::string>::const_iterator const_it = map.find(message::kJoin);
+	std::cout << "test1-5" << std::endl;
+	const std::string& str_map = const_it->second;
+	std::cout << "test1-6" << std::endl;
+	std::cout << c << t << str_map << std::endl;
 	ss << target.get_nick_name() << " "
 		<< message::MessageParser::get_command_str_map().find(message::kJoin)->second << " :"
 		<< channel.get_name() << "\r\n";
+	std::cout << "test1-7" << std::endl;
 	return ss.str();
 }
 
@@ -183,7 +196,13 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+
+	std::cout << "test1" << std::endl;
 	const std::string common_message = GenerateJoinCommonMessage(event.get_executer(), channel);
+	std::cout << "test2" << std::endl;
+
+
+
 	if (event.get_fd() == this->get_fd()) {
 		this->joining_channels_.push_back(&channel);
 		return OptionalMessage::Create(this->get_fd(), common_message + this->GenerateJoinDetailMessage(channel));
