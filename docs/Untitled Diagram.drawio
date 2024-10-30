@@ -506,7 +506,7 @@
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-83" value="User：&lt;div&gt;・所属したチャンネルのサイズ確認&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;・kの確認&lt;/div&gt;&lt;div&gt;・iの確認&lt;/div&gt;&lt;div&gt;・lの確認&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;・チャンネルイベントの作成&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
           <mxGeometry x="3070" y="-270" width="290" height="201.25" as="geometry" />
         </mxCell>
-        <mxCell id="ZX0kus3nEfe8XQ3JR11P-84" value="User：&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+        <mxCell id="ZX0kus3nEfe8XQ3JR11P-84" value="User：&lt;div&gt;JOIN&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
           <mxGeometry x="2780" y="429.38" width="290" height="201.25" as="geometry" />
         </mxCell>
       </root>
