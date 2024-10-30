@@ -407,9 +407,9 @@
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-44" value="Event ptr" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="2750" y="-320" width="100" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="ZX0kus3nEfe8XQ3JR11P-45" value="" style="endArrow=none;dashed=1;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1">
+        <mxCell id="ZX0kus3nEfe8XQ3JR11P-45" value="" style="endArrow=none;dashed=1;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="2954.29" y="269.5" as="sourcePoint" />
+            <mxPoint x="2955" y="-60" as="sourcePoint" />
             <mxPoint x="2955.29" y="-378.5" as="targetPoint" />
           </mxGeometry>
         </mxCell>
@@ -460,7 +460,7 @@
         </mxCell>
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-67" value="" style="endArrow=none;dashed=1;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="2659.29" y="1149" as="sourcePoint" />
+            <mxPoint x="2660" y="690" as="sourcePoint" />
             <mxPoint x="2659.58" y="310" as="targetPoint" />
           </mxGeometry>
         </mxCell>
@@ -506,8 +506,8 @@
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-83" value="User：&lt;div&gt;・所属したチャンネルのサイズ確認&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;・kの確認&lt;/div&gt;&lt;div&gt;・iの確認&lt;/div&gt;&lt;div&gt;・lの確認&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;・チャンネルイベントの作成&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
           <mxGeometry x="3070" y="-270" width="290" height="201.25" as="geometry" />
         </mxCell>
-        <mxCell id="ZX0kus3nEfe8XQ3JR11P-84" value="User：&lt;div&gt;JOIN&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
-          <mxGeometry x="2780" y="429.38" width="290" height="201.25" as="geometry" />
+        <mxCell id="ZX0kus3nEfe8XQ3JR11P-84" value="User：&lt;div&gt;・JOINコマンド実行メッセージ表示（実行者、実行者以外）&lt;br&gt;&lt;div&gt;・所属チェンネルを追加&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;・ユーザーを追加&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="2780" y="429.38" width="380" height="201.25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
