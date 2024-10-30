@@ -509,6 +509,9 @@
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-84" value="User：&lt;div&gt;・JOINコマンド実行メッセージ表示（実行者、実行者以外）&lt;br&gt;&lt;div&gt;・所属チェンネルを追加&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;・ユーザーを追加&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
           <mxGeometry x="2780" y="429.38" width="380" height="201.25" as="geometry" />
         </mxCell>
+        <mxCell id="ZX0kus3nEfe8XQ3JR11P-85" value="AddNewChannel" style="shape=note;size=20;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="2150" y="163" width="150" height="100" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
