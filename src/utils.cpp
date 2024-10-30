@@ -1,6 +1,5 @@
 #include "utils.h"
 
-
 namespace utils{
 
 void CheckPort(std::string num_str) {
@@ -111,10 +110,6 @@ bool HasNewlines(const std::string& str) {
 	if (find_n_type == std::string::npos && find_r_n_type == std::string::npos)
 		return false;
 	return true;
-}
-
-bool HasDelimator(const std::string& str, const std::string& delim) {
-	return str.find(delim) != str.npos;
 }
 
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};

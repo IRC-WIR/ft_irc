@@ -53,7 +53,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	}
 	std::string last_param;
 	std::string command = message_;
-	bool has_delim = utils::HasDelimator(message_, ":");
+	bool has_delim = false;
 	while (!IsFinishParsing())
 	{
 		switch (state_)
@@ -74,6 +74,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				last_param = utils::SplitAfter(message_, ":");
 				if (!last_param.empty())
 				{
+					has_delim = true;
 					utils::EraseNewline(last_param);
 					command = utils::SplitBefore(message_, ":");
 				}
