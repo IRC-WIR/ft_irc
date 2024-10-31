@@ -172,7 +172,9 @@ void	EventHandler::Detach(pollfd entry) {
 		if (poll_fd_[i].fd == entry.fd)
 			target_index = i;
 	}
+	int target_fd = (poll_fd_.begin() + target_index)->fd;
 	poll_fd_.erase(poll_fd_.begin() + target_index);
+	close(target_fd);
 	return ;
 }
 
@@ -233,7 +235,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
 		Detach(entry);
-		Event event(entry.fd, entry.revents);
+		Event event(entry.fd, POLL_HUP);
 		Event* event_ptr = &event;
 		event_ptr->set_command(message::kQuit);
 		ExecuteCommand(event_ptr);
@@ -282,6 +284,8 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 			std::cout << "Parse Empty" <<std::endl;
 			break ;
 		default:
+			if (event->get_command() == message::kQuit)
+				Detach(entry);
 			this->ExecuteCommand(event);
 			break ;
 		}
