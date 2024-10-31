@@ -4,8 +4,6 @@
 # include <string>
 # include <stdexcept>
 # include <utility>
-# include <fstream>
-# include <iostream>
 
 // Javaにある「Optional」クラスを参考にしました。
 // c++にも「std::optional」という似た仕組みがあるようです。
