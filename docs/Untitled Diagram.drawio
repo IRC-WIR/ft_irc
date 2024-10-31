@@ -1,16 +1,16 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" version="24.7.17">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" version="24.8.3">
   <diagram name="Page-1" id="13e1069c-82ec-6db2-03f1-153e76fe0fe0">
-    <mxGraphModel dx="3322" dy="2420" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="2771" dy="1576" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="BjCihLlQD2JP0RxUMp7F-10" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFCCCC;" vertex="1" parent="1">
+        <mxCell id="BjCihLlQD2JP0RxUMp7F-10" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFCCCC;" parent="1" vertex="1">
           <mxGeometry x="2020" y="-660" width="1380" height="990" as="geometry" />
         </mxCell>
-        <mxCell id="BjCihLlQD2JP0RxUMp7F-13" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#CCCCFF;" vertex="1" parent="1">
+        <mxCell id="BjCihLlQD2JP0RxUMp7F-13" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#CCCCFF;" parent="1" vertex="1">
           <mxGeometry x="2020" y="190" width="1380" height="620" as="geometry" />
         </mxCell>
-        <mxCell id="BjCihLlQD2JP0RxUMp7F-14" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFCCFF;" vertex="1" parent="1">
+        <mxCell id="BjCihLlQD2JP0RxUMp7F-14" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFCCFF;" parent="1" vertex="1">
           <mxGeometry x="2020" y="180" width="1380" height="150" as="geometry" />
         </mxCell>
         <mxCell id="XCsdaRrqTIR_uCTDz4fb-1" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;shadow=1;fillColor=#969696;" parent="1" vertex="1">
@@ -518,17 +518,23 @@
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-84" value="User：&lt;div&gt;・JOINコマンド実行メッセージ表示（実行者、実行者以外）&lt;br&gt;&lt;div&gt;・所属チェンネルを追加&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Channel：&lt;/div&gt;&lt;/div&gt;&lt;div&gt;・ユーザーを追加&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
           <mxGeometry x="2780" y="429.38" width="380" height="201.25" as="geometry" />
         </mxCell>
-        <mxCell id="ZX0kus3nEfe8XQ3JR11P-85" value="Error:&lt;br&gt;Channel名が設定されていない" style="shape=note;size=20;whiteSpace=wrap;html=1;shadow=1;strokeColor=#FF7566;" parent="1" vertex="1">
+        <mxCell id="ZX0kus3nEfe8XQ3JR11P-85" value="EventとDBに情報を追加する" style="shape=note;size=20;whiteSpace=wrap;html=1;shadow=1;strokeColor=#FF7566;" parent="1" vertex="1">
           <mxGeometry x="2070" y="205" width="195" height="100" as="geometry" />
         </mxCell>
         <mxCell id="ZX0kus3nEfe8XQ3JR11P-87" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;AddNewChannel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="2275" y="230" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="BjCihLlQD2JP0RxUMp7F-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="BjCihLlQD2JP0RxUMp7F-4" target="ZX0kus3nEfe8XQ3JR11P-53">
+        <mxCell id="BjCihLlQD2JP0RxUMp7F-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="BjCihLlQD2JP0RxUMp7F-4" target="ZX0kus3nEfe8XQ3JR11P-53" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="BjCihLlQD2JP0RxUMp7F-4" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Checkのループを回し終わり、Eventにすべての情報がそろったうえで確認できるエラーなどをチェックする関数&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="BjCihLlQD2JP0RxUMp7F-4" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Checkのループを回し終わり、Eventにすべての情報がそろったうえで確認できるエラーなどをチェックする関数&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="2900" y="-27" width="410" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="HXLr0WoZ0Ttub5ZfBrc1-1" value="Eventにエラー情報を追加する" style="shape=note;size=20;whiteSpace=wrap;html=1;shadow=1;strokeColor=#FF7566;" vertex="1" parent="1">
+          <mxGeometry x="2080" y="-320" width="195" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HXLr0WoZ0Ttub5ZfBrc1-2" value="DBに情報を追加する" style="shape=note;size=20;whiteSpace=wrap;html=1;shadow=1;strokeColor=#FF7566;" vertex="1" parent="1">
+          <mxGeometry x="2070" y="560" width="195" height="100" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
