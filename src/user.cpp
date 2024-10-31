@@ -104,6 +104,10 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
 	set_is_password_authenticated(true);
+	if (IsVerified() && !this->is_displayed_welcome()) {
+		set_displayed_welcome(true);
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -124,8 +128,8 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
-	if (IsVerified() && !this->get_is_displayed_welcome()) {
-		set_is_displayed_welcome(true);
+	if (IsVerified() && !this->is_displayed_welcome()) {
+		set_displayed_welcome(true);
 		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
 	}
 	return OptionalMessage::Create(get_fd(), ret_message);
@@ -147,8 +151,8 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 			this->real_name_ += " ";
 		this->real_name_ += params[i];
 	}
-	if (IsVerified() && !this->get_is_displayed_welcome()) {
-		set_is_displayed_welcome(true);
+	if (IsVerified() && !this->is_displayed_welcome()) {
+		set_displayed_welcome(true);
 		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
 	}
 	return OptionalMessage::Empty();
@@ -290,11 +294,11 @@ bool User::get_is_password_authenticated() const {
 	return is_password_authenticated_;
 }
 
-void User::set_is_displayed_welcome(bool is_verified) {
+void User::set_displayed_welcome(bool is_verified) {
 	is_displayed_welcome_ = is_verified;
 }
 
-bool User::get_is_displayed_welcome(void) const {
+bool User::is_displayed_welcome(void) const {
 	return is_displayed_welcome_;
 }
 

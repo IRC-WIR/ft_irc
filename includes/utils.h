@@ -9,6 +9,7 @@
 #include <cstring> //for std::memset
 #include <utility> //for std::pair
 #include <set> //for std::set
+#include <fstream> //for std::fstream
 #include "optional_message.h"
 
 namespace utils {

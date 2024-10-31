@@ -22,8 +22,8 @@ class User : public EventListener, public EventConfigurator {
 
 		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
-		void set_is_displayed_welcome(bool is_verified);
-		bool get_is_displayed_welcome(void) const;
+		void set_displayed_welcome(bool is_verified);
+		bool is_displayed_welcome(void) const;
 
 		int get_fd(void) const;
 		bool get_is_delete(void) const;

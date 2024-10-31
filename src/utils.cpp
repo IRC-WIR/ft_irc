@@ -119,18 +119,14 @@ std::string GetWelcomeString() {
 	s.open(kFilePath.c_str(), std::ios::in);
 	if (!s.is_open()) {
 		std::cerr << "Could not open file : " << kFilePath << std::endl;
-		return NULL;
+		return "";
 	}
-	std::string ret_message;
+	std::stringstream ret_ss;
 	for (std::string line; std::getline(s, line); ) {
-		ret_message += line;
-		ret_message += kNewLine;
+		ret_ss << line << kNewLine;
 	}
-	return ret_message;
+	return ret_ss.str();
 }
-
-
-
 
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
