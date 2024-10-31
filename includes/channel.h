@@ -38,8 +38,13 @@ class Channel: public EventListener, public EventConfigurator {
 		class MyMap : public std::map<T, U> {
 			public:
 				const U& operator() (const U& key) const {
-					return this->find(key)->second;
+					const typename MyMap<T, U>::const_iterator it = this->find(key);
+					if (it == this->end())
+						throw std::out_of_range(MyMap<T, U>::kErrMsg);
+					return it->second;
 				}
+			private:
+				static const std::string kErrMsg;
 		};
 
 		const std::string name_;
