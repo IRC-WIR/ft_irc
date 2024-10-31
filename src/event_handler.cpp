@@ -92,9 +92,9 @@ void	EventHandler::ExecutePoll() {
 	}
 	int fd_size = poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
-		HandlePollHupEvent(this->poll_fd_[i]);
-	for (int i = 0; i < fd_size; i++)
 		HandlePollInEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollHupEvent(this->poll_fd_[i]);
 	for (int i = 0; i < fd_size; i++)
 		HandlePollOutEvent(this->poll_fd_[i]);
 	return ;
