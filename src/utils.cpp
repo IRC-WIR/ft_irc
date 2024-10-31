@@ -1,7 +1,7 @@
 #include "utils.h"
+#include <iterator> // for std::back_inserter
 
-
-namespace utils{
+namespace utils {
 
 void CheckPort(std::string num_str) {
 	for (int i = 0; i < (int)num_str.length(); i++)
@@ -111,6 +111,12 @@ bool HasNewlines(const std::string& str) {
 	if (find_n_type == std::string::npos && find_r_n_type == std::string::npos)
 		return false;
 	return true;
+}
+
+std::string StrToLower(const std::string& str) {
+	std::string ret;
+	std::transform(str.begin(), str.end(), std::back_inserter(ret), ::tolower);
+	return ret;
 }
 
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};

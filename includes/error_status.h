@@ -6,7 +6,8 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
-            ERR_NOSUCHCHANNEL,
+			ERR_NOSUCHCHANNEL,
+			ERR_TOOMANYCHANNELS,
             ERR_NONICKNAMEGIVEN,
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
@@ -15,6 +16,9 @@ class ErrorStatus {
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
             ERR_PASSWDMISMATCH,
+			ERR_CHANNELISFULL,
+			ERR_INVITEONLYCHAN,
+			ERR_BADCHANNELKEY,
             ERR_CHANOPRIVSNEEDED
             ;
 
