@@ -21,7 +21,6 @@ void Channel::InitModeMap() {
 	this->mode_map_['i'] = false;
 	this->mode_map_['t'] = false;
 	this->mode_map_['k'] = false;
-	this->mode_map_['o'] = false;
 	this->mode_map_['l'] = false;
 }
 
@@ -267,6 +266,9 @@ void Channel::CkJoinCommand(Event*& event) const {
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
 
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
 	const std::string key = params.size() >= 2 ? params[1] : "";
 	if (this->mode_map_('k') && this->key_ != key)
 		event->set_error_status(ErrorStatus::ERR_BADCHANNELKEY);
@@ -274,11 +276,6 @@ void Channel::CkJoinCommand(Event*& event) const {
 		event->set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
 	else if (this->mode_map_('l') && this->operators_.size() + this->members_.size() >= this->max_member_num_)
 		event->set_error_status(ErrorStatus::ERR_CHANNELISFULL);
-	else {
-		ChannelEvent* channel_event = new ChannelEvent(*event, *this);
-		delete event;
-		event = channel_event;
-	}
 }
 
 void Channel::CkInviteCommand(Event& event) const {
