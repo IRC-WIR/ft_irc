@@ -28,8 +28,6 @@ class OptionalMessage {
 		};
 
 	private:
-		static const std::string kFilePath;
-
 		const bool is_empty_;
 		const int fd_;
 		const std::string message_;
