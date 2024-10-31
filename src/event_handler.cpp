@@ -260,9 +260,9 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//request_buffer:
 	//pattern1:command1\ncommand2\ncommand3\n
 	while (utils::HasNewlines(request_buffer)) {
-		parsing_msg = utils::SplitBefore(request_buffer, "\n");
+		parsing_msg = utils::TrimBefore(request_buffer, "\n");
 		parsing_msg += "\n";
-		remain_msg = utils::SplitAfter(request_buffer, "\n");
+		remain_msg = utils::TrimAfter(request_buffer, "\n");
 		//eventを作成
 		Event* event = new Event(entry.fd, entry.revents);
 		//parse

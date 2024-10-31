@@ -51,9 +51,16 @@ void MessageParser::ParsingMessage(const std::string& msg)
 		state_ = KParseNotAscii;
 		return;
 	}
-	std::string last_param;
+	std::string last_param = "";
 	std::string command = message_;
-	bool has_delim = false;
+	bool has_delim = message_.find(":") != message_.npos;
+
+	if (has_delim) {
+		last_param = utils::TrimAfter(message_, ":");
+		utils::EraseNewline(last_param);
+		command = utils::TrimBefore(message_, ":");
+	}
+	state_ = kParseCommand;
 	while (!IsFinishParsing())
 	{
 		switch (state_)
@@ -69,17 +76,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			default:
-			//debug in parsing
-				std::cout << "message_:" << message_ << std::endl;
-				last_param = utils::SplitAfter(message_, ":");
-				if (!last_param.empty())
-				{
-					has_delim = true;
-					utils::EraseNewline(last_param);
-					command = utils::SplitBefore(message_, ":");
-				}
-				state_ = kParseCommand;
-				break;
+				return;
 		}
 	}
 }
