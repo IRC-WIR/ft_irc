@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <iterator> // for std::back_inserter
 
 namespace utils {
 
@@ -114,7 +115,7 @@ bool HasNewlines(const std::string& str) {
 
 std::string StrToLower(const std::string& str) {
 	std::string ret;
-	std::transform(str.begin(), str.end(), ret.begin(), ::tolower);
+	std::transform(str.begin(), str.end(), std::back_inserter(ret), ::tolower);
 	return ret;
 }
 

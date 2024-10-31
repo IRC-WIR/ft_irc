@@ -320,7 +320,7 @@ bool EventHandler::CheckNewChannel(const Event& event) {
 void EventHandler::AddNewChannel(Event*& event_ptr) {
 	const User& op = event_ptr->get_executer();
 	const std::string& name = event_ptr->get_command_params()[0];
-	const Channel channel = this->database_.CreateChannel(op, name);
+	const Channel& channel = this->database_.CreateChannel(op, name);
 	ChannelEvent* channel_event = new ChannelEvent(*event_ptr, channel);
 	delete event_ptr;
 	event_ptr = channel_event;

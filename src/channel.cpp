@@ -104,17 +104,25 @@ const std::string& Channel::get_name() const {
 	return this->name_;
 }
 
+std::string Channel::GenerateMemberListWithNewUser(const User& new_user) const {
+	std::string ret = this->GenerateMemberList();
+	if (this->ContainsUser(new_user))
+		return ret;
+	else
+		return ret + " " + new_user.get_nick_name();
+}
+
 std::string Channel::GenerateMemberList() const {
 	std::stringstream ss;
 	for (std::size_t i = 0; i < this->operators_.size(); i++) {
 		if (i != 0)
 			ss << " ";
-		ss << "@" << this->operators_[i];
+		ss << "@" << this->operators_[i]->get_nick_name();
 	}
 	for (std::size_t i = 0; i < this->members_.size(); i++) {
 		if (!this->operators_.empty() || i != 0)
 			ss << " ";
-		ss << this->members_[i];
+		ss << this->members_[i]->get_nick_name();
 	}
 	return ss.str();
 }
@@ -204,7 +212,7 @@ OptionalMessage Channel::ExJoinCommand(const Event& event) {
 		return OptionalMessage::Empty();
 
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	if (this == &channel)
+	if (this == &channel && !this->ContainsUser(event.get_executer()))
 		this->AddUser(event.get_executer());
 	return OptionalMessage::Empty();
 }

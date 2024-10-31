@@ -163,7 +163,7 @@ std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
 	ss << 353 << " "
 		<< this->get_nick_name() << " = "
 		<< channel.get_name() << " :"
-		<< channel.GenerateMemberList() << "\r\n";
+		<< channel.GenerateMemberListWithNewUser(*this) << "\r\n";
 	// End of NAMES list
 	ss << 366 << " "
 		<< this->get_nick_name() << " "

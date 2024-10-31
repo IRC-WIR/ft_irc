@@ -32,12 +32,13 @@ class Channel: public EventListener, public EventConfigurator {
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
 		std::string GenerateMemberList(void) const;
+		std::string GenerateMemberListWithNewUser(const User&) const;
 
 	private:
 		template <typename T, typename U>
 		class MyMap : public std::map<T, U> {
 			public:
-				const U& operator() (const U& key) const {
+				const U& operator() (const T& key) const {
 					const typename MyMap<T, U>::const_iterator it = this->find(key);
 					if (it == this->end())
 						throw std::out_of_range(MyMap<T, U>::kErrMsg);
@@ -56,6 +57,7 @@ class Channel: public EventListener, public EventConfigurator {
 		utils::MyVector<const User*> operators_;
 		utils::MyVector<const User*> members_;
 
+		Channel(const Channel&);
 		void InitModeMap(void);
 
 		//check command
