@@ -36,14 +36,14 @@ int Stoi(std::string num_str) {
 	return (num_int);
 }
 
-std::string SplitBefore(const std::string& str, const std::string& delim) {
+std::string TrimBefore(const std::string& str, const std::string& delim) {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
 	return str.substr(0, n);
 }
 
-std::string SplitAfter(const std::string& str, const std::string& delim) {
+std::string TrimAfter(const std::string& str, const std::string& delim) {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";

@@ -29,7 +29,7 @@ enum ParseState
 	kParseParam,
 	kParseError,
 	kParseEmpty,
-	KParseNotAscii,
+	kParseNotAscii,
 	kParseComplete
 };
 

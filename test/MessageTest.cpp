@@ -154,18 +154,27 @@ TEST(MessageTest, ParsingTest9) {
 
   std::string raw_upper_message =
     "PRIVMSG user : test_to_send\r\n";
-  std::string raw_lower_message =
-    "PRIVmsg #ch1 : test_to_send\r\n";
+  std::string num_1 =
+    "PRIVmsg #ch1 \r\n";
+  std::string num_2 =
+    "PRIVmsg #ch1 :\r\n";
   message::MessageParser message_upper_parser(raw_upper_message);
-  message::MessageParser message_lower_parser(raw_lower_message);
+  message::MessageParser message_num_1(num_1);
+  message::MessageParser message_num_2(num_2);
   // Expect PRIVMSG command.
   EXPECT_EQ(message::kPrivmsg, message_upper_parser.get_command());
   // Expect PRIVMSG command.
-  EXPECT_EQ(message::kPrivmsg, message_lower_parser.get_command());
+  EXPECT_EQ(message::kPrivmsg, message_num_1.get_command());
   // Expect PRIVMSG command param[0]
   EXPECT_EQ("user", message_upper_parser.get_params()[0]);
   // Expect PRIVMSG last command param
   EXPECT_EQ(" test_to_send", message_upper_parser.get_params()[1]);
+  // Expect the num of paramater {"#ch1"} → 1
+  EXPECT_EQ(1, message_num_1.get_params().size());
+  // // Expect the num of paramater {"#ch1",""} → 2
+  EXPECT_EQ(2, message_num_2.get_params().size());
+  // // Expect PRIVMSG last empty command param
+  EXPECT_EQ("", message_num_2.get_params()[1]);
 }
 
 //test QUIT command
@@ -196,7 +205,6 @@ TEST(MessageTest, ParsingTest11) {
   EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
   // Expect last command params.
   EXPECT_EQ(" space_include_last_param: ", message_parser.get_params()[1]);
-
 }
 
 // // test lower_case parsing
