@@ -307,7 +307,8 @@ void User::CkKickCommand(Event& event) const
 
 void User::CkTopicCommand(Event& event) const
 {
-	(void)event;
+	if (event.get_executer())
+
 
 }
 
