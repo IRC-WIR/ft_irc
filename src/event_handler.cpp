@@ -310,7 +310,7 @@ bool EventHandler::IsAuthenticated(const Event& event) {
 void EventHandler::CheckChannelTarget(Event& event) {
 	const std::string& target = event.get_command_params()[0];
 	//is channel but not but cannot find channel target
-	if (*target.c_str() == '#' && !event.IsChannelEvent()) {
+	if (target[0] == '#' && !event.IsChannelEvent()) {
 		event.set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
 	}
 }
