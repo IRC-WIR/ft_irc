@@ -172,7 +172,7 @@ void Database::CkJoinCommand(Event& event) const {
 	const int kNameMaxLength = 50;
 	const char kStartChar = '#';
 	const std::string kMustNotContain(" \7,:"); // \7 == Ctrl+G
-	
+
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
@@ -205,10 +205,17 @@ void Database::CkKickCommand(Event& event) const {
 
 void Database::CkTopicCommand(Event& event) const {
 	const int kParamsSize = 1;
+	const int kNameMaxLength = 50;
+	const char kStartChar = '#';
 
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
+		return ;
+	}
+	const std::string& channel_name = params[0];
+	if (channel_name.empty() || channel_name[0] != kStartChar || channel_name.length() > kNameMaxLength) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 		return ;
 	}
 
