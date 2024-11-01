@@ -6,20 +6,21 @@
 # include "event_listener.h"
 # include "event_configurator.h"
 # include "user.h"
+# include <string>
 
 class Database {
-
 	public:
 		Database(const std::string& password);
 		~Database();
 
 		void CreateUser(int fd);
-		void CreateChannel(void);
+		const Channel& CreateChannel(const User&, const std::string&);
 		void DeleteFinishedElements(void);
 
 		void CheckEvent(Event*& event) const;
 		std::map<int, std::string> ExecuteEvent(const Event& event);
 		const std::string& get_server_password() const;
+
 	private:
 		Database();
 		std::vector<EventConfigurator*> check_element_;
@@ -27,6 +28,7 @@ class Database {
 		const std::string& server_password_;
 
 		void CheckCommandAndParams(Event& event) const;
+		void AfterCheck(Event&) const;
 		//check command
 		void CkPassCommand(Event& event) const;
 		void CkNickCommand(Event& event) const;
