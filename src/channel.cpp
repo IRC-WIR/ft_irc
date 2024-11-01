@@ -21,7 +21,6 @@ void Channel::InitModeMap() {
 	this->mode_map_['i'] = false;
 	this->mode_map_['t'] = false;
 	this->mode_map_['k'] = false;
-	this->mode_map_['o'] = false;
 	this->mode_map_['l'] = false;
 }
 
@@ -104,17 +103,25 @@ const std::string& Channel::get_name() const {
 	return this->name_;
 }
 
+std::string Channel::GenerateMemberListWithNewUser(const User& new_user) const {
+	std::string ret = this->GenerateMemberList();
+	if (this->ContainsUser(new_user))
+		return ret;
+	else
+		return ret + " " + new_user.get_nick_name();
+}
+
 std::string Channel::GenerateMemberList() const {
 	std::stringstream ss;
 	for (std::size_t i = 0; i < this->operators_.size(); i++) {
 		if (i != 0)
 			ss << " ";
-		ss << "@" << this->operators_[i];
+		ss << "@" << this->operators_[i]->get_nick_name();
 	}
 	for (std::size_t i = 0; i < this->members_.size(); i++) {
 		if (!this->operators_.empty() || i != 0)
 			ss << " ";
-		ss << this->members_[i];
+		ss << this->members_[i]->get_nick_name();
 	}
 	return ss.str();
 }
@@ -204,7 +211,7 @@ OptionalMessage Channel::ExJoinCommand(const Event& event) {
 		return OptionalMessage::Empty();
 
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	if (this == &channel)
+	if (this == &channel && !this->ContainsUser(event.get_executer()))
 		this->AddUser(event.get_executer());
 	return OptionalMessage::Empty();
 }
@@ -259,6 +266,9 @@ void Channel::CkJoinCommand(Event*& event) const {
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
 
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
 	const std::string key = params.size() >= 2 ? params[1] : "";
 	if (this->mode_map_('k') && this->key_ != key)
 		event->set_error_status(ErrorStatus::ERR_BADCHANNELKEY);
@@ -266,11 +276,6 @@ void Channel::CkJoinCommand(Event*& event) const {
 		event->set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
 	else if (this->mode_map_('l') && this->operators_.size() + this->members_.size() >= this->max_member_num_)
 		event->set_error_status(ErrorStatus::ERR_CHANNELISFULL);
-	else {
-		ChannelEvent* channel_event = new ChannelEvent(*event, *this);
-		delete event;
-		event = channel_event;
-	}
 }
 
 void Channel::CkInviteCommand(Event& event) const {

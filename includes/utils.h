@@ -15,8 +15,8 @@ namespace utils {
 	void CheckPort(std::string port);
 	void CheckPassword(std::string password);
 	int	Stoi(std::string num_str);
-	std::string SplitBefore(const std::string& str, const std::string& delim);
-	std::string SplitAfter(const std::string& str, const std::string& delim);
+	std::string TrimBefore(const std::string& str, const std::string& delim);
+	std::string TrimAfter(const std::string& str, const std::string& delim);
 	void EraseNewline(std::string& str);
 	void EraseSpace(std::string& str);
 	bool IsAscii(char c);
