@@ -32,7 +32,7 @@ class User : public EventListener, public EventConfigurator {
 		const std::string& get_real_name(void) const;
 
 	private:
-		User();
+		User(void);
 		int		fd_;
 
 		bool	is_password_authenticated_;
@@ -40,6 +40,8 @@ class User : public EventListener, public EventConfigurator {
 		std::string	user_name_;
 		std::string	real_name_;
 		bool is_delete_;
+		utils::MyVector<const Channel*> joining_channels_;
+		std::string GenerateJoinDetailMessage(const Channel&) const;
 		bool is_displayed_welcome_;
 
 		//check command

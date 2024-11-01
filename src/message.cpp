@@ -48,11 +48,21 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	if (!utils::IsAsciiStr(message_))
 	{
 		command_ = kNotFound;
-		state_ = KParseNotAscii;
+		state_ = kParseNotAscii;
 		return;
 	}
-	std::string last_param;
+	std::string last_param = "";
 	std::string command = message_;
+	const std::string kDelim = ":";
+	std::string::size_type delim_pos = message_.find(kDelim);
+	bool has_delim = (delim_pos != std::string::npos);
+
+	if (has_delim) {
+		last_param = message_.substr(delim_pos + kDelim.length());
+		utils::EraseNewline(last_param);
+		command = message_.substr(0, delim_pos);
+	}
+	state_ = kParseCommand;
 	while (!IsFinishParsing())
 	{
 		switch (state_)
@@ -62,22 +72,13 @@ void MessageParser::ParsingMessage(const std::string& msg)
 				break;
 
 			case kParseParam:
-				if (!last_param.empty())
+				if (has_delim)
 					command_params_.push_back(last_param);
 				state_ = kParseComplete;
 				break;
 
 			default:
-			//debug in parsing
-				std::cout << "message_:" << message_ << std::endl;
-				last_param = utils::SplitAfter(message_, ":");
-				if (!last_param.empty())
-				{
-					utils::EraseNewline(last_param);
-					command = utils::SplitBefore(message_, ":");
-				}
-				state_ = kParseCommand;
-				break;
+				return;
 		}
 	}
 }
@@ -86,7 +87,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 {
 	std::stringstream ss(command);
 	std::string	str;
-	while ( getline(ss, str, ' ') ){
+	while ( getline(ss, str, ' ') ) {
 		utils::EraseNewline(str);
 		if (!str.empty())
 			command_params_.push_back(str);
@@ -109,7 +110,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 		state_ = kParseError;
 		return;
 	}
-	//find command, remove commmand string from commad_params vector
+	//find command, remove command string from command_params vector
 	command_params_.erase(command_params_.begin());
 	command_ = it->second;
 	state_ = kParseParam;

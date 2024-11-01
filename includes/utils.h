@@ -11,13 +11,14 @@
 #include <set> //for std::set
 #include <fstream> //for std::fstream
 #include "optional_message.h"
+#include <algorithm> // for std::find
 
 namespace utils {
 	void CheckPort(std::string port);
 	void CheckPassword(std::string password);
 	int	Stoi(std::string num_str);
-	std::string SplitBefore(const std::string& str, const std::string& delim);
-	std::string SplitAfter(const std::string& str, const std::string& delim);
+	std::string TrimBefore(const std::string& str, const std::string& delim);
+	std::string TrimAfter(const std::string& str, const std::string& delim);
 	void EraseNewline(std::string& str);
 	void EraseSpace(std::string& str);
 	bool IsAscii(char c);
@@ -25,6 +26,22 @@ namespace utils {
 	void ConvertToUpper(std::string& str);
 	bool HasNewlines(const std::string& str);
 	std::string GetWelcomeString();
+	std::string StrToLower(const std::string& str);
+
+	template <typename T>
+	class MyVector : public std::vector<T> {
+		public:
+			bool Contains(const T& t) const {
+				return (std::find(this->begin(), this->end(), t) != this->end());
+			}
+			bool Remove(const T& t) {
+				typename MyVector<T>::iterator it = std::find(this->begin(), this->end(), t);
+				if (it == this->end())
+					return false;
+				this->erase(it);
+				return true;
+			}
+	};
 
 	//debug
 	void PrintStringVector(const std::vector<std::string>& str_vec);

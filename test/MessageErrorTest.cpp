@@ -50,5 +50,5 @@ TEST(MessageErrorTest, ParsingErrorTest4) {
   //Expect not found command.
   EXPECT_EQ(message::kNotFound, message_parser.get_command());
   //Expect ParseError state.
-  EXPECT_EQ(message::KParseNotAscii, message_parser.get_state());
+  EXPECT_EQ(message::kParseNotAscii, message_parser.get_state());
 }

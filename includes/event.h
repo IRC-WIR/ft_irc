@@ -24,6 +24,8 @@ class Event {
 		virtual bool IsChannelEvent(void) const;
 		void set_executer(const User&);
 		const User& get_executer(void) const;
+		void set_do_nothing(bool);
+		bool is_do_nothing(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
@@ -57,6 +59,7 @@ class Event {
 		std::vector<std::string>	command_params_;
 		const ErrorStatus* error_status_;
 		const User* executer_;
+		bool is_do_nothing_;
 };
 
 #endif

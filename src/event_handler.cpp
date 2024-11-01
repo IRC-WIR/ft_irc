@@ -1,4 +1,7 @@
 #include "event_handler.h"
+#include "message.h"
+#include "channel.h"
+#include "channel_event.h"
 #include <errno.h>
 
 const	int	EventHandler::kQueueLimit = 10;
@@ -92,9 +95,9 @@ void	EventHandler::ExecutePoll() {
 	}
 	int fd_size = poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
-		HandlePollHupEvent(this->poll_fd_[i]);
-	for (int i = 0; i < fd_size; i++)
 		HandlePollInEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollHupEvent(this->poll_fd_[i]);
 	for (int i = 0; i < fd_size; i++)
 		HandlePollOutEvent(this->poll_fd_[i]);
 	return ;
@@ -260,9 +263,9 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//request_buffer:
 	//pattern1:command1\ncommand2\ncommand3\n
 	while (utils::HasNewlines(request_buffer)) {
-		parsing_msg = utils::SplitBefore(request_buffer, "\n");
+		parsing_msg = utils::TrimBefore(request_buffer, "\n");
 		parsing_msg += "\n";
-		remain_msg = utils::SplitAfter(request_buffer, "\n");
+		remain_msg = utils::TrimAfter(request_buffer, "\n");
 		//eventを作成
 		Event* event = new Event(entry.fd, entry.revents);
 		//parse
@@ -279,7 +282,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		case message::kParseError:
 			std::cout << "Parse Error" <<std::endl;
 			break ;
-		case message::KParseNotAscii:
+		case message::kParseNotAscii:
 			//have to define the action of inputting out range of Ascii
 			std::cout << "Not Ascii code input" << std::endl;
 			break;
@@ -298,10 +301,29 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		request_map_.insert(std::make_pair(entry.fd, request_buffer));
 }
 
-void EventHandler::ExecuteCommand(Event*& event) {
-	database_.CheckEvent(event);
-	AddResponseMap(database_.ExecuteEvent(*event));
+void EventHandler::ExecuteCommand(Event*& event_ptr) {
+	database_.CheckEvent(event_ptr);
+	if (event_ptr->is_do_nothing())
+		return ;
+	if (EventHandler::CheckNewChannel(*event_ptr))
+		this->AddNewChannel(event_ptr);
+	AddResponseMap(database_.ExecuteEvent(*event_ptr));
 	database_.DeleteFinishedElements();
+}
+
+bool EventHandler::CheckNewChannel(const Event& event) {
+	return (!event.HasErrorOccurred()
+			&& event.get_command() == message::kJoin
+			&& !event.IsChannelEvent());
+}
+
+void EventHandler::AddNewChannel(Event*& event_ptr) {
+	const User& op = event_ptr->get_executer();
+	const std::string& name = event_ptr->get_command_params()[0];
+	const Channel& channel = this->database_.CreateChannel(op, name);
+	ChannelEvent* channel_event = new ChannelEvent(*event_ptr, channel);
+	delete event_ptr;
+	event_ptr = channel_event;
 }
 
 message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {

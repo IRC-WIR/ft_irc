@@ -1,7 +1,7 @@
 #include "utils.h"
+#include <iterator> // for std::back_inserter
 
-
-namespace utils{
+namespace utils {
 
 void CheckPort(std::string num_str) {
 	for (int i = 0; i < (int)num_str.length(); i++)
@@ -36,14 +36,14 @@ int Stoi(std::string num_str) {
 	return (num_int);
 }
 
-std::string SplitBefore(const std::string& str, const std::string& delim) {
+std::string TrimBefore(const std::string& str, const std::string& delim) {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
 	return str.substr(0, n);
 }
 
-std::string SplitAfter(const std::string& str, const std::string& delim) {
+std::string TrimAfter(const std::string& str, const std::string& delim) {
 	std::string::size_type n = str.find(delim);
 	if (n == std::string::npos)
 		return "";
@@ -126,6 +126,12 @@ std::string GetWelcomeString() {
 		ret_ss << line << kNewLine;
 	}
 	return ret_ss.str();
+}
+
+std::string StrToLower(const std::string& str) {
+	std::string ret;
+	std::transform(str.begin(), str.end(), std::back_inserter(ret), ::tolower);
+	return ret;
 }
 
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
