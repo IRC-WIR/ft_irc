@@ -48,7 +48,7 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	if (!utils::IsAsciiStr(message_))
 	{
 		command_ = kNotFound;
-		state_ = KParseNotAscii;
+		state_ = kParseNotAscii;
 		return;
 	}
 	std::string last_param = "";
