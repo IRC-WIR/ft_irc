@@ -78,6 +78,10 @@ const std::string& Channel::get_topic() const {
 	return this->topic_;
 }
 
+const std::string& Channel::get_name(void) const {
+	return name_;
+}
+
 bool Channel::VerifyKey(const std::string& key) const {
 	return (this->key_ == key);
 }
@@ -109,7 +113,7 @@ void Channel::CheckCommand(Event*& event) const {
 			CkModeCommand(*event);
 			break;
 		case message::kPrivmsg:
-			CkPrivmsgCommand(*event);
+			CkPrivmsgCommand(event);
 			break;
 		default:
 			return;
@@ -233,10 +237,13 @@ void Channel::CkTopicCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkPrivmsgCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkPrivmsgCommand(Event*& event) const {
+	if (event->get_command_params()[0] != this->get_name())
+		return ;
+	//チャンネルイベントを作成する
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
 }
 
 void Channel::CkModeCommand(Event& event) const {

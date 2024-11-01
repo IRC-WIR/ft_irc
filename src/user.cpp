@@ -82,8 +82,31 @@ std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorSta
 	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
 	ret_ss << " ";
 	//add Error Message
-	ret_ss << ": ";
+	ret_ss << ":";
 	ret_ss << err_status.get_error_message();
+	ret_ss << "\r\n";
+	return ret_ss.str();
+}
+
+std::string User::CreateMessage(const std::string& to, const message::Command& cmd, const std::vector<std::string>& params) const {
+	std::stringstream ret_ss;
+	//add msg from name
+	// ret_ss << ":";
+	// ret_ss << " ";
+	//add command
+	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
+	ret_ss << " ";
+	//add the to subject
+	ret_ss << to;
+	ret_ss << " ";
+	//add message
+	ret_ss << ":";
+	//パラメータ１個目を飛ばす（ターゲットになるので）
+	for (std::vector<std::string>::const_iterator it = ++params.begin();
+		it != params.end();
+		it ++) {
+			ret_ss << *it <<  " ";
+		}
 	ret_ss << "\r\n";
 	return ret_ss.str();
 }
@@ -183,9 +206,19 @@ OptionalMessage User::ExTopicCommand(const Event& event){
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
-	(void)event;
-	std::cout << "Privmsg method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		return OptionalMessage::Create(this->get_fd(), err_msg);
+	}
+	//送信相手確認
+	const std::vector<std::string>& params = event.get_command_params();
+	const std::string& target = params.front();
+	if (IsTarget(target, event)) {
+		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
+		return OptionalMessage::Create(this->get_fd(), send_msg);
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -258,9 +291,16 @@ void User::CkTopicCommand(Event& event) const
 
 void User::CkPrivmsgCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	if (event.HasErrorOccurred())
+	{
+		const ErrorStatus& err = event.get_error_status();
+		if (err != ErrorStatus::ERR_NOSUCHNICK)
+			return;
+		const std::string& target = event.get_command_params().front();
+		//送信相手存在確認
+		if (target == this->get_nick_name())
+			event.ResetErrorStatus();
+	}
 }
 
 void User::CkModeCommand(Event& event) const
@@ -281,13 +321,11 @@ bool User::get_is_password_authenticated() const
 	return is_password_authenticated_;
 }
 
-int User::get_fd() const
-{
+int User::get_fd() const {
 	return fd_;
 }
 
-bool User::get_is_delete() const
-{
+bool User::get_is_delete() const {
 	return is_delete_;
 }
 
@@ -303,7 +341,7 @@ const std::string& User::get_real_name() const {
 	return this->real_name_;
 }
 
-bool	User::IsVerified() const
+bool User::IsVerified() const
 {
 	if (!this->is_password_authenticated_
 		|| this->nick_name_.empty()
@@ -311,4 +349,18 @@ bool	User::IsVerified() const
 		return false;
 	}
 	return true;
+}
+
+
+bool User::IsTarget(const std::string& target, const Event& event) const
+{
+	if (target == this->get_nick_name())
+		return true;
+	if (event.IsChannelEvent()) {
+		if (event.get_fd() == this->get_fd())
+			return false;
+		const ChannelEvent& channel_event = dynamic_cast<const ChannelEvent&>(event);
+		return channel_event.get_channel().ContainsUser(*this);
+	}
+	return false;
 }

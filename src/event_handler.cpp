@@ -298,10 +298,30 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		request_map_.insert(std::make_pair(entry.fd, request_buffer));
 }
 
+bool EventHandler::IsAuthenticated(const Event& event) {
+	//認証したか確認、kPass、kNick、kUser、kQuit認証前でも実装できる
+	return (event.get_command() == message::kPass
+			|| event.get_command() == message::kNick
+			|| event.get_command() == message::kUser
+			|| event.get_command() == message::kQuit
+			|| event.get_executer().IsVerified());
+}
+
+void EventHandler::CheckChannelTarget(Event& event) {
+	const std::string& target = event.get_command_params()[0];
+	//is channel but not but cannot find channel target
+	if (target[0] == '#' && !event.IsChannelEvent()) {
+		event.set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
+	}
+}
+
 void EventHandler::ExecuteCommand(Event*& event) {
 	database_.CheckEvent(event);
-	AddResponseMap(database_.ExecuteEvent(*event));
-	database_.DeleteFinishedElements();
+	if (IsAuthenticated(*event)) {
+		CheckChannelTarget(*event);
+		AddResponseMap(database_.ExecuteEvent(*event));
+		database_.DeleteFinishedElements();
+	}
 }
 
 message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
@@ -326,7 +346,7 @@ void	EventHandler::AddEventSocket(int new_fd) {
 	poll_fd_.push_back(new_pollfd);
 }
 
-void	EventHandler::AddResponseMap(std::map<int, std::string> new_response){
+void	EventHandler::AddResponseMap(std::map<int, std::string> new_response) {
 
 	for (std::map<int, std::string>::iterator new_map_iterator =
 		new_response.begin();

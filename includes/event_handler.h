@@ -17,7 +17,7 @@ class EventHandler{
 	public:
 		EventHandler(Database& database,int port_no);
 		~EventHandler();
-		bool				IsListeningSocket();
+		bool				IsAuthenticated(const Event& event);
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
 		void				AddEventSocket(int new_fd);
@@ -40,6 +40,7 @@ class EventHandler{
 		void				HandlePollInEvent(pollfd entry);
 		void				HandlePollOutEvent(pollfd entry);
 		void				HandlePollHupEvent(pollfd entry);
+		void				CheckChannelTarget(Event& event);
 		void				ExecuteCommand(Event*& event);
 
 		Database&	database_;

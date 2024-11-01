@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
+#include "channel_event.h"
 #include <stdexcept>
 
 class Channel: public EventListener, public EventConfigurator {
@@ -28,6 +29,7 @@ class Channel: public EventListener, public EventConfigurator {
 		const User& get_operator(void) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
+		const std::string& get_name(void) const;
 		bool VerifyKey(const std::string&) const;
 
 		class NoOperatorException : public std::runtime_error {
@@ -62,7 +64,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkKickCommand(Event& event) const;
 		void CkTopicCommand(Event& event) const;
 		void CkModeCommand(Event& event) const;
-		void CkPrivmsgCommand(Event& event) const;
+		void CkPrivmsgCommand(Event*& event) const;
 
 		//execute command
 		OptionalMessage ExPassCommand(const Event& event);
