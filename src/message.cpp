@@ -53,12 +53,14 @@ void MessageParser::ParsingMessage(const std::string& msg)
 	}
 	std::string last_param = "";
 	std::string command = message_;
-	bool has_delim = message_.find(":") != message_.npos;
+	const std::string kDelim = ":";
+	std::string::size_type delim_pos = message_.find(kDelim);
+	bool has_delim = (delim_pos != std::string::npos);
 
 	if (has_delim) {
-		last_param = utils::TrimAfter(message_, ":");
+		last_param = message_.substr(delim_pos + kDelim.length());
 		utils::EraseNewline(last_param);
-		command = utils::TrimBefore(message_, ":");
+		command = message_.substr(0, delim_pos);
 	}
 	state_ = kParseCommand;
 	while (!IsFinishParsing())
