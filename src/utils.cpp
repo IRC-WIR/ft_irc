@@ -105,12 +105,27 @@ void ConvertToUpper(std::string& str) {
 bool HasNewlines(const std::string& str) {
 	std::string::size_type find_n_type;
 	std::string::size_type find_r_n_type;
+	//Exceptional newline expression "\n"
 	find_n_type = str.find("\n");
-	find_r_n_type = str.find("\r\n");
+	find_r_n_type = str.find(kNewLine);
 
 	if (find_n_type == std::string::npos && find_r_n_type == std::string::npos)
 		return false;
 	return true;
+}
+
+std::string GetWelcomeString() {
+	std::fstream s;
+	s.open(kFilePath.c_str(), std::ios::in);
+	if (!s.is_open()) {
+		std::cerr << "Could not open file : " << kFilePath << std::endl;
+		return "";
+	}
+	std::stringstream ret_ss;
+	for (std::string line; std::getline(s, line); ) {
+		ret_ss << line << kNewLine;
+	}
+	return ret_ss.str();
 }
 
 std::string StrToLower(const std::string& str) {
