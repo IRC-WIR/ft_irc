@@ -20,8 +20,11 @@ class User : public EventListener, public EventConfigurator {
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
 
-		void set_is_password_authenticated(bool is_authenticated);
+		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
+		void set_displayed_welcome(bool is_verified);
+		bool is_displayed_welcome(void) const;
+
 		int get_fd(void) const;
 		bool get_is_delete(void) const;
 		const std::string& get_nick_name(void) const;
@@ -38,8 +41,8 @@ class User : public EventListener, public EventConfigurator {
 		std::string	real_name_;
 		bool is_delete_;
 		utils::MyVector<const Channel*> joining_channels_;
-
 		std::string GenerateJoinDetailMessage(const Channel&) const;
+		bool is_displayed_welcome_;
 
 		//check command
 		void CkPassCommand(Event& event) const;
