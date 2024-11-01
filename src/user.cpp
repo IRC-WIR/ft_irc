@@ -128,11 +128,14 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
-	if (IsVerified() && !this->is_displayed_welcome()) {
-		set_displayed_welcome(true);
-		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+	if (IsVerified()) {
+		if (!this->is_displayed_welcome()) {
+			set_displayed_welcome(true);
+			return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+		}
+		return OptionalMessage::Create(get_fd(), ret_message);
 	}
-	return OptionalMessage::Create(get_fd(), ret_message);
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExUserCommand(const Event& event) {
