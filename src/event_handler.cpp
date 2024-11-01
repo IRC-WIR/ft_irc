@@ -92,9 +92,9 @@ void	EventHandler::ExecutePoll() {
 	}
 	int fd_size = poll_fd_.size();
 	for (int i = 0; i < fd_size; i++)
-		HandlePollHupEvent(this->poll_fd_[i]);
-	for (int i = 0; i < fd_size; i++)
 		HandlePollInEvent(this->poll_fd_[i]);
+	for (int i = 0; i < fd_size; i++)
+		HandlePollHupEvent(this->poll_fd_[i]);
 	for (int i = 0; i < fd_size; i++)
 		HandlePollOutEvent(this->poll_fd_[i]);
 	return ;
@@ -260,9 +260,9 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//request_buffer:
 	//pattern1:command1\ncommand2\ncommand3\n
 	while (utils::HasNewlines(request_buffer)) {
-		parsing_msg = utils::SplitBefore(request_buffer, "\n");
+		parsing_msg = utils::TrimBefore(request_buffer, "\n");
 		parsing_msg += "\n";
-		remain_msg = utils::SplitAfter(request_buffer, "\n");
+		remain_msg = utils::TrimAfter(request_buffer, "\n");
 		//eventを作成
 		Event* event = new Event(entry.fd, entry.revents);
 		//parse
@@ -279,7 +279,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		case message::kParseError:
 			std::cout << "Parse Error" <<std::endl;
 			break ;
-		case message::KParseNotAscii:
+		case message::kParseNotAscii:
 			//have to define the action of inputting out range of Ascii
 			std::cout << "Not Ascii code input" << std::endl;
 			break;
