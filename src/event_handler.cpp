@@ -279,7 +279,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		case message::kParseError:
 			std::cout << "Parse Error" <<std::endl;
 			break ;
-		case message::KParseNotAscii:
+		case message::kParseNotAscii:
 			//have to define the action of inputting out range of Ascii
 			std::cout << "Not Ascii code input" << std::endl;
 			break;

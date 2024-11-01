@@ -110,7 +110,7 @@ void MessageParser::ParsingCommand(const std::string& command)
 		state_ = kParseError;
 		return;
 	}
-	//find command, remove commmand string from commad_params vector
+	//find command, remove command string from command_params vector
 	command_params_.erase(command_params_.begin());
 	command_ = it->second;
 	state_ = kParseParam;
