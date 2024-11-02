@@ -268,7 +268,7 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 				std::string context_message = event.get_command_params().empty() ? "client quit" : event.get_command_params()[0];
 				if (event.get_event_type() == POLL_HUP)
 					context_message = "client dies and EOF occurs on socket";
-				return OptionalMessage::Create(this->fd_, prefix_message + context_message);
+				return OptionalMessage::Create(this->fd_, prefix_message + context_message + "\r\n");
 			}
 		}
 	}
@@ -354,7 +354,6 @@ void User::CkModeCommand(Event& event) const
 
 void User::CkQuitCommand(Event& event) const
 {
-	if (event.get_fd() == this->fd_)
 	(void)event;
 	return ;
 }
