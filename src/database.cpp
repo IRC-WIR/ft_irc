@@ -220,11 +220,6 @@ void Database::CkPrivmsgCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NOTEXTTOSEND);
 		return;
 	}
-	const char& target = params.front()[0];
-	//channel's front character is '#', do not set error to channel
-	if (target == '#')
-		return;
-	event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
 }
 
 void Database::CkModeCommand(Event& event) const {
