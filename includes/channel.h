@@ -29,9 +29,11 @@ class Channel: public EventListener, public EventConfigurator {
 		bool GiveOperator(const User&);
 		bool TakeOperator(const User&);
 		bool IsOperator(const User&) const;
+		bool IsMode(const char& c) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
+		const utils::MyVector<const User*>& get_members_(void) const;
 		std::string GenerateMemberList(void) const;
 		std::string GenerateMemberListWithNewUser(const User&) const;
 

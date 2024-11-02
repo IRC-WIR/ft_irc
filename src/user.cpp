@@ -232,27 +232,27 @@ static bool isRPL(const ErrorStatus& error_status) {
 }
 
 std::string User::CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const {
-	std::stringstream ret_ss;
+	std::stringstream ss;
 	//add error no
-	ret_ss << err_status.get_error_code();
-	ret_ss << " ";
+	ss << err_status.get_error_code();
+	ss << " ";
 	//add nick name
-	ret_ss << (nick_name_.empty()? "*" : nick_name_) ;
-	ret_ss << " ";
+	ss << (nick_name_.empty()? "*" : nick_name_) ;
+	ss << " ";
 	//add channel name
-	ret_ss << (channel.get_name()) ;
-	ret_ss << " ";
+	ss << (channel.get_name()) ;
+	ss << " ";
 	//add error message
-	ret_ss << ":";
+	ss << ":";
 	if (err_status == ErrorStatus::RPL_NOTOPIC)
-		ret_ss << err_status.get_error_message();
+		ss << err_status.get_error_message();
 	else
-		ret_ss << channel.get_topic();
-	ret_ss << "\r\n";
-	return ret_ss.str();
+		ss << channel.get_topic();
+	ss << "\r\n";
+	return ss.str();
 }
 
-static std::string GenerateTopicMessage(const User& user, const Channel& channel) {
+static std::string GenerateTopicMessage(const User& user, const Channel& channel,const Event& event) {
 	std::stringstream ss;
 	//add nick name
 	ss << user.get_nick_name();
@@ -264,7 +264,9 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 	ss << channel.get_name();
 	ss << " ";
 	//add channel topic name
-	ss << channel.get_topic();
+	ss << ":";
+	//channel topicがここで設定したかは不確定
+	ss << event.get_command_params()[1];
 	ss << "\r\n";
 	return ss.str();
 }
@@ -272,21 +274,24 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		//topic <target>→reply topicの条件
+		std::cout << "test1" << std::endl;
 		if (event.IsChannelEvent() && isRPL(event.get_error_status())) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			const std::string& rpl_msg = CreateTopicRplMessage(channel, event.get_error_status());
 			return OptionalMessage::Create(event.get_fd(), rpl_msg);
 		}
+		std::cout << "test2" << std::endl;
 		if (event.get_fd() == this->get_fd()) {
 			const std::string& error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
 			return OptionalMessage::Create(event.get_fd(), error_msg);
 		}
+		std::cout << "test3" << std::endl;
 		return OptionalMessage::Empty();
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	const std::string common_message = GenerateTopicMessage(event.get_executer(), channel);
+	const std::string common_message = GenerateTopicMessage(event.get_executer(), channel, event);
 	if (this->joining_channels_.Contains(&channel))
 		return OptionalMessage::Create(this->get_fd(), common_message);
 	else

@@ -106,19 +106,35 @@ void Database::AfterCheck(Event& event) const {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			if (channel.ContainsUser(event.get_executer())
-					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status())))
-				event.set_do_nothing(true);
+					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status()))) {
+						event.set_do_nothing(true);
+						return ;
+					}
 		}
 		return ;
 	}
 	if (event.get_command() == message::kTopic) {
+		if (event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (!channel.ContainsUser(event.get_executer())) {
+				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+				return ;
+			}
+			if (channel.IsMode('t') && channel.get_members_().Contains(&event.get_executer())) {
+				event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+				return ;
+			}
+		}
 		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
 		return ;
 	}
+
 }
+
+
 
 //Check
 void Database::CkPassCommand(Event& event) const {

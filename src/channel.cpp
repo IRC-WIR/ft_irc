@@ -91,6 +91,10 @@ bool Channel::IsOperator(const User& user) const {
 	return this->operators_.Contains(&user);
 }
 
+bool Channel::IsMode(const char& c) const{
+	return mode_map_(c);
+}
+
 void Channel::set_topic(const std::string& topic) {
 	this->topic_ = topic;
 }
@@ -101,6 +105,10 @@ const std::string& Channel::get_topic() const {
 
 const std::string& Channel::get_name() const {
 	return this->name_;
+}
+
+const utils::MyVector<const User*>& Channel::get_members_(void) const {
+	return members_ ;
 }
 
 std::string Channel::GenerateMemberListWithNewUser(const User& new_user) const {
@@ -243,7 +251,6 @@ OptionalMessage Channel::ExTopicCommand(const Event& event) {
 		this->set_topic(ss.str());
 	}
 	return OptionalMessage::Empty();
-
 }
 
 OptionalMessage Channel::ExModeCommand(const Event& event) {
@@ -315,16 +322,13 @@ void Channel::CkTopicCommand(Event*& event) const {
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
-	if (!this->ContainsUser(event->get_executer()))
-		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 	if (params.size() == 1) {
 		if (get_topic().empty())
 			event->set_error_status(ErrorStatus::RPL_NOTOPIC);
 		else
 			event->set_error_status(ErrorStatus::RPL_TOPIC);
 	}
-	if (this->mode_map_('t') && !IsOperator(event->get_executer()))
-		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+
 }
 
 void Channel::CkPrivmsgCommand(Event& event) const {
