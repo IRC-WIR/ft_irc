@@ -202,33 +202,16 @@ OptionalMessage User::ExInviteCommand(const Event& event){
 }
 
 OptionalMessage User::ExKickCommand(const Event& event){
-	//実行者
-	if (event.get_fd() == this->fd_) {
-		if (event.HasErrorOccurred()) {
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() == this->get_fd()) {
 			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
-			return OptionalMessage::Create(this->fd_, message);
-		}
-	//実行者以外
-	} else {
-		//失敗
-		if (event.HasErrorOccurred())
-			return OptionalMessage::Empty();
-		if (!event.IsChannelEvent())
-			return OptionalMessage::Empty();
-		//成功
-		const ChannelEvent& channelEvent = dynamic_cast<const ChannelEvent&>(event);
-		Channel channel = channelEvent.get_channel();
-		std::string target_user_name = event.get_command_params()[1];
-		//メンバ以外
-		if (!channel.ContainsUserByNick(target_user_name))
-			return OptionalMessage::Empty();
-		//メンバ
-		std::string quit_message = this->nick_name_ + " left from the Channel.\r\n";
-		if (event.get_command_params().size() > 2)
-			quit_message = event.get_command_params()[3];
-		return OptionalMessage::Create(this->fd_, quit_message);
+			return OptionalMessage::Create(this->get_fd(), message);
+		} 
+		return OptionalMessage::Empty();
 	}
-	return OptionalMessage::Empty();
+	//自分のChannelリストにターゲットが含まれていればメッセージ返す
+	return (OptionalMessage::Create(this->fd_, ""));
+	
 }
 
 
@@ -305,8 +288,7 @@ void User::CkInviteCommand(Event& event) const
 void User::CkKickCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check Kick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	return ;
 }
 
 void User::CkTopicCommand(Event& event) const

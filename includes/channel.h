@@ -67,7 +67,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkUserCommand(Event& event) const;
 		void CkJoinCommand(Event*& event) const;
 		void CkInviteCommand(Event& event) const;
-		void CkKickCommand(Event& event) const;
+		void CkKickCommand(Event*& event) const;
 		void CkTopicCommand(Event& event) const;
 		void CkModeCommand(Event& event) const;
 		void CkPrivmsgCommand(Event& event) const;

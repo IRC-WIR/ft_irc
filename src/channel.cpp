@@ -221,9 +221,13 @@ OptionalMessage Channel::ExInviteCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
+//Parameters: <channel> <user> [<comment>]
 OptionalMessage Channel::ExKickCommand(const Event& event) {
-	(void)event;
-	return OptionalMessage::Empty();
+	if (event.HasErrorOccurred())
+		return ;
+	if (event.get_command_params()[0] != this->name_)
+		return ;
+	this->RemoveUserByNick(event.get_command_params()[1]);
 }
 
 OptionalMessage Channel::ExTopicCommand(const Event& event) {
@@ -285,36 +289,25 @@ void Channel::CkInviteCommand(Event& event) const {
 }
 
 //Parameters: <channel> <user> [<comment>]
-void Channel::CkKickCommand(Event& event) const {
+void Channel::CkKickCommand(Event*& event) const {
 
-	if (event.get_command_params()[0] != this->name_)
+	if (event->HasErrorOccurred())
+		return ;
+	if (event->get_command_params()[0] != this->name_)
 		return ;
 
-	//自身がターゲットChannelの場合
-	////eventをchannel_eventに上書き
-	//ChannelEvent* channelEvent = new ChannelEvent(event, *this);
-	//event = channelEvent;
+	if (!this->ContainsUserByNick(event->get_command_params()[1]))
+		event->set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
 
-	//実行者がこのChannelのメンバでない場合
-	//eventの持つユーザを引数に与えChannelのContainメソッドで判定
-	if (false) {
-		event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
-		return ;
-	}
-		
-	//実行者がこのChannelのオペレータでない場合
-	if (event.get_fd() != this->get_operator().get_fd()) {
-		event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
-		return ;
-	}
+	const User& executer = event->get_executer();
+	if (!this->IsOperator(executer))
+		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+	if (!this->ContainsUser(executer))
+		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 
-	//ターゲットユーザがこのChannelのメンバでない場合
-	//nicknameを条件に検索可能なContainメソッドにより判定
-	if (false) {
-		event.set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
-		return ;
-	}
-
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
 	return ;
 }
 
