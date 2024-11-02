@@ -91,6 +91,10 @@ bool Channel::IsOperator(const User& user) const {
 	return this->operators_.Contains(&user);
 }
 
+bool Channel::IsMode(const char& c) const{
+	return mode_map_(c);
+}
+
 void Channel::set_topic(const std::string& topic) {
 	this->topic_ = topic;
 }
@@ -101,6 +105,10 @@ const std::string& Channel::get_topic() const {
 
 const std::string& Channel::get_name() const {
 	return this->name_;
+}
+
+const utils::MyVector<const User*>& Channel::get_members_(void) const {
+	return members_ ;
 }
 
 std::string Channel::GenerateMemberListWithNewUser(const User& new_user) const {
@@ -147,7 +155,7 @@ void Channel::CheckCommand(Event*& event) const {
 			CkKickCommand(*event);
 			break;
 		case message::kTopic:
-			CkTopicCommand(*event);
+			CkTopicCommand(event);
 			break;
 		case message::kMode:
 			CkModeCommand(*event);
@@ -227,7 +235,21 @@ OptionalMessage Channel::ExKickCommand(const Event& event) {
 }
 
 OptionalMessage Channel::ExTopicCommand(const Event& event) {
-	(void)event;
+	if (event.HasErrorOccurred()
+		|| !event.IsChannelEvent())
+		return OptionalMessage::Empty();
+
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this == &channel) {
+		std::vector<std::string> params = event.get_command_params();
+		std::stringstream ss;
+		for (size_t i = 1; i < params.size(); i ++) {
+			if (i != 1)
+				ss << " ";
+			ss << params[i];
+		}
+		this->set_topic(ss.str());
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -290,10 +312,23 @@ void Channel::CkKickCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkTopicCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkTopicCommand(Event*& event) const {
+	if (event->HasErrorOccurred())
+		return ;
+	const std::vector<std::string> params = event->get_command_params();
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
+		return ;
+	event->add_target_num();
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+	if (params.size() == 1) {
+		if (get_topic().empty())
+			event->set_error_status(ErrorStatus::RPL_NOTOPIC);
+		else
+			event->set_error_status(ErrorStatus::RPL_TOPIC);
+	}
+
 }
 
 void Channel::CkPrivmsgCommand(Event*& event) const {

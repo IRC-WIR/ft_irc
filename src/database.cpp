@@ -106,12 +106,35 @@ void Database::AfterCheck(Event& event) const {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			if (channel.ContainsUser(event.get_executer())
-					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status())))
-				event.set_do_nothing(true);
+					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status()))) {
+						event.set_do_nothing(true);
+						return ;
+					}
 		}
 		return ;
 	}
+	if (event.get_command() == message::kTopic) {
+		if (event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (!channel.ContainsUser(event.get_executer())) {
+				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+				return ;
+			}
+			if (channel.IsMode('t') && channel.get_members_().Contains(&event.get_executer())) {
+				event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+				return ;
+			}
+		}
+		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+			return ;
+		}
+		return ;
+	}
+
 }
+
+
 
 //Check
 void Database::CkPassCommand(Event& event) const {
@@ -204,9 +227,21 @@ void Database::CkKickCommand(Event& event) const {
 }
 
 void Database::CkTopicCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 1;
+	const int kNameMaxLength = 50;
+	const char kStartChar = '#';
+
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < kParamsSize) {
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return ;
+	}
+	const std::string& channel_name = params[0];
+	if (channel_name.empty() || channel_name[0] != kStartChar || channel_name.length() > kNameMaxLength) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+		return ;
+	}
+
 }
 
 void Database::CkPrivmsgCommand(Event& event) const {

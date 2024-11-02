@@ -249,11 +249,76 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExTopicCommand(const Event& event){
-	(void)event;
-	std::cout << "Topic method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
-	return OptionalMessage::Empty();
+static bool isRPL(const ErrorStatus& error_status) {
+	return error_status == ErrorStatus::RPL_NOTOPIC
+		|| error_status == ErrorStatus::RPL_TOPIC;
+}
+
+std::string User::CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const {
+	std::stringstream ss;
+	//add error no
+	ss << err_status.get_error_code();
+	ss << " ";
+	//add nick name
+	ss << (nick_name_.empty()? "*" : nick_name_) ;
+	ss << " ";
+	//add channel name
+	ss << (channel.get_name()) ;
+	ss << " ";
+	//add error message
+	ss << ":";
+	if (err_status == ErrorStatus::RPL_NOTOPIC)
+		ss << err_status.get_error_message();
+	else
+		ss << channel.get_topic();
+	ss << "\r\n";
+	return ss.str();
+}
+
+static std::string GenerateTopicMessage(const User& user, const Channel& channel,const Event& event) {
+	std::stringstream ss;
+	//add nick name
+	ss << user.get_nick_name();
+	ss << " ";
+	//add command
+	ss << message::MessageParser::get_command_str_map().find(message::kTopic) -> second;
+	ss << " ";
+	//add channel name
+	ss << channel.get_name();
+	ss << " ";
+	//add channel topic name
+	ss << ":";
+	//channel topicがここで設定したかは不確定
+	ss << event.get_command_params()[1];
+	ss << "\r\n";
+	return ss.str();
+}
+
+OptionalMessage User::ExTopicCommand(const Event& event) {
+	if (event.HasErrorOccurred()) {
+		//topic <target>→reply topicの条件
+		std::cout << "test1" << std::endl;
+		if (event.IsChannelEvent() && isRPL(event.get_error_status())) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			const std::string& rpl_msg = CreateTopicRplMessage(channel, event.get_error_status());
+			return OptionalMessage::Create(event.get_fd(), rpl_msg);
+		}
+		std::cout << "test2" << std::endl;
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+			return OptionalMessage::Create(event.get_fd(), error_msg);
+		}
+		std::cout << "test3" << std::endl;
+		return OptionalMessage::Empty();
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	const std::string common_message = GenerateTopicMessage(event.get_executer(), channel, event);
+	if (this->joining_channels_.Contains(&channel))
+		return OptionalMessage::Create(this->get_fd(), common_message);
+	else
+		return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
@@ -338,9 +403,7 @@ void User::CkKickCommand(Event& event) const
 
 void User::CkTopicCommand(Event& event) const
 {
-	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	(void) event;
 }
 
 void User::CkPrivmsgCommand(Event& event) const

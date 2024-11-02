@@ -6,6 +6,8 @@
 class ErrorStatus {
     public:
         static const ErrorStatus
+            RPL_NOTOPIC,
+            RPL_TOPIC,
             ERR_NOSUCHNICK,
             ERR_NOSUCHCHANNEL,
             ERR_CANNOTSENDTOCHAN,
@@ -14,12 +16,14 @@ class ErrorStatus {
             ERR_NONICKNAMEGIVEN,
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
+            ERR_NOTONCHANNEL,
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
             ERR_PASSWDMISMATCH,
 			ERR_CHANNELISFULL,
 			ERR_INVITEONLYCHAN,
-			ERR_BADCHANNELKEY
+			ERR_BADCHANNELKEY,
+            ERR_CHANOPRIVSNEEDED
             ;
 
         const std::string& get_error_message(void) const;

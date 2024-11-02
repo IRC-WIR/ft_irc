@@ -43,6 +43,8 @@ class User : public EventListener, public EventConfigurator {
 		bool is_delete_;
 		utils::MyVector<const Channel*> joining_channels_;
 		std::string GenerateJoinDetailMessage(const Channel&) const;
+		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
+		std::string CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const;
 		bool is_displayed_welcome_;
 
 		//check command

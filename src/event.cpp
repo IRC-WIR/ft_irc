@@ -6,7 +6,7 @@ const std::string Event::NoExecuterException::kMessage = "there is no executer."
 const std::string Event::AlreadySetException::kMessage = "already exists executer.";
 
 Event::Event(int fd, int event_type)
-		: fd_(fd), event_type_(event_type), error_status_(NULL), executer_(NULL) {
+		: fd_(fd), event_type_(event_type), error_status_(NULL), executer_(NULL), target_num_(0) {
 	return ;
 }
 
@@ -89,6 +89,14 @@ void Event::set_do_nothing(bool is_do_nothing) {
 
 bool Event::is_do_nothing() const {
 	return this->is_do_nothing_;
+}
+
+void Event::add_target_num() {
+	target_num_ += 1;
+}
+
+int Event::get_target_num() const {
+	return target_num_;
 }
 
 Event::NoErrorException::NoErrorException()
