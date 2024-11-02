@@ -115,8 +115,6 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 		char receive_buffer[kBufferSize + 1];
 		std::memset(receive_buffer, 0, kBufferSize + 1);
 		Receive(entry.fd, receive_buffer);
-		if (receive_buffer[0] == '\0')
-			Detach(entry);
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << receive_buffer << std::endl;
 		Execute(entry, receive_buffer);
 	}
@@ -139,29 +137,13 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			}
 			//送信失敗
 			if (sent_msg_length < 0) {
-
-				switch (errno) {
-				//プログラム終了
-				case EFAULT:
-				case EMSGSIZE:
-					std::cout <<  strerror(errno) << std::endl;
-					std::exit(EXIT_FAILURE);
-				//次回POLLOUT発生時に再送
-				case EWOULDBLOCK:
-					return;
-				//直ちに再送
-			  case EINTR:
-					break ;
-				//接続切断
-				default:
-					Detach(entry);
-					Event event(entry.fd, entry.revents);
-					event.set_command(message::kQuit);
-					AddResponseMap(database_.ExecuteEvent(event));
-					response_map_.erase(target_fd);
-					return;
-				}
-				continue;
+				Detach(entry);
+				Event event(entry.fd, entry.revents);
+				Event* event_ptr = &event;;
+				event_ptr->set_command(message::kQuit);
+				ExecuteCommand(event_ptr);
+				response_map_.erase(target_fd);
+				return;
 			} else {
 				it = response_map_[target_fd].erase(it);
 			}
@@ -182,15 +164,17 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 	}
 }
 
-void	EventHandler::Detach(pollfd event) {
-	std::cout << "connection hang up " << event.fd << std::endl;
+void	EventHandler::Detach(pollfd entry) {
+	std::cout << "connection hang up " << entry.fd << std::endl;
 	int target_index = 0;
 	for (int i = 0; i < (int)poll_fd_.size(); i++)
 	{
-		if (poll_fd_[i].fd == event.fd)
+		if (poll_fd_[i].fd == entry.fd)
 			target_index = i;
 	}
+	int target_fd = (poll_fd_.begin() + target_index)->fd;
 	poll_fd_.erase(poll_fd_.begin() + target_index);
+	close(target_fd);
 	return ;
 }
 
@@ -248,6 +232,15 @@ void	EventHandler::Receive(int fd, char* buffer) {
 
 
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
+	//EOFの場合
+	if (msg[0] == '\0') {
+		Detach(entry);
+		Event event(entry.fd, POLL_HUP);
+		Event* event_ptr = &event;
+		event_ptr->set_command(message::kQuit);
+		ExecuteCommand(event_ptr);
+		return ;
+	}
 	std::string request_buffer;
 	//prepare request_buffer
 	//find request fd's remain msg
@@ -291,6 +284,8 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 			std::cout << "Parse Empty" <<std::endl;
 			break ;
 		default:
+			if (event->get_command() == message::kQuit)
+				Detach(entry);
 			this->ExecuteCommand(event);
 			break ;
 		}

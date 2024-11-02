@@ -90,6 +90,9 @@ void Database::CheckCommandAndParams(Event& event) const {
 		case message::kPrivmsg:
 			CkPrivmsgCommand(event);
 			break ;
+		case message::kQuit:
+			CkQuitCommand(event);
+			break ;
 		default:
 			break ;
 	}
@@ -219,5 +222,10 @@ void Database::CkModeCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
+}
+
+void Database::CkQuitCommand(Event& event) const {
+	(void)event;
+	return ;
 }
 //check

@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <cerrno>
 #include <cstdlib>
+#include <unistd.h>
 #include "message.h"
 #include "event.h"
 #include "database.h"
