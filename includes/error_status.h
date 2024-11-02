@@ -9,13 +9,17 @@ class ErrorStatus {
             ERR_NOSUCHNICK,
             ERR_NOSUCHCHANNEL,
             ERR_CANNOTSENDTOCHAN,
+            ERR_TOOMANYCHANNELS,
             ERR_NOTEXTTOSEND,
             ERR_NONICKNAMEGIVEN,
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
-            ERR_PASSWDMISMATCH
+            ERR_PASSWDMISMATCH,
+			ERR_CHANNELISFULL,
+			ERR_INVITEONLYCHAN,
+			ERR_BADCHANNELKEY
             ;
 
         const std::string& get_error_message(void) const;

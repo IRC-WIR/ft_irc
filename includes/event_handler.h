@@ -42,6 +42,9 @@ class EventHandler{
 		void				HandlePollHupEvent(pollfd entry);
 		void				CheckChannelTarget(Event& event);
 		void				ExecuteCommand(Event*& event);
+		void				AddNewChannel(Event*&);
+
+		static bool			CheckNewChannel(const Event&);
 
 		Database&	database_;
 		std::vector<struct pollfd>	poll_fd_;

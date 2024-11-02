@@ -1,4 +1,7 @@
 #include "event_handler.h"
+#include "message.h"
+#include "channel.h"
+#include "channel_event.h"
 #include <errno.h>
 
 const	int	EventHandler::kQueueLimit = 10;
@@ -298,30 +301,29 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		request_map_.insert(std::make_pair(entry.fd, request_buffer));
 }
 
-bool EventHandler::IsAuthenticated(const Event& event) {
-	//認証したか確認、kPass、kNick、kUser、kQuit認証前でも実装できる
-	return (event.get_command() == message::kPass
-			|| event.get_command() == message::kNick
-			|| event.get_command() == message::kUser
-			|| event.get_command() == message::kQuit
-			|| event.get_executer().IsVerified());
+void EventHandler::ExecuteCommand(Event*& event_ptr) {
+	database_.CheckEvent(event_ptr);
+	if (event_ptr->is_do_nothing())
+		return ;
+	if (EventHandler::CheckNewChannel(*event_ptr))
+		this->AddNewChannel(event_ptr);
+	AddResponseMap(database_.ExecuteEvent(*event_ptr));
+	database_.DeleteFinishedElements();
 }
 
-void EventHandler::CheckChannelTarget(Event& event) {
-	const std::string& target = event.get_command_params()[0];
-	//is channel but not but cannot find channel target
-	if (*target.c_str() == '#' && !event.IsChannelEvent()) {
-		event.set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
-	}
+bool EventHandler::CheckNewChannel(const Event& event) {
+	return (!event.HasErrorOccurred()
+			&& event.get_command() == message::kJoin
+			&& !event.IsChannelEvent());
 }
 
-void EventHandler::ExecuteCommand(Event*& event) {
-	database_.CheckEvent(event);
-	if (IsAuthenticated(*event)) {
-		CheckChannelTarget(*event);
-		AddResponseMap(database_.ExecuteEvent(*event));
-		database_.DeleteFinishedElements();
-	}
+void EventHandler::AddNewChannel(Event*& event_ptr) {
+	const User& op = event_ptr->get_executer();
+	const std::string& name = event_ptr->get_command_params()[0];
+	const Channel& channel = this->database_.CreateChannel(op, name);
+	ChannelEvent* channel_event = new ChannelEvent(*event_ptr, channel);
+	delete event_ptr;
+	event_ptr = channel_event;
 }
 
 message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
