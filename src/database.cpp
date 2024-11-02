@@ -98,11 +98,18 @@ void Database::CheckCommandAndParams(Event& event) const {
 	}
 }
 
+static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
+	return (status == ErrorStatus::ERR_INVITEONLYCHAN
+			|| status == ErrorStatus::ERR_BADCHANNELKEY
+			|| status == ErrorStatus::ERR_CHANNELISFULL);
+}
+
 void Database::AfterCheck(Event& event) const {
 	if (event.get_command() == message::kJoin) {
-		if (!event.HasErrorOccurred() && event.IsChannelEvent()) {
+		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-			if (channel.ContainsUser(event.get_executer()))
+			if (channel.ContainsUser(event.get_executer())
+					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status())))
 				event.set_do_nothing(true);
 		}
 		return ;
@@ -130,7 +137,7 @@ void Database::CkNickCommand(Event& event) const {
 
 	if (event.get_command_params().size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
-		return ;	
+		return ;
 	}
 
 	const std::string& new_nickname = event.get_command_params().at(0);
@@ -149,7 +156,7 @@ void Database::CkNickCommand(Event& event) const {
 
 	const std::string must_not_start_with = "$:&#~%+";
 	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
-		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);	
+		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
 

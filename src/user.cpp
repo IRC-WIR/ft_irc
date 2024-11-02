@@ -2,7 +2,10 @@
 #include "channel.h"
 #include "channel_event.h"
 
-User::User(int fd) : fd_(fd), is_password_authenticated_(false), is_delete_(false) {
+User::User(int fd) :
+	fd_(fd), is_password_authenticated_(false),
+	is_delete_(false),
+	is_displayed_welcome_(false) {
 }
 
 User::~User() {
@@ -106,6 +109,10 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
 	set_is_password_authenticated(true);
+	if (IsVerified() && !this->is_displayed_welcome()) {
+		set_displayed_welcome(true);
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -126,7 +133,14 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		ret_message = this->nick_name_ + " changed his nickname to " + new_nickname + ".\n";
 	}
 	this->nick_name_ = new_nickname;
-	return OptionalMessage::Create(this->fd_, ret_message);
+	if (IsVerified()) {
+		if (!this->is_displayed_welcome()) {
+			set_displayed_welcome(true);
+			return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+		}
+		return OptionalMessage::Create(get_fd(), ret_message);
+	}
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExUserCommand(const Event& event) {
@@ -144,6 +158,10 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 		if (i != 3)
 			this->real_name_ += " ";
 		this->real_name_ += params[i];
+	}
+	if (IsVerified() && !this->is_displayed_welcome()) {
+		set_displayed_welcome(true);
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
 	}
 	return OptionalMessage::Empty();
 }
@@ -168,7 +186,7 @@ std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
 	ss << 353 << " "
 		<< this->get_nick_name() << " = "
 		<< channel.get_name() << " :"
-		<< channel.GenerateMemberList() << "\r\n";
+		<< channel.GenerateMemberListWithNewUser(*this) << "\r\n";
 	// End of NAMES list
 	ss << 366 << " "
 		<< this->get_nick_name() << " "
@@ -342,14 +360,20 @@ void User::CkQuitCommand(Event& event) const
 }
 //check
 
-void User::set_is_password_authenticated(bool is_authenticated) {
-	is_password_authenticated_ = is_authenticated;
+void User::set_is_password_authenticated(bool is_pw_authenticated) {
+	is_password_authenticated_ = is_pw_authenticated;
 }
 
-
-bool User::get_is_password_authenticated() const
-{
+bool User::get_is_password_authenticated() const {
 	return is_password_authenticated_;
+}
+
+void User::set_displayed_welcome(bool is_verified) {
+	is_displayed_welcome_ = is_verified;
+}
+
+bool User::is_displayed_welcome(void) const {
+	return is_displayed_welcome_;
 }
 
 int User::get_fd() const

@@ -9,21 +9,24 @@
 #include <cstring> //for std::memset
 #include <utility> //for std::pair
 #include <set> //for std::set
+#include <fstream> //for std::fstream
+#include "optional_message.h"
 #include <algorithm> // for std::find
 
 namespace utils {
 	void CheckPort(std::string port);
 	void CheckPassword(std::string password);
 	int	Stoi(std::string num_str);
-	std::string SplitBefore(const std::string& str, const std::string& delim);
-	std::string SplitAfter(const std::string& str, const std::string& delim);
+	std::string TrimBefore(const std::string& str, const std::string& delim);
+	std::string TrimAfter(const std::string& str, const std::string& delim);
 	void EraseNewline(std::string& str);
 	void EraseSpace(std::string& str);
 	bool IsAscii(char c);
 	bool IsAsciiStr(const std::string& str);
 	void ConvertToUpper(std::string& str);
 	bool HasNewlines(const std::string& str);
-	std::string StrToLower(const std::string&);
+	std::string GetWelcomeString();
+	std::string StrToLower(const std::string& str);
 
 	template <typename T>
 	class MyVector : public std::vector<T> {
@@ -54,6 +57,10 @@ namespace utils {
 	static const std::string kNotDigitalNumber = "The input port is not digital number";
 	static const std::string kNotPrintableAscii = "The input password is out of range of printable ASCII code 33~126";
 	static const std::string kNotEnoughCharacters = "The input password is less than 8 characters";
+	//FilePath
+	static const std::string kFilePath = "./conf/ircserv.motd";
+	//NewLine in IRC server
+	static const std::string kNewLine = "\r\n";
 };
 
 #endif
