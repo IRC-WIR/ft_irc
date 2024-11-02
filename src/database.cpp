@@ -111,6 +111,13 @@ void Database::AfterCheck(Event& event) const {
 		}
 		return ;
 	}
+	if (event.get_command() == message::kTopic) {
+		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+			return ;
+		}
+		return ;
+	}
 }
 
 //Check
@@ -210,7 +217,7 @@ void Database::CkTopicCommand(Event& event) const {
 
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
-		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return ;
 	}
 	const std::string& channel_name = params[0];

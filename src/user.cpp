@@ -163,22 +163,9 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 
 static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
 	std::stringstream ss;
-	std::cout << "test1-1" << std::endl;
-	const std::string& t = target.get_nick_name();
-	std::cout << "test1-2" << std::endl;
-	const std::string& c = channel.get_name();
-	std::cout << "test1-3" << std::endl;
-	std::map<message::Command, std::string> map = message::MessageParser::get_command_str_map();
-	std::cout << "test1-4" << std::endl;
-	std::map<message::Command, std::string>::const_iterator const_it = map.find(message::kJoin);
-	std::cout << "test1-5" << std::endl;
-	const std::string& str_map = const_it->second;
-	std::cout << "test1-6" << std::endl;
-	std::cout << c << t << str_map << std::endl;
 	ss << target.get_nick_name() << " "
 		<< message::MessageParser::get_command_str_map().find(message::kJoin)->second << " :"
 		<< channel.get_name() << "\r\n";
-	std::cout << "test1-7" << std::endl;
 	return ss.str();
 }
 
@@ -214,13 +201,7 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-
-	std::cout << "test1" << std::endl;
 	const std::string common_message = GenerateJoinCommonMessage(event.get_executer(), channel);
-	std::cout << "test2" << std::endl;
-
-
-
 	if (event.get_fd() == this->get_fd()) {
 		this->joining_channels_.push_back(&channel);
 		return OptionalMessage::Create(this->get_fd(), common_message + this->GenerateJoinDetailMessage(channel));
@@ -245,12 +226,71 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExTopicCommand(const Event& event){
+static bool isRPL(const ErrorStatus& error_status) {
+	return error_status == ErrorStatus::RPL_NOTOPIC
+		|| error_status == ErrorStatus::RPL_TOPIC;
+}
+
+std::string User::CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const {
+	std::stringstream ret_ss;
+	//add error no
+	ret_ss << err_status.get_error_code();
+	ret_ss << " ";
+	//add nick name
+	ret_ss << (nick_name_.empty()? "*" : nick_name_) ;
+	ret_ss << " ";
+	//add channel name
+	ret_ss << (channel.get_name()) ;
+	ret_ss << " ";
+	//add error message
+	ret_ss << ":";
+	if (err_status == ErrorStatus::RPL_NOTOPIC)
+		ret_ss << err_status.get_error_message();
+	else
+		ret_ss << channel.get_topic();
+	ret_ss << "\r\n";
+	return ret_ss.str();
+}
+
+static std::string GenerateTopicMessage(const User& user, const Channel& channel) {
+	std::stringstream ss;
+	//add nick name
+	ss << user.get_nick_name();
+	ss << " ";
+	//add command
+	ss << message::MessageParser::get_command_str_map().find(message::kTopic) -> second;
+	ss << " ";
+	//add channel name
+	ss << channel.get_name();
+	ss << " ";
+	//add channel topic name
+	ss << channel.get_topic();
+	ss << "\r\n";
+	return ss.str();
+}
+
+OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
-		std::string error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
-		return OptionalMessage::Create(event.get_fd(), error_msg);
+		//topic <target>→reply topicの条件
+		if (event.IsChannelEvent() && isRPL(event.get_error_status())) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			const std::string& rpl_msg = CreateTopicRplMessage(channel, event.get_error_status());
+			return OptionalMessage::Create(event.get_fd(), rpl_msg);
+		}
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+			return OptionalMessage::Create(event.get_fd(), error_msg);
+		}
+		return OptionalMessage::Empty();
 	}
-	return OptionalMessage::Empty();
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	const std::string common_message = GenerateTopicMessage(event.get_executer(), channel);
+	if (this->joining_channels_.Contains(&channel))
+		return OptionalMessage::Create(this->get_fd(), common_message);
+	else
+		return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event){
@@ -325,9 +365,7 @@ void User::CkKickCommand(Event& event) const
 
 void User::CkTopicCommand(Event& event) const
 {
-	if (event.get_executer())
-
-
+	(void) event;
 }
 
 void User::CkPrivmsgCommand(Event& event) const
