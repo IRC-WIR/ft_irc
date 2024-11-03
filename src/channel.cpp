@@ -3,6 +3,8 @@
 #include "utils.h"
 #include <algorithm>
 
+const std::string Channel::kHandlingModes = "itkol";
+
 template <typename T, typename U>
 const std::string Channel::MyMap<T, U>::kErrMsg("not found the key");
 

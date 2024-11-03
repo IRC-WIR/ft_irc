@@ -12,6 +12,7 @@
 class Channel: public EventListener, public EventConfigurator {
 	public:
 		static const int kMaxJoiningChannels = 10;
+		static const std::string kHandlingModes;
 
 		Channel(const User& op, const std::string& name);
 		~Channel();
