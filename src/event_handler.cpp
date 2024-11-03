@@ -166,12 +166,11 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 
 void	EventHandler::Detach(int fd) {
 	std::cout << "connection hang up " << fd << std::endl;
-	std::vector<struct pollfd>::size_type index = 0;
-	for (; index < poll_fd_.size(); index++) {
-		if (poll_fd_[index].fd == fd) {
-			int target_fd = poll_fd_[index].fd;
-			poll_fd_.erase(poll_fd_.begin() + index);
-			close(target_fd);
+	for (std::vector<struct pollfd>::iterator it = poll_fd_.begin(); it != poll_fd_.end(); ++it) {
+		if (it->fd == fd) {
+			close(it->fd);
+			poll_fd_.erase(it);
+			return ;
 		}
 	}
 	return ;
