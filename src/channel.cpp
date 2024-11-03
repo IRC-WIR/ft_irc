@@ -144,7 +144,7 @@ void Channel::CheckCommand(Event*& event) const {
 			CkInviteCommand(*event);
 			break;
 		case message::kKick:
-			CkKickCommand(*event);
+			CkKickCommand(event);
 			break;
 		case message::kTopic:
 			CkTopicCommand(*event);
@@ -224,10 +224,11 @@ OptionalMessage Channel::ExInviteCommand(const Event& event) {
 //Parameters: <channel> <user> [<comment>]
 OptionalMessage Channel::ExKickCommand(const Event& event) {
 	if (event.HasErrorOccurred())
-		return ;
+		return OptionalMessage::Empty();
 	if (event.get_command_params()[0] != this->name_)
-		return ;
+		return OptionalMessage::Empty();
 	this->RemoveUserByNick(event.get_command_params()[1]);
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage Channel::ExTopicCommand(const Event& event) {
@@ -296,12 +297,15 @@ void Channel::CkKickCommand(Event*& event) const {
 	if (event->get_command_params()[0] != this->name_)
 		return ;
 
+	//ターゲットがチャンネルメンバか否か
 	if (!this->ContainsUserByNick(event->get_command_params()[1]))
 		event->set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
 
 	const User& executer = event->get_executer();
+	//実行者がチャンネルオペレータか否か
 	if (!this->IsOperator(executer))
 		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+	//実行者がチャンネルメンバか否か
 	if (!this->ContainsUser(executer))
 		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 

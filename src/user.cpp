@@ -220,16 +220,37 @@ OptionalMessage User::ExInviteCommand(const Event& event){
 }
 
 OptionalMessage User::ExKickCommand(const Event& event){
+	//失敗
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
 			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
 			return OptionalMessage::Create(this->get_fd(), message);
-		} 
+		}
 		return OptionalMessage::Empty();
 	}
-	//自分のChannelリストにターゲットが含まれていればメッセージ返す
-	return (OptionalMessage::Create(this->fd_, ""));
-	
+	if (!event.IsChannelEvent()) {
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& message = User::CreateErrorMessage(event.get_command(), ErrorStatus::ERR_NOSUCHCHANNEL);
+			return OptionalMessage::Create(this->get_fd(), message);
+		}
+		return OptionalMessage::Empty();
+	}
+	//成功
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	const std::string& target_name = event.get_command_params()[1];
+	//対象チャンネルに所属している場合
+	if (channel.ContainsUser(*this)) {
+		std::string base_message;
+		if (event.get_fd() == this->get_fd()) {
+			base_message = "Kick " + target_name + " from " + channel.get_name();
+		} else {
+			base_message = "Kick message from " + event.get_executer().get_nick_name() + " to remove " + target_name + " from channel " + channel.get_name();
+		}
+		std::string optional_message = event.get_command_params().size() > 2 ? 
+			" using \"" + channel.get_name() +"\" as the reason(comment)" : ""; 
+		return OptionalMessage::Create(this->get_fd(), base_message + optional_message);
+	}
+	return OptionalMessage::Empty();
 }
 
 
