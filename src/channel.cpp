@@ -152,7 +152,7 @@ void Channel::CheckCommand(Event*& event) const {
 			CkTopicCommand(*event);
 			break;
 		case message::kMode:
-			CkModeCommand(*event);
+			CkModeCommand(event);
 			break;
 		case message::kPrivmsg:
 			CkPrivmsgCommand(*event);
@@ -264,7 +264,7 @@ void Channel::CkUserCommand(Event& event) const {
 void Channel::CkJoinCommand(Event*& event) const {
 	if (event->HasErrorOccurred())
 		return ;
-	const std::vector<std::string> params = event->get_command_params();
+	const std::vector<std::string>& params = event->get_command_params();
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
 
@@ -304,9 +304,36 @@ void Channel::CkPrivmsgCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkModeCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Mode called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkModeCommand(Event*& event) const {
+	const std::string kSigns = "+-";
+	const std::string::size_type kPlusPos = kSigns.find('+');
+
+	if (event->HasErrorOccurred())
+		return ;
+	const std::vector<std::string>& params = event->get_command_params();
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
+		return ;
+
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+
+	bool is_plus = true;
+	const std::string& mode = params[1];
+	for (std::string::size_type i = 0; i < mode.length(); i++) {
+		std::string::size_type pos = kSigns.find(mode[i]);
+		if (pos != std::string::npos) {
+			is_plus = (pos == kPlusPos);
+			continue ;
+		}
+		if (is_plus && this->mode_map_(mode[i])) {
+			event->set_do_nothing(true);
+			return ;
+		}
+		switch (mode[i]) {
+		case 'i':
+		}
+	}
+	event->set_do_nothing(true);
 }
 //check

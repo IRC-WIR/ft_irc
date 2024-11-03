@@ -216,11 +216,23 @@ void Database::CkPrivmsgCommand(Event& event) const {
 }
 
 void Database::CkModeCommand(Event& event) const {
-	const int kParamsSize = 1;
-	const std::string kHandlingStr = "+-" + Channel::kHandlingModes;
+	const std::string kSigns = "+-";
 
-	if (event.get_command_params().size() < kParamsSize)
+	switch (event.get_command_params().size()) {
+	case 0:
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
-		
+	case 1:
+		return ;
+	default:
+		const std::string& mode = event.get_command_params()[1];
+		for (std::string::size_type i = 0; i < mode.length(); i++) {
+			if (kSigns.find(mode[i]) != std::string::npos)
+				continue ;
+			if (Channel::kHandlingModes.find(mode[i]) == std::string::npos)
+				event.set_error_status(ErrorStatus::ERR_UNKNOWNMODE);
+			break ;
+		}
+		return ;
+	}
 }
 //check

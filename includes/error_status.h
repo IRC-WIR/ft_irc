@@ -15,6 +15,7 @@ class ErrorStatus {
             ERR_ALREADYREGISTRED,
             ERR_PASSWDMISMATCH,
 			ERR_CHANNELISFULL,
+            ERR_UNKNOWNMODE,
 			ERR_INVITEONLYCHAN,
 			ERR_BADCHANNELKEY
             ;

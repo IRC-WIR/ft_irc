@@ -10,6 +10,7 @@ const ErrorStatus
     ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister."),
     ErrorStatus::ERR_PASSWDMISMATCH(464, "Password incorrect"),
 	ErrorStatus::ERR_CHANNELISFULL(471, "Cannot join channel (+l)"),
+    ErrorStatus::ERR_UNKNOWNMODE(472, "is unknown mode char to me"),
 	ErrorStatus::ERR_INVITEONLYCHAN(473, "Cannot join channel (+i)"),
 	ErrorStatus::ERR_BADCHANNELKEY(475, "Cannot join channel (+k)")
     ;
