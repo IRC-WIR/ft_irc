@@ -16,8 +16,6 @@ class User : public EventListener, public EventConfigurator {
 
 		void CheckCommand(Event*& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
-		std::string CreateMessage(const std::string& to, const message::Command& cmd, const std::vector<std::string>& params) const;
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
 		bool IsTarget(const std::string& target, const Event& event) const;
@@ -43,6 +41,7 @@ class User : public EventListener, public EventConfigurator {
 		bool is_delete_;
 		utils::MyVector<const Channel*> joining_channels_;
 		std::string GenerateJoinDetailMessage(const Channel&) const;
+		std::string CreateMessage(const std::string& to, const message::Command& cmd, const std::vector<std::string>& params) const;
 		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
 		std::string CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const;
 		bool is_displayed_welcome_;

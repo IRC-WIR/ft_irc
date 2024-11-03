@@ -334,6 +334,7 @@ void Channel::CkTopicCommand(Event*& event) const {
 void Channel::CkPrivmsgCommand(Event*& event) const {
 	if (event->get_command_params()[0] != this->get_name())
 		return ;
+	event->add_target_num();
 	//チャンネルイベントを作成する
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;

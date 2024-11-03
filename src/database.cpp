@@ -131,7 +131,26 @@ void Database::AfterCheck(Event& event) const {
 		}
 		return ;
 	}
-
+	if (event.get_command() == message::kPrivmsg) {
+		if (!event.get_executer().IsVerified())
+			event.set_do_nothing(true);
+		if (event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (!channel.ContainsUser(event.get_executer())) {
+				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+				return ;
+			}
+		}
+		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
+			if (*event.get_command_params()[0].c_str() == '#') {
+				event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+				return ;
+			}
+			event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
+			return ;
+		}
+		return ;
+	}
 }
 
 

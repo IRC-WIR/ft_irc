@@ -321,7 +321,7 @@ OptionalMessage User::ExTopicCommand(const Event& event) {
 		return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExPrivmsgCommand(const Event& event){
+OptionalMessage User::ExPrivmsgCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
@@ -330,7 +330,7 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	}
 	//送信相手確認
 	const std::vector<std::string>& params = event.get_command_params();
-	const std::string& target = params.front();
+	const std::string& target = params[0];
 	if (IsTarget(target, event)) {
 		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
 		return OptionalMessage::Create(this->get_fd(), send_msg);
@@ -409,14 +409,10 @@ void User::CkTopicCommand(Event& event) const
 void User::CkPrivmsgCommand(Event& event) const
 {
 	if (event.HasErrorOccurred())
-	{
-		const ErrorStatus& err = event.get_error_status();
-		if (err != ErrorStatus::ERR_NOSUCHNICK)
-			return;
-		const std::string& target = event.get_command_params()[0];
-		//送信相手存在確認
-		if (target == this->get_nick_name())
-	}
+		return ;
+	if (event.get_command_params()[0] != this->get_nick_name())
+		return ;
+	event.add_target_num();
 }
 
 void User::CkModeCommand(Event& event) const
@@ -480,8 +476,6 @@ bool User::IsTarget(const std::string& target, const Event& event) const
 	if (target == this->get_nick_name())
 		return true;
 	if (event.IsChannelEvent()) {
-		if (event.get_fd() == this->get_fd())
-			return false;
 		const ChannelEvent& channel_event = dynamic_cast<const ChannelEvent&>(event);
 		return channel_event.get_channel().ContainsUser(*this);
 	}
