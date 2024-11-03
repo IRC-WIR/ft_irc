@@ -142,7 +142,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				ExecuteCommand(event);
 				response_map_.erase(target_fd);
 				delete event;
-				Detach(entry);
+				Detach(entry.fd);
 				return;
 			} else {
 				it = response_map_[target_fd].erase(it);
@@ -164,11 +164,11 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 	}
 }
 
-void	EventHandler::Detach(pollfd entry) {
-	std::cout << "connection hang up " << entry.fd << std::endl;
+void	EventHandler::Detach(int fd) {
+	std::cout << "connection hang up " << fd << std::endl;
 	std::vector<struct pollfd>::size_type index = 0;
 	for (; index < poll_fd_.size(); index++) {
-		if (poll_fd_[index].fd == entry.fd) {
+		if (poll_fd_[index].fd == fd) {
 			int target_fd = poll_fd_[index].fd;
 			poll_fd_.erase(poll_fd_.begin() + index);
 			close(target_fd);
@@ -233,7 +233,7 @@ void	EventHandler::Receive(int fd, char* buffer) {
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
-		Detach(entry);
+		Detach(entry.fd);
 		Event* event = new Event(entry.fd, POLL_HUP);
 		event->set_command(message::kQuit);
 		ExecuteCommand(event);
@@ -283,8 +283,6 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 			std::cout << "Parse Empty" <<std::endl;
 			break ;
 		default:
-			if (event->get_command() == message::kQuit)
-				Detach(entry);
 			this->ExecuteCommand(event);
 			break ;
 		}
@@ -296,6 +294,8 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 }
 
 void EventHandler::ExecuteCommand(Event*& event_ptr) {
+	if (event_ptr->get_command() == message::kQuit)
+		Detach(event_ptr->get_fd());
 	database_.CheckEvent(event_ptr);
 	if (event_ptr->is_do_nothing())
 		return ;

@@ -37,7 +37,7 @@ class EventHandler{
 		void				Execute(const pollfd& entry, const std::string& msg);
 		message::ParseState	Parse(const std::string& buffer, Event& event);
 		void				Send(Event event);
-		void				Detach(pollfd entry);
+		void				Detach(int fd);
 		void				HandlePollInEvent(pollfd entry);
 		void				HandlePollOutEvent(pollfd entry);
 		void				HandlePollHupEvent(pollfd entry);
