@@ -4,7 +4,7 @@
 #include "event_listener.h"
 #include "event_configurator.h"
 #include "utils.h"
-#include "error_status.h"
+#include "response_status.h"
 #include "optional_message.h"
 
 class Channel;
@@ -16,7 +16,7 @@ class User : public EventListener, public EventConfigurator {
 
 		void CheckCommand(Event*& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
+		std::string CreateErrorMessage(const message::Command& cmd, const ResponseStatus& err_status) const;
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
 

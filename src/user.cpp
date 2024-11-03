@@ -73,7 +73,7 @@ OptionalMessage User::ExecuteCommand(const Event& event) {
 	}
 }
 
-std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const {
+std::string User::CreateErrorMessage(const message::Command& cmd, const ResponseStatus& err_status) const {
 	std::stringstream ret_ss;
 	//add error no
 	ret_ss << err_status.get_error_code();
@@ -100,13 +100,13 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_res_status());
 		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
 	set_is_password_authenticated(true);
 	if (IsVerified() && !this->is_displayed_welcome()) {
 		set_displayed_welcome(true);
-		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(event.get_res_status, event.get_executer()));
 	}
 	return OptionalMessage::Empty();
 }
@@ -117,7 +117,7 @@ OptionalMessage User::ExNickCommand(const Event& event){
 		return OptionalMessage::Empty();
 
 	if (event.HasErrorOccurred()) {
-		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command(), event.get_error_status()));
+		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command(), event.get_res_status()));
 	}
 
 	const std::string& new_nickname = event.get_command_params()[0];
@@ -131,7 +131,7 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	if (IsVerified()) {
 		if (!this->is_displayed_welcome()) {
 			set_displayed_welcome(true);
-			return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+			return OptionalMessage::Create(get_fd(), utils::());
 		}
 		return OptionalMessage::Create(get_fd(), ret_message);
 	}
@@ -142,7 +142,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+		const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_res_status());
 		return OptionalMessage::Create(this->get_fd(), message);
 	}
 
@@ -156,7 +156,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	}
 	if (IsVerified() && !this->is_displayed_welcome()) {
 		set_displayed_welcome(true);
-		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(event.get_res_status, event.get_executer()));
 	}
 	return OptionalMessage::Empty();
 }
@@ -193,7 +193,7 @@ std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
 OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_res_status());
 			return OptionalMessage::Create(this->get_fd(), message);
 		} else
 			return OptionalMessage::Empty();
@@ -256,7 +256,7 @@ void User::CkPassCommand(Event& event) const
 	if (event.HasErrorOccurred())
 		return ;
 	if (get_is_password_authenticated())
-		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+		event.set_res_status(ResponseStatus::ERR_ALREADYREGISTRED);
 	return;
 }
 
@@ -266,7 +266,7 @@ void User::CkNickCommand(Event& event) const
 			return ;
 		const std::string& new_nickname = event.get_command_params()[0];
 		if (this->nick_name_ == new_nickname){
-			event.set_error_status(ErrorStatus::ERR_NICKNAMEINUSE);
+			event.set_res_status(ResponseStatus::ERR_NICKNAMEINUSE);
 		}
 	return ;
 }
@@ -276,7 +276,7 @@ void User::CkUserCommand(Event& event) const {
 			|| event.HasErrorOccurred())
 		return ;
 	if (!this->user_name_.empty())
-		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
+		event.set_res_status(ResponseStatus::ERR_ALREADYREGISTRED);
 }
 
 void User::CkJoinCommand(Event& event) const {
@@ -284,7 +284,7 @@ void User::CkJoinCommand(Event& event) const {
 			|| event.HasErrorOccurred())
 		return ;
 	if (this->joining_channels_.size() >= Channel::kMaxJoiningChannels) {
-		event.set_error_status(ErrorStatus::ERR_TOOMANYCHANNELS);
+		event.set_res_status(ResponseStatus::ERR_TOOMANYCHANNELS);
 		return ;
 	}
 }

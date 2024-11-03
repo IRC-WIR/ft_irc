@@ -114,18 +114,30 @@ bool HasNewlines(const std::string& str) {
 	return true;
 }
 
-std::string GetWelcomeString() {
+std::string GetWelcomeString(const ResponseStatus& res_status, const User& user) {
 	std::fstream s;
+	std::string kHostName = "localhost";
+
 	s.open(kFilePath.c_str(), std::ios::in);
 	if (!s.is_open()) {
 		std::cerr << "Could not open file : " << kFilePath << std::endl;
 		return "";
 	}
-	std::stringstream ret_ss;
+	std::stringstream ss;
+	//add server
+	ss << ":" << kHostName;
+	ss << " ";
+	//add RPL code
+	ss << res_status.RPL_WELCOME.get_error_code();
+	ss << " ";
+	//add message from motd file
 	for (std::string line; std::getline(s, line); ) {
-		ret_ss << line << kNewLine;
+		ss << line << kNewLine;
 	}
-	return ret_ss.str();
+	//<nick>!<user>@<host>"
+	//add nick!user@host
+	ss << user.get_nick_name() << "!" << user.get_user_name() << "@" << kHostName;
+	return ss.str();
 }
 
 std::string StrToLower(const std::string& str) {

@@ -1,11 +1,12 @@
-#ifndef ERROR_STATUS_H_
-# define ERROR_STATUS_H_
+#ifndef RESPONSE_STATUS_H_
+# define RESPONSE_STATUS_H_
 
 # include <string>
 
-class ErrorStatus {
+class ResponseStatus {
     public:
-        static const ErrorStatus
+        static const ResponseStatus
+            RPL_WELCOME,
 			ERR_NOSUCHCHANNEL,
 			ERR_TOOMANYCHANNELS,
             ERR_NONICKNAMEGIVEN,
@@ -26,12 +27,12 @@ class ErrorStatus {
         const int code_;
         const std::string message_;
 
-        ErrorStatus(void);
-        ErrorStatus(int, const std::string&);
-        ~ErrorStatus();
+        ResponseStatus(void);
+        ResponseStatus(int, const std::string&);
+        ~ResponseStatus();
 };
 
-bool operator ==(const ErrorStatus&, const ErrorStatus&);
-bool operator !=(const ErrorStatus&, const ErrorStatus&);
+bool operator ==(const ResponseStatus&, const ResponseStatus&);
+bool operator !=(const ResponseStatus&, const ResponseStatus&);
 
 #endif

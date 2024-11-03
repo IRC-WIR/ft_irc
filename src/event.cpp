@@ -1,17 +1,17 @@
 #include "event.h"
 #include "user.h"
 
-const std::string Event::NoErrorException::kMessage = "there is no ErrorStatus.";
+const std::string Event::NoErrorException::kMessage = "there is no ResponseStatus.";
 const std::string Event::NoExecuterException::kMessage = "there is no executer.";
 const std::string Event::AlreadySetException::kMessage = "already exists executer.";
 
 Event::Event(int fd, int event_type)
-		: fd_(fd), event_type_(event_type), error_status_(NULL), executer_(NULL) {
+		: fd_(fd), event_type_(event_type), res_status_(NULL), executer_(NULL) {
 	return ;
 }
 
 Event::Event(const Event& src)
-		: fd_(src.get_fd()), event_type_(src.get_event_type()), error_status_(src.error_status_), executer_(src.executer_) {
+		: fd_(src.get_fd()), event_type_(src.get_event_type()), res_status_(src.res_status_), executer_(src.executer_) {
 	this->set_command(src.get_command());
 	this->set_command_params(src.get_command_params());
 	this->set_do_nothing(src.is_do_nothing());
@@ -37,10 +37,10 @@ const std::vector<std::string>& Event::get_command_params() const {
 	return command_params_;
 }
 
-const ErrorStatus& Event::get_error_status() const {
+const ResponseStatus& Event::get_res_status() const {
 	if (!this->HasErrorOccurred())
 		throw Event::NoErrorException();
-	return *this->error_status_;
+	return *this->res_status_;
 }
 
 void Event::set_command(message::Command command) {
@@ -55,12 +55,12 @@ void Event::set_command_params(const std::vector<std::string>& commmand_params) 
 	}
 }
 
-void Event::set_error_status(const ErrorStatus& error_status) {
-	this->error_status_ = &error_status;
+void Event::set_res_status(const ResponseStatus& res_status) {
+	this->res_status_ = &res_status;
 }
 
 bool Event::HasErrorOccurred() const {
-	return (this->error_status_ != NULL);
+	return (this->res_status_ != NULL);
 }
 
 bool Event::IsChannelEvent() const {
