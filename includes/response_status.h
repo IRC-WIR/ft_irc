@@ -6,30 +6,20 @@
 class ResponseStatus {
     public:
         static const ResponseStatus
-            RPL_WELCOME,
-			ERR_NOSUCHCHANNEL,
-			ERR_TOOMANYCHANNELS,
-            ERR_NONICKNAMEGIVEN,
-            ERR_ERRONEUSNICKNAME,
-            ERR_NICKNAMEINUSE,
-            ERR_NEEDMOREPARAMS,
-            ERR_ALREADYREGISTRED,
-            ERR_PASSWDMISMATCH,
-			ERR_CHANNELISFULL,
-			ERR_INVITEONLYCHAN,
-			ERR_BADCHANNELKEY
+            RPL_WELCOME
             ;
 
-        const std::string& get_error_message(void) const;
-        int get_error_code(void) const;
+        int get_response_code(void) const;
+        const std::string& get_response_message(void) const;
+
+    protected:
+        ResponseStatus(void);
+        ResponseStatus(int, const std::string&);
+        virtual ~ResponseStatus();
 
     private:
         const int code_;
         const std::string message_;
-
-        ResponseStatus(void);
-        ResponseStatus(int, const std::string&);
-        ~ResponseStatus();
 };
 
 bool operator ==(const ResponseStatus&, const ResponseStatus&);

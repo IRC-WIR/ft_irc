@@ -16,10 +16,10 @@ class Event {
 		int		get_event_type(void) const;
 		message::Command	get_command(void) const;
 		const std::vector<std::string>&	get_command_params(void) const;
-		const ResponseStatus& get_res_status(void) const;
+		const ErrorStatus& get_error_status(void) const;
 		void	set_command(message::Command command);
 		void	set_command_params(const std::vector<std::string>& commmand_params);
-		void	set_res_status(const ResponseStatus&);
+		void	set_error_status(const ErrorStatus&);
 		bool	HasErrorOccurred(void) const;
 		virtual bool IsChannelEvent(void) const;
 		void set_executer(const User&);
@@ -57,7 +57,7 @@ class Event {
 		const int	event_type_;
 		message::Command command_;
 		std::vector<std::string>	command_params_;
-		const ResponseStatus* res_status_;
+		const ErrorStatus* error_status_;
 		const User* executer_;
 		bool is_do_nothing_;
 };

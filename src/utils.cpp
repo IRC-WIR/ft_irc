@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <iterator> // for std::back_inserter
+#include "user.h"
 
 namespace utils {
 
@@ -116,7 +117,6 @@ bool HasNewlines(const std::string& str) {
 
 std::string GetWelcomeString(const ResponseStatus& res_status, const User& user) {
 	std::fstream s;
-	std::string kHostName = "localhost";
 
 	s.open(kFilePath.c_str(), std::ios::in);
 	if (!s.is_open()) {
@@ -128,7 +128,7 @@ std::string GetWelcomeString(const ResponseStatus& res_status, const User& user)
 	ss << ":" << kHostName;
 	ss << " ";
 	//add RPL code
-	ss << res_status.RPL_WELCOME.get_error_code();
+	ss << res_status.RPL_WELCOME.get_response_code();
 	ss << " ";
 	//add message from motd file
 	for (std::string line; std::getline(s, line); ) {
@@ -136,7 +136,7 @@ std::string GetWelcomeString(const ResponseStatus& res_status, const User& user)
 	}
 	//<nick>!<user>@<host>"
 	//add nick!user@host
-	ss << user.get_nick_name() << "!" << user.get_user_name() << "@" << kHostName;
+	ss << user.get_nick_name() << "!" << user.get_user_name() << "@" << kHostName << kNewLine;
 	return ss.str();
 }
 

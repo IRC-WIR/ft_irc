@@ -95,10 +95,10 @@ void Database::CheckCommandAndParams(Event& event) const {
 	}
 }
 
-static bool IsIgnoringErrorOnJoin(const ResponseStatus& status) {
-	return (status == ResponseStatus::ERR_INVITEONLYCHAN
-			|| status == ResponseStatus::ERR_BADCHANNELKEY
-			|| status == ResponseStatus::ERR_CHANNELISFULL);
+static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
+	return (status == ErrorStatus::ERR_INVITEONLYCHAN
+			|| status == ErrorStatus::ERR_BADCHANNELKEY
+			|| status == ErrorStatus::ERR_CHANNELISFULL);
 }
 
 void Database::AfterCheck(Event& event) const {
@@ -106,7 +106,7 @@ void Database::AfterCheck(Event& event) const {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			if (channel.ContainsUser(event.get_executer())
-					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_res_status())))
+					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status())))
 				event.set_do_nothing(true);
 		}
 		return ;
@@ -119,11 +119,11 @@ void Database::CkPassCommand(Event& event) const {
 
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
-		event.set_res_status(ResponseStatus::ERR_NEEDMOREPARAMS);
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return;
 	}
 	if (params[0] != get_server_password()) {
-		event.set_res_status(ResponseStatus::ERR_PASSWDMISMATCH);
+		event.set_error_status(ErrorStatus::ERR_PASSWDMISMATCH);
 		return;
 	}
 }
@@ -133,27 +133,27 @@ void Database::CkNickCommand(Event& event) const {
 	const int kParamsSize = 1;
 
 	if (event.get_command_params().size() < kParamsSize) {
-		event.set_res_status(ResponseStatus::ERR_NONICKNAMEGIVEN);
+		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
 		return ;
 	}
 
 	const std::string& new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9) {
-		event.set_res_status(ResponseStatus::ERR_ERRONEUSNICKNAME);
+		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
 
 	const std::string must_not_contain = " ,*?!@.";
 	for (int i = 0; i < (int)must_not_contain.length(); i++) {
 		if (new_nickname.find(must_not_contain[i]) != std::string::npos) {
-			event.set_res_status(ResponseStatus::ERR_ERRONEUSNICKNAME);
+			event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 			return;
 		}
 	}
 
 	const std::string must_not_start_with = "$:&#~%+";
 	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
-		event.set_res_status(ResponseStatus::ERR_ERRONEUSNICKNAME);
+		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
 
@@ -164,7 +164,7 @@ void Database::CkUserCommand(Event& event) const {
 	const int kParamsSize = 4;
 
 	if (event.get_command_params().size() < kParamsSize)
-		event.set_res_status(ResponseStatus::ERR_NEEDMOREPARAMS);
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 }
 
 void Database::CkJoinCommand(Event& event) const {
@@ -175,17 +175,17 @@ void Database::CkJoinCommand(Event& event) const {
 
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
-		event.set_res_status(ResponseStatus::ERR_NEEDMOREPARAMS);
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return ;
 	}
 	const std::string& channel_name = params[0];
 	if (channel_name.empty() || channel_name[0] != kStartChar || channel_name.length() > kNameMaxLength) {
-		event.set_res_status(ResponseStatus::ERR_NOSUCHCHANNEL);
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 		return ;
 	}
 	for (std::size_t i = 0; i < kMustNotContain.length(); i++) {
 		if (channel_name.find(kMustNotContain[i]) != std::string::npos) {
-			event.set_res_status(ResponseStatus::ERR_NOSUCHCHANNEL);
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
 	}

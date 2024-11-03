@@ -271,11 +271,11 @@ void Channel::CkJoinCommand(Event*& event) const {
 	event = channel_event;
 	const std::string key = params.size() >= 2 ? params[1] : "";
 	if (this->mode_map_('k') && this->key_ != key)
-		event->set_res_status(ResponseStatus::ERR_BADCHANNELKEY);
+		event->set_error_status(ErrorStatus::ERR_BADCHANNELKEY);
 	else if (this->mode_map_('i'))
-		event->set_res_status(ResponseStatus::ERR_INVITEONLYCHAN);
+		event->set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
 	else if (this->mode_map_('l') && this->operators_.size() + this->members_.size() >= this->max_member_num_)
-		event->set_res_status(ResponseStatus::ERR_CHANNELISFULL);
+		event->set_error_status(ErrorStatus::ERR_CHANNELISFULL);
 }
 
 void Channel::CkInviteCommand(Event& event) const {
