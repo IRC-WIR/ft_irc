@@ -223,11 +223,11 @@ OptionalMessage Channel::ExInviteCommand(const Event& event) {
 
 //Parameters: <channel> <user> [<comment>]
 OptionalMessage Channel::ExKickCommand(const Event& event) {
-	if (event.HasErrorOccurred())
+	if (event.HasErrorOccurred() || !event.IsChannelEvent())
 		return OptionalMessage::Empty();
-	if (event.get_command_params()[0] != this->name_)
-		return OptionalMessage::Empty();
-	this->RemoveUserByNick(event.get_command_params()[1]);
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this == &channel)
+		this->RemoveUserByNick(event.get_command_params()[1]);
 	return OptionalMessage::Empty();
 }
 
