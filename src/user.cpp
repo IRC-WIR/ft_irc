@@ -265,7 +265,7 @@ void User::CkNickCommand(Event& event) const
 		if (event.HasErrorOccurred())
 			return ;
 		const std::string& new_nickname = event.get_command_params()[0];
-		if (this->nick_name_ == new_nickname){
+		if (utils::StrToLower(this->nick_name_) == utils::StrToLower(new_nickname)){
 			event.set_error_status(ErrorStatus::ERR_NICKNAMEINUSE);
 		}
 	return ;
