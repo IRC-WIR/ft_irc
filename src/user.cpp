@@ -247,7 +247,7 @@ OptionalMessage User::ExKickCommand(const Event& event){
 			base_message = "Kick message from " + event.get_executer().get_nick_name() + " to remove " + target_name + " from channel " + channel.get_name();
 		}
 		std::string optional_message = event.get_command_params().size() > 2 ? 
-			" using \"" + channel.get_name() +"\" as the reason(comment)" : ""; 
+			" using \"" + event.get_command_params()[2] +"\" as the reason(comment)" : ""; 
 		return OptionalMessage::Create(this->get_fd(), base_message + optional_message);
 	}
 	return OptionalMessage::Empty();
