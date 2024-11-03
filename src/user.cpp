@@ -254,7 +254,7 @@ OptionalMessage User::ExModeCommand(const Event& event){
 
 OptionalMessage User::ExQuitCommand(const Event& event){
 
-	if (event.get_executer().get_fd() == this->get_fd()) {
+	if (event.get_fd() == this->get_fd()) {
 		this->is_delete_ = true;
 
 	} else {

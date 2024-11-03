@@ -137,12 +137,12 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			}
 			//送信失敗
 			if (sent_msg_length < 0) {
-				Detach(entry);
-				Event event(entry.fd, entry.revents);
-				Event* event_ptr = &event;;
-				event_ptr->set_command(message::kQuit);
-				ExecuteCommand(event_ptr);
+				Event* event = new Event(entry.fd, entry.revents);
+				event->set_command(message::kQuit);
+				ExecuteCommand(event);
 				response_map_.erase(target_fd);
+				delete event;
+				Detach(entry);
 				return;
 			} else {
 				it = response_map_[target_fd].erase(it);
@@ -166,15 +166,14 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 
 void	EventHandler::Detach(pollfd entry) {
 	std::cout << "connection hang up " << entry.fd << std::endl;
-	int target_index = 0;
-	for (int i = 0; i < (int)poll_fd_.size(); i++)
-	{
-		if (poll_fd_[i].fd == entry.fd)
-			target_index = i;
+	std::vector<struct pollfd>::size_type index = 0;
+	for (; index < poll_fd_.size(); index++) {
+		if (poll_fd_[index].fd == entry.fd) {
+			int target_fd = poll_fd_[index].fd;
+			poll_fd_.erase(poll_fd_.begin() + index);
+			close(target_fd);
+		}
 	}
-	int target_fd = (poll_fd_.begin() + target_index)->fd;
-	poll_fd_.erase(poll_fd_.begin() + target_index);
-	close(target_fd);
 	return ;
 }
 
@@ -235,10 +234,10 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
 		Detach(entry);
-		Event event(entry.fd, POLL_HUP);
-		Event* event_ptr = &event;
-		event_ptr->set_command(message::kQuit);
-		ExecuteCommand(event_ptr);
+		Event* event = new Event(entry.fd, POLL_HUP);
+		event->set_command(message::kQuit);
+		ExecuteCommand(event);
+		delete event;
 		return ;
 	}
 	std::string request_buffer;
