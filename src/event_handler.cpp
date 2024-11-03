@@ -140,7 +140,6 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				Event* event = new Event(entry.fd, entry.revents);
 				event->set_command(message::kQuit);
 				ExecuteCommand(event);
-				response_map_.erase(target_fd);
 				delete event;
 				return;
 			} else {
@@ -165,6 +164,7 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 
 void	EventHandler::Detach(int fd) {
 	std::cout << "connection hang up " << fd << std::endl;
+	response_map_.erase(fd);
 	for (std::vector<struct pollfd>::iterator it = poll_fd_.begin(); it != poll_fd_.end(); ++it) {
 		if (it->fd == fd) {
 			close(it->fd);
@@ -231,7 +231,6 @@ void	EventHandler::Receive(int fd, char* buffer) {
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
-		Detach(entry.fd);
 		Event* event = new Event(entry.fd, POLL_HUP);
 		event->set_command(message::kQuit);
 		ExecuteCommand(event);
@@ -292,8 +291,6 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 }
 
 void EventHandler::ExecuteCommand(Event*& event_ptr) {
-	if (event_ptr->get_command() == message::kQuit)
-		Detach(event_ptr->get_fd());
 	database_.CheckEvent(event_ptr);
 	if (event_ptr->is_do_nothing())
 		return ;
@@ -301,6 +298,8 @@ void EventHandler::ExecuteCommand(Event*& event_ptr) {
 		this->AddNewChannel(event_ptr);
 	AddResponseMap(database_.ExecuteEvent(*event_ptr));
 	database_.DeleteFinishedElements();
+	if (!event_ptr->HasErrorOccurred() && event_ptr->get_command() == message::kQuit)
+		Detach(event_ptr->get_fd());
 }
 
 bool EventHandler::CheckNewChannel(const Event& event) {
