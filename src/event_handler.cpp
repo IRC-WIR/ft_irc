@@ -142,7 +142,6 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				ExecuteCommand(event);
 				response_map_.erase(target_fd);
 				delete event;
-				Detach(entry.fd);
 				return;
 			} else {
 				it = response_map_[target_fd].erase(it);
