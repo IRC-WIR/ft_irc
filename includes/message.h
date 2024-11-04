@@ -3,27 +3,36 @@
 
 #include "utils.h"
 
-namespace message
-{
+namespace message {
 
-enum Command
-{
-	kCommandDefault = 0,
-	kPass,
-	kNick,
-	kUser,
-	kJoin,
-	kInvite,
-	kKick,
-	kTopic,
-	kMode,
-	kPrivmsg,
-	kQuit,
-	kNotFound
+class Command {
+	public:
+	static const Command
+		kPass,
+		kNick,
+		kUser,
+		kJoin,
+		kInvite,
+		kKick,
+		kTopic,
+		kMode,
+		kPrivmsg,
+		kQuit,
+		kNotFound
+	;
+
+	static const Command& SearchByName(const std::string&);
+	const std::string& get_name(void) const;
+
+	private:
+		static const std::vector<const Command*>& kCommandList;
+		const std::string name_;
+
+		Command(const std::string&);
+		~Command();
 };
 
-enum ParseState
-{
+enum ParseState {
 	kParseDefault = 0,
 	kParseCommand,
 	kParseParam,
@@ -33,25 +42,19 @@ enum ParseState
 	kParseComplete
 };
 
-class MessageParser
-{
+class MessageParser {
 	public:
 		MessageParser(const std::string& msg);
 
-		Command	get_command() const;
-		ParseState get_state() const;
-		std::vector<std::string> get_params() const;
-		static const std::map<Command, std::string>& get_command_str_map();
+		const Command&	get_command(void) const;
+		ParseState get_state(void) const;
+		std::vector<std::string> get_params(void) const;
 
 	private:
 		std::string	message_;
-		Command	command_;
+		const Command*	command_;
 		ParseState state_;
 		std::vector<std::string> command_params_;
-		static const std::map<std::string, Command> kCommandMap;
-		static std::map<std::string, Command> CreateCommandMap();
-		static const std::map<Command, std::string> kCommandStrMap;
-		static std::map<Command, std::string> CreateCommandStrMap();
 
 		bool	IsFinishParsing();
 		void	ParsingMessage(const std::string& msg);
@@ -59,6 +62,9 @@ class MessageParser
 		void	Init(const std::string& msg);
 		bool	IsEndOfMessage(const char& ch);
 };
+
+bool operator== (const Command&, const Command&);
+bool operator!= (const Command&, const Command&);
 
 } // namespace message
 

@@ -2,52 +2,73 @@
 
 namespace message {
 
-const std::map<std::string, Command> MessageParser::kCommandMap = MessageParser::CreateCommandMap();
-const std::map<Command, std::string> MessageParser::kCommandStrMap = MessageParser::CreateCommandStrMap();
+const Command
 
-//here
-//convert to Upper & compare from map
-std::map<std::string, Command> MessageParser::CreateCommandMap() {
-    std::map<std::string, Command> m;
-    m.insert(std::make_pair("PASS", kPass));
-    m.insert(std::make_pair("NICK", kNick));
-    m.insert(std::make_pair("USER", kUser));
-    m.insert(std::make_pair("JOIN", kJoin));
-    m.insert(std::make_pair("INVITE", kInvite));
-    m.insert(std::make_pair("KICK", kKick));
-    m.insert(std::make_pair("TOPIC", kTopic));
-    m.insert(std::make_pair("MODE", kMode));
-    m.insert(std::make_pair("PRIVMSG", kPrivmsg));
-    m.insert(std::make_pair("QUIT", kQuit));
-    return m;
+	Command::kPass("PASS"),
+	Command::kNick("KICK"),
+	Command::kUser("USER"),
+	Command::kJoin("JOIN"),
+	Command::kInvite("INVITE"),
+	Command::kKick("KICK"),
+	Command::kTopic("TOPIC"),
+	Command::kMode("MODE"),
+	Command::kPrivmsg("PRIVMSG"),
+	Command::kQuit("QUIT"),
+	Command::kNotFound("")
+	;
+
+static std::vector<const Command*> CreateCommandList() {
+	std::vector<const Command*> ret;
+	ret.push_back(&Command::kPass);
+	ret.push_back(&Command::kNick);
+	ret.push_back(&Command::kUser);
+	ret.push_back(&Command::kJoin);
+	ret.push_back(&Command::kInvite);
+	ret.push_back(&Command::kKick);
+	ret.push_back(&Command::kTopic);
+	ret.push_back(&Command::kMode);
+	ret.push_back(&Command::kPrivmsg);
+	ret.push_back(&Command::kQuit);
+	ret.push_back(&Command::kNotFound);
+	return ret;
 }
 
-std::map<Command, std::string> MessageParser::CreateCommandStrMap() {
-	std::map<Command, std::string> m;
-	m.insert(std::make_pair(kPass, "PASS"));
-	m.insert(std::make_pair(kNick, "NICK"));
-	m.insert(std::make_pair(kUser, "USER"));
-	m.insert(std::make_pair(kJoin, "JOIN"));
-	m.insert(std::make_pair(kInvite, "INVITE"));
-	m.insert(std::make_pair(kKick, "KICK"));
-	m.insert(std::make_pair(kTopic, "TOPIC"));
-	m.insert(std::make_pair(kMode, "MODE"));
-	m.insert(std::make_pair(kPrivmsg, "PRIVMSG"));
-	m.insert(std::make_pair(kQuit, "QUIT"));
-	return m;
+const std::vector<const Command*>& Command::kCommandList = CreateCommandList();
+
+Command::Command(const std::string& name) : name_(name) {
 }
 
-MessageParser::MessageParser(const std::string& msg)
-{
+Command::~Command() {
+}
+
+const Command& Command::SearchByName(const std::string& name) {
+	for (std::vector<const Command*>::const_iterator it = Command::kCommandList.begin(); it != Command::kCommandList.end(); ++it) {
+		if ((*it)->get_name() == name)
+			return **it;
+	}
+	return Command::kNotFound;
+}
+
+const std::string& Command::get_name() const {
+	return this->name_;
+}
+
+bool operator== (const Command& command1, const Command& command2) {
+	return (&command1 == &command2);
+}
+
+bool operator!= (const Command& command1, const Command& command2) {
+	return !(command1 == command2);
+}
+
+MessageParser::MessageParser(const std::string& msg) {
 	ParsingMessage(msg);
 }
 
-void MessageParser::ParsingMessage(const std::string& msg)
-{
+void MessageParser::ParsingMessage(const std::string& msg) {
 	Init(msg);
-	if (!utils::IsAsciiStr(message_))
-	{
-		command_ = kNotFound;
+	if (!utils::IsAsciiStr(message_)) {
+		command_ = &Command::kNotFound;
 		state_ = kParseNotAscii;
 		return;
 	}
@@ -63,29 +84,24 @@ void MessageParser::ParsingMessage(const std::string& msg)
 		command = message_.substr(0, delim_pos);
 	}
 	state_ = kParseCommand;
-	while (!IsFinishParsing())
-	{
-		switch (state_)
-		{
+	while (!IsFinishParsing()) {
+		switch (state_) {
 			case kParseCommand:
 				ParsingCommand(command);
 				break;
-
 			case kParseParam:
 				if (has_delim)
 					command_params_.push_back(last_param);
 				state_ = kParseComplete;
 				break;
-
 			default:
 				return;
 		}
 	}
 }
 
-void MessageParser::ParsingCommand(const std::string& command)
-{
-	std::stringstream ss(command);
+void MessageParser::ParsingCommand(const std::string& input) {
+	std::stringstream ss(input);
 	std::string	str;
 	while ( getline(ss, str, ' ') ) {
 		utils::EraseNewline(str);
@@ -93,70 +109,56 @@ void MessageParser::ParsingCommand(const std::string& command)
 			command_params_.push_back(str);
 	}
 	//input like "/r/n"
-	if (command_params_.size() == 0)
-	{
-		command_ = kNotFound;
+	if (command_params_.size() == 0) {
+		command_ = &Command::kNotFound;
 		state_ = kParseEmpty;
 		return;
 	}
 	//find command
 	std::string command_str = command_params_[0];
 	utils::ConvertToUpper(command_str);
-	std::map<std::string, Command>::const_iterator it = kCommandMap.find(command_str);
+	const Command& command = Command::SearchByName(command_str);
 	//can't find command
-	if (it == kCommandMap.end())
-	{
-		command_ = kNotFound;
+	if (command == Command::kNotFound) {
+		command_ = &Command::kNotFound;
 		state_ = kParseError;
 		return;
 	}
 	//find command, remove command string from command_params vector
 	command_params_.erase(command_params_.begin());
-	command_ = it->second;
+	command_ = &command;
 	state_ = kParseParam;
 }
 
 
-void MessageParser::Init(const std::string& msg)
-{
-	command_ = kCommandDefault;
+void MessageParser::Init(const std::string& msg) {
+	command_ = &Command::kNotFound;
 	state_ = kParseDefault;
 	message_ = msg;
 	command_params_.clear();
 }
 
 
-bool MessageParser::IsEndOfMessage(const char& ch)
-{
+bool MessageParser::IsEndOfMessage(const char& ch) {
 	if (ch == '\r' || ch == '\n')
 		return true;
 	return false;
 }
 
 
-Command MessageParser::get_command() const
-{
-	return command_;
+const Command& MessageParser::get_command() const {
+	return *command_;
 }
 
-ParseState MessageParser::get_state() const
-{
+ParseState MessageParser::get_state() const {
 	return state_;
 }
 
-std::vector<std::string> MessageParser::get_params() const
-{
+std::vector<std::string> MessageParser::get_params() const {
 	return command_params_;
 }
 
-const std::map<Command, std::string>& MessageParser::get_command_str_map()
-{
-	return message::MessageParser::kCommandStrMap;
-}
-
-
-bool MessageParser::IsFinishParsing()
-{
+bool MessageParser::IsFinishParsing() {
 	return (state_ == kParseError || state_ == kParseEmpty || state_ == kParseComplete);
 }
 

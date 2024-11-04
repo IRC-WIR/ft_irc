@@ -15,5 +15,11 @@ const ErrorStatus
 	ErrorStatus::ERR_BADCHANNELKEY(475, "Cannot join channel (+k)")
 	;
 
-ErrorStatus::ErrorStatus():ResponseStatus() {}
-ErrorStatus::ErrorStatus(int i, const std::string& s) : ResponseStatus(i,s) {}
+ErrorStatus::ErrorStatus() : ResponseStatus() {
+}
+
+ErrorStatus::ErrorStatus(int code, const std::string& message) : ResponseStatus(code, message) {
+}
+
+ErrorStatus::~ErrorStatus() {
+}

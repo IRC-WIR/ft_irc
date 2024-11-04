@@ -156,7 +156,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				default:
 					Detach(entry);
 					Event event(entry.fd, entry.revents);
-					event.set_command(message::kQuit);
+					event.set_command(message::Command::kQuit);
 					AddResponseMap(database_.ExecuteEvent(event));
 					response_map_.erase(target_fd);
 					return;
@@ -271,9 +271,7 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		//parse
 		message::ParseState parse_state = Parse(parsing_msg, *event);
 		//debug print parse
-		const std::map<message::Command, std::string> &str_map = message::MessageParser::get_command_str_map();
-		if (str_map.find(event->get_command()) != str_map.end())
-			std::cout << "command:" << str_map.find(event->get_command()) -> second << std::endl;
+		std::cout << "command:" << event->get_command().get_name() << std::endl;
 		std::cout << "command param:" << std::endl;
 		utils::PrintStringVector(event->get_command_params());
 		//debug
@@ -313,7 +311,7 @@ void EventHandler::ExecuteCommand(Event*& event_ptr) {
 
 bool EventHandler::CheckNewChannel(const Event& event) {
 	return (!event.HasErrorOccurred()
-			&& event.get_command() == message::kJoin
+			&& event.get_command() == message::Command::kJoin
 			&& !event.IsChannelEvent());
 }
 
