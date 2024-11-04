@@ -108,28 +108,15 @@ void Database::AfterCheck(Event& event) const {
 		return ;
 	}
 	if (event.get_command() == Command::kTopic) {
-		if (event.IsChannelEvent()) {
-			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-			//topic <target>
-			if (event.get_command_params().size() == 1)
-				return ;
-			if (!channel.ContainsUser(event.get_executer())) {
-				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
-				return ;
-			}
-			if (channel.IsMode('t') && channel.get_members().Contains(&event.get_executer())) {
-				event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
-				return ;
-			}
-		}
-		std::cout << "event.get_target_num(): " << event.get_target_num() << std::endl;
+		//topic <target>
+		if (event.IsChannelEvent() && event.get_command_params().size() == 1)
+			return ;
 		if (!event.HasErrorOccurred() && !event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
 		return ;
 	}
-
 }
 
 //Check

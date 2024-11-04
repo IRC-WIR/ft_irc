@@ -14,13 +14,13 @@ static const User* SearchByNick(const utils::MyVector<const User*>& vector, cons
 	return NULL;
 }
 
-// static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
-// 	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
-// 		if ((*it)->get_fd() == fd)
-// 			return *it;
-// 	}
-// 	return NULL;
-// }
+static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if ((*it)->get_fd() == fd)
+			return *it;
+	}
+	return NULL;
+}
 
 Channel::Channel(const User& op, const std::string& name)
 		: name_(name) {
@@ -236,10 +236,8 @@ OptionalMessage Channel::ExKickCommand(const Event& event) {
 }
 
 OptionalMessage Channel::ExTopicCommand(const Event& event) {
-	if (event.HasErrorOccurred()
-		|| !event.IsChannelEvent())
+	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
-
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	if (this == &channel) {
 		std::vector<std::string> params = event.get_command_params();
@@ -327,6 +325,14 @@ void Channel::CkTopicCommand(Event*& event) const {
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
+	if (!(SearchByFD(operators_, event->get_fd()) || SearchByFD(members_, event->get_fd()))) {
+		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		return ;
+	}
+	if (this->mode_map_('t') && SearchByFD(members_, event->get_fd())) {
+		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		return ;
+	}
 }
 
 void Channel::CkPrivmsgCommand(Event& event) const {
