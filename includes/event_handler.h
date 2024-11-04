@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <cerrno>
 #include <cstdlib>
+#include <unistd.h>
 #include "message_parser.h"
 #include "event.h"
 #include "database.h"
@@ -36,7 +37,7 @@ class EventHandler{
 		void						Execute(const pollfd& entry, const std::string& msg);
 		MessageParser::ParseState	Parse(const std::string& buffer, Event& event);
 		void						Send(Event event);
-		void						Detach(pollfd entry);
+		void						Detach(int fd);
 		void						HandlePollInEvent(pollfd entry);
 		void						HandlePollOutEvent(pollfd entry);
 		void						HandlePollHupEvent(pollfd entry);

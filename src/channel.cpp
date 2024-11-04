@@ -158,6 +158,8 @@ void Channel::CheckCommand(Event*& event) const {
 		CkModeCommand(event);
 	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(*event);
+	else if (command == Command::kQuit)
+		CkQuitCommand(*event);
 
 }
 
@@ -182,6 +184,8 @@ OptionalMessage Channel::ExecuteCommand(const Event& event) {
 		return ExModeCommand(event);
 	else if (command == Command::kPrivmsg)
 		return ExPrivmsgCommand(event);
+	else if (command == Command::kQuit)
+		return ExQuitCommand(event);
 	else
 		return OptionalMessage::Empty();
 
@@ -240,6 +244,11 @@ OptionalMessage Channel::ExModeCommand(const Event& event) {
 
 OptionalMessage Channel::ExPrivmsgCommand(const Event& event) {
 	(void)event;
+	return OptionalMessage::Empty();
+}
+OptionalMessage Channel::ExQuitCommand(const Event& event){
+
+	RemoveUser(event.get_executer());
 	return OptionalMessage::Empty();
 }
 //Execute
@@ -353,4 +362,8 @@ void Channel::CkModeCommand(Event*& event) const {
 		break ;
 	}
 }
-//check
+
+void Channel::CkQuitCommand(Event& event) const {
+	(void)event;
+	return ;
+}

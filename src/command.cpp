@@ -3,7 +3,7 @@
 const Command
 
 	Command::kPass("PASS"),
-	Command::kNick("KICK"),
+	Command::kNick("NICK"),
 	Command::kUser("USER"),
 	Command::kJoin("JOIN"),
 	Command::kInvite("INVITE"),
