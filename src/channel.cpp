@@ -107,7 +107,7 @@ const std::string& Channel::get_name() const {
 	return this->name_;
 }
 
-const utils::MyVector<const User*>& Channel::get_members_(void) const {
+const utils::MyVector<const User*>& Channel::get_members(void) const {
 	return members_ ;
 }
 
@@ -318,17 +318,9 @@ void Channel::CkTopicCommand(Event*& event) const {
 	const std::vector<std::string> params = event->get_command_params();
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
-	event->add_target_num();
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
-	if (params.size() == 1) {
-		if (get_topic().empty())
-			event->set_error_status(ErrorStatus::RPL_NOTOPIC);
-		else
-			event->set_error_status(ErrorStatus::RPL_TOPIC);
-	}
-
 }
 
 void Channel::CkPrivmsgCommand(Event& event) const {

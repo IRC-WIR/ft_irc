@@ -1,7 +1,7 @@
 #include "event.h"
 #include "user.h"
 
-const std::string Event::NoErrorException::kMessage = "there is no ErrorStatus.";
+const std::string Event::NoErrorException::kMessage = "there is no ResponseStatus.";
 const std::string Event::NoExecuterException::kMessage = "there is no executer.";
 const std::string Event::AlreadySetException::kMessage = "already exists executer.";
 

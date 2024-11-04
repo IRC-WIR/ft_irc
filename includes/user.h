@@ -19,7 +19,6 @@ class User : public EventListener, public EventConfigurator {
 
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
-
 		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
 		void set_displayed_welcome(bool is_verified);
@@ -43,7 +42,7 @@ class User : public EventListener, public EventConfigurator {
 		utils::MyVector<const Channel*> joining_channels_;
 		std::string GenerateJoinDetailMessage(const Channel&) const;
 		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
-		std::string CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const;
+		std::string CreateTopicRplMessage(const Channel& channe, bool has_topic) const;
 		bool is_displayed_welcome_;
 
 		//check command

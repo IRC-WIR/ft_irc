@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
+#include "response_status.h"
 #include <stdexcept>
 #include <map>
 #include <sstream>
@@ -33,7 +34,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
-		const utils::MyVector<const User*>& get_members_(void) const;
+		const utils::MyVector<const User*>& get_members(void) const;
 		std::string GenerateMemberList(void) const;
 		std::string GenerateMemberListWithNewUser(const User&) const;
 

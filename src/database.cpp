@@ -28,10 +28,8 @@ const Channel& Database::CreateChannel(const User& op, const std::string& name) 
 void Database::CheckEvent(Event*& event) const {
 	Database::CheckCommandAndParams(*event);
 	std::size_t vector_length = check_element_.size();
-
 	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
-
 	this->AfterCheck(*event);
 }
 
@@ -116,16 +114,20 @@ void Database::AfterCheck(Event& event) const {
 	if (event.get_command() == message::kTopic) {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			//topic <target>
+			if (event.get_command_params().size() == 1)
+				return ;
 			if (!channel.ContainsUser(event.get_executer())) {
 				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 				return ;
 			}
-			if (channel.IsMode('t') && channel.get_members_().Contains(&event.get_executer())) {
+			if (channel.IsMode('t') && channel.get_members().Contains(&event.get_executer())) {
 				event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
 				return ;
 			}
 		}
-		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
+		std::cout << "event.get_target_num(): " << event.get_target_num() << std::endl;
+		if (!event.HasErrorOccurred() && !event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
