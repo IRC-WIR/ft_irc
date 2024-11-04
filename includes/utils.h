@@ -12,7 +12,7 @@
 #include <fstream> //for std::fstream
 #include "optional_message.h"
 #include <algorithm> // for std::find
-#include "error_status.h"
+#include "response_status.h"
 
 class User;
 

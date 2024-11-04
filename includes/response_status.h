@@ -9,8 +9,8 @@ class ResponseStatus {
             RPL_WELCOME
             ;
 
-        int get_response_code(void) const;
-        const std::string& get_response_message(void) const;
+        int get_code(void) const;
+        const std::string& get_message(void) const;
 
     protected:
         ResponseStatus(void);
