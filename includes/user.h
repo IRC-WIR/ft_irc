@@ -30,7 +30,7 @@ class User : public EventListener, public EventConfigurator {
 		const std::string& get_nick_name(void) const;
 		const std::string& get_user_name(void) const;
 		const std::string& get_real_name(void) const;
-		std::string CereateNameWithHost(void) const;
+		std::string CreateNameWithHost(void) const;
 
 	private:
 		User(void);

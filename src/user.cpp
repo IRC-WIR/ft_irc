@@ -159,7 +159,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
 	std::stringstream ss;
 
-	ss << target.CereateNameWithHost() << " ";
+	ss << target.CreateNameWithHost() << " ";
 	ss << message::Command::kJoin.get_name() << " :";
 	ss << channel.get_name() << "\r\n";
 	return ss.str();
@@ -363,7 +363,7 @@ const std::string& User::get_real_name() const {
 }
 
 //<nick>!<user>@<host>
-std::string User::CereateNameWithHost() const {
+std::string User::CreateNameWithHost() const {
 	std::stringstream ss;
 	ss << ":" << this->get_nick_name();
 	ss << "!" << this->get_user_name();

@@ -129,7 +129,7 @@ std::string GetWelcomeString(const ResponseStatus& res_status, const User& user)
 		ss << line << kNewLine;
 	}
 	//add nick!user@host
-	ss << user.CereateNameWithHost() << kNewLine;
+	ss << user.CreateNameWithHost() << kNewLine;
 	return ss.str();
 }
 
