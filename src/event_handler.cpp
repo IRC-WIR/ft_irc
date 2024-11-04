@@ -209,7 +209,7 @@ void	EventHandler::Receive(int fd, char* buffer) {
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
-		Event* event = new Event(entry.fd, POLL_HUP);
+		Event* event = new Event(entry.fd, POLLHUP);
 		event->set_command(Command::kQuit);
 		ExecuteCommand(event);
 		delete event;

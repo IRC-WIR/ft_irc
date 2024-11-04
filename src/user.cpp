@@ -1,6 +1,7 @@
 #include "user.h"
 #include "channel.h"
 #include "channel_event.h"
+#include <poll.h>
 
 User::User(int fd) :
 	fd_(fd), is_password_authenticated_(false),
@@ -146,11 +147,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	const std::vector<std::string>& params = event.get_command_params();
 	// 今回は1,2番目の要素(= 2, 3番目の引数)は無視する
 	this->user_name_ = params[0];
-	for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
-		if (i != 3)
-			this->real_name_ += " ";
-		this->real_name_ += params[i];
-	}
+	this->real_name_ = utils::Join(params.begin() + 2, params.end(), " ");
 	if (IsVerified() && !this->is_displayed_welcome()) {
 		set_displayed_welcome(true);
 		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, event.get_executer()));
@@ -261,7 +258,7 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 	++it) {
 		if((*it)->ContainsUser(executer)) {
 			std::string context_message;
-			if (event.get_event_type() == POLL_HUP)
+			if (event.get_event_type() == POLLHUP)
 				context_message = "client dies and EOF occurs on socket";
 			else if (event.get_command_params().empty())
 				context_message = "client quit";
