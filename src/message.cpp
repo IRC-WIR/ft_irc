@@ -104,8 +104,7 @@ void MessageParser::ParsingMessage(const std::string& msg) {
 	}
 }
 
-void MessageParser::ParsingCommand(const std::string& input)
-{
+void MessageParser::ParsingCommand(const std::string& input) {
 	std::stringstream ss(input);
 	std::string	str;
 	while ( getline(ss, str, ' ') ) {
