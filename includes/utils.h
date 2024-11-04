@@ -11,7 +11,12 @@
 #include <set> //for std::set
 #include <fstream> //for std::fstream
 #include "optional_message.h"
-#include <algorithm> // for std::find
+#include <algorithm> // for std::find, std::copy
+#include "response_status.h"
+#include <ostream> // for std::ostringstream
+#include <iterator> // for std::ostream_iterator
+
+class User;
 
 namespace utils {
 	void CheckPort(std::string port);
@@ -25,8 +30,17 @@ namespace utils {
 	bool IsAsciiStr(const std::string& str);
 	void ConvertToUpper(std::string& str);
 	bool HasNewlines(const std::string& str);
-	std::string GetWelcomeString();
+	std::string GetWelcomeString(const ResponseStatus& res_status, const User& user);
 	std::string StrToLower(const std::string& str);
+
+	template <typename InputIterator>
+	std::string Join(InputIterator begin, InputIterator end, const std::string& delim) {
+		std::ostringstream os;
+		std::copy(begin, end, std::ostream_iterator<std::string>(os, delim.c_str()));
+		std::string ret = os.str();
+		ret.erase(ret.length() - delim.length());
+		return ret;
+	}
 
 	template <typename T>
 	class MyVector : public std::vector<T> {
@@ -61,6 +75,8 @@ namespace utils {
 	static const std::string kFilePath = "./conf/ircserv.motd";
 	//NewLine in IRC server
 	static const std::string kNewLine = "\r\n";
+	static std::string kHostName = "localhost";
+
 };
 
 #endif

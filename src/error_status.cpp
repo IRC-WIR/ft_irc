@@ -1,6 +1,7 @@
 #include "error_status.h"
 
 const ErrorStatus
+
 	ErrorStatus::ERR_NOSUCHCHANNEL(403, "No such channel"),
 	ErrorStatus::ERR_TOOMANYCHANNELS(405, "You have joined too many channels"),
     ErrorStatus::ERR_NONICKNAMEGIVEN(431, "No nickname given"),
@@ -12,33 +13,13 @@ const ErrorStatus
 	ErrorStatus::ERR_CHANNELISFULL(471, "Cannot join channel (+l)"),
 	ErrorStatus::ERR_INVITEONLYCHAN(473, "Cannot join channel (+i)"),
 	ErrorStatus::ERR_BADCHANNELKEY(475, "Cannot join channel (+k)")
-    ;
+	;
 
-// 呼ばれない
-ErrorStatus::ErrorStatus() : code_(0), message_("") {
-    return ;
+ErrorStatus::ErrorStatus() : ResponseStatus() {
 }
 
-ErrorStatus::ErrorStatus(int code, const std::string& message) : code_(code), message_(message) {
-    return ;
+ErrorStatus::ErrorStatus(int code, const std::string& message) : ResponseStatus(code, message) {
 }
 
 ErrorStatus::~ErrorStatus() {
-    return ;
-}
-
-const std::string& ErrorStatus::get_error_message() const {
-    return this->message_;
-}
-
-int ErrorStatus::get_error_code() const {
-    return this->code_;
-}
-
-bool operator ==(const ErrorStatus& status1, const ErrorStatus& status2) {
-    return (&status1 == &status2);
-}
-
-bool operator !=(const ErrorStatus& status1, const ErrorStatus& status2) {
-    return !(status1 == status2);
 }

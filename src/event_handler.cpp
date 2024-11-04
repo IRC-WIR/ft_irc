@@ -1,5 +1,5 @@
 #include "event_handler.h"
-#include "message.h"
+#include "command.h"
 #include "channel.h"
 #include "channel_event.h"
 #include <errno.h>
@@ -83,8 +83,7 @@ void	EventHandler::ExecutePoll() {
 void	EventHandler::HandlePollInEvent(pollfd entry) {
 	if (entry.revents& (POLLIN))
 	{
-		if (entry.fd == listening_socket_)
-		{
+		if (entry.fd == listening_socket_) {
 			Accept();
 			return;
 		}
@@ -98,8 +97,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 }
 
 void	EventHandler::HandlePollOutEvent(pollfd entry) {
-	if (entry.revents & POLLOUT)
-	{
+	if (entry.revents & POLLOUT) {
 		int target_fd = entry.fd;
     for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
 			it != response_map_[target_fd].end();) {
@@ -115,13 +113,12 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			//送信失敗
 			if (sent_msg_length < 0) {
 				Event* event = new Event(entry.fd, entry.revents);
-				event->set_command(message::kQuit);
+				event->set_command(Command::kQuit);
 				ExecuteCommand(event);
 				delete event;
 				return;
-			} else {
-				it = response_map_[target_fd].erase(it);
 			}
+			it = response_map_[target_fd].erase(it);
 		}
 		//対象ソケットへの、メッセージを送信し切った場合
 		if (response_map_[target_fd].empty()) {
@@ -133,8 +130,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 }
 
 void	EventHandler::HandlePollHupEvent(pollfd entry) {
-	if (entry.revents& (POLLHUP))
-	{
+	if (entry.revents& (POLLHUP)) {
 		std::cout << entry.fd << ">> disconnected" << std::endl;
 	}
 }
@@ -191,8 +187,8 @@ void	EventHandler::Receive(int fd, char* buffer) {
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
 	if (msg[0] == '\0') {
-		Event* event = new Event(entry.fd, POLL_HUP);
-		event->set_command(message::kQuit);
+		Event* event = new Event(entry.fd, POLLHUP);
+		event->set_command(Command::kQuit);
 		ExecuteCommand(event);
 		delete event;
 		return ;
@@ -218,24 +214,22 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		//eventを作成
 		Event* event = new Event(entry.fd, entry.revents);
 		//parse
-		message::ParseState parse_state = Parse(parsing_msg, *event);
+		MessageParser::ParseState parse_state = Parse(parsing_msg, *event);
 		//debug print parse
-		const std::map<message::Command, std::string> &str_map = message::MessageParser::get_command_str_map();
-		if (str_map.find(event->get_command()) != str_map.end())
-			std::cout << "command:" << str_map.find(event->get_command()) -> second << std::endl;
+		std::cout << "command:" << event->get_command().get_name() << std::endl;
 		std::cout << "command param:" << std::endl;
 		utils::PrintStringVector(event->get_command_params());
 		//debug
 		//judge parse result
 		switch (parse_state) {
-		case message::kParseError:
+		case MessageParser::kParseError:
 			std::cout << "Parse Error" <<std::endl;
 			break ;
-		case message::kParseNotAscii:
+		case MessageParser::kParseNotAscii:
 			//have to define the action of inputting out range of Ascii
 			std::cout << "Not Ascii code input" << std::endl;
 			break;
-		case message::kParseEmpty:
+		case MessageParser::kParseEmpty:
 			//have to define the action of emmpty inputting
 			std::cout << "Parse Empty" <<std::endl;
 			break ;
@@ -258,13 +252,13 @@ void EventHandler::ExecuteCommand(Event*& event_ptr) {
 		this->AddNewChannel(event_ptr);
 	AddResponseMap(database_.ExecuteEvent(*event_ptr));
 	database_.DeleteFinishedElements();
-	if (!event_ptr->HasErrorOccurred() && event_ptr->get_command() == message::kQuit)
+	if (!event_ptr->HasErrorOccurred() && event_ptr->get_command() == Command::kQuit)
 		Detach(event_ptr->get_fd());
 }
 
 bool EventHandler::CheckNewChannel(const Event& event) {
 	return (!event.HasErrorOccurred()
-			&& event.get_command() == message::kJoin
+			&& event.get_command() == Command::kJoin
 			&& !event.IsChannelEvent());
 }
 
@@ -277,9 +271,9 @@ void EventHandler::AddNewChannel(Event*& event_ptr) {
 	event_ptr = channel_event;
 }
 
-message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
+MessageParser::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
 	std::string str_buffer(buffer);
-	message::MessageParser message_parser(str_buffer);
+	MessageParser message_parser(str_buffer);
 
 	event.set_command(message_parser.get_command());
 	event.set_command_params(message_parser.get_params());
