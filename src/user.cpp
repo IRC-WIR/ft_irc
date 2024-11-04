@@ -1,6 +1,7 @@
 #include "user.h"
 #include "channel.h"
 #include "channel_event.h"
+#include <poll.h>
 
 User::User(int fd) :
 	fd_(fd), is_password_authenticated_(false),
@@ -35,6 +36,8 @@ void User::CheckCommand(Event*& event) const {
 		CkModeCommand(*event);
 	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(*event);
+	else if (command == Command::kQuit)
+		CkQuitCommand(*event);
 
 }
 
@@ -59,6 +62,8 @@ OptionalMessage User::ExecuteCommand(const Event& event) {
 		return ExModeCommand(event);
 	else if (command == Command::kPrivmsg)
 		return ExPrivmsgCommand(event);
+	else if (command == Command::kQuit)
+		return ExQuitCommand(event);
 	else
 		return OptionalMessage::Empty();
 
@@ -110,11 +115,9 @@ OptionalMessage User::ExNickCommand(const Event& event){
 
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
-
 	if (event.HasErrorOccurred()) {
 		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command(), event.get_error_status()));
 	}
-
 	const std::string& new_nickname = event.get_command_params()[0];
 	std::string ret_message;
 	if (this->nick_name_.empty()) {
@@ -144,11 +147,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	const std::vector<std::string>& params = event.get_command_params();
 	// 今回は1,2番目の要素(= 2, 3番目の引数)は無視する
 	this->user_name_ = params[0];
-	for (std::vector<std::string>::size_type i = 3; i < params.size(); i++) {
-		if (i != 3)
-			this->real_name_ += " ";
-		this->real_name_ += params[i];
-	}
+	this->real_name_ = utils::Join(params.begin() + 2, params.end(), " ");
 	if (IsVerified() && !this->is_displayed_welcome()) {
 		set_displayed_welcome(true);
 		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, event.get_executer()));
@@ -308,6 +307,31 @@ OptionalMessage User::ExModeCommand(const Event& event){
 	utils::PrintStringVector(event.get_command_params());
 	return OptionalMessage::Empty();
 }
+
+OptionalMessage User::ExQuitCommand(const Event& event){
+	if (event.get_fd() == this->get_fd()) {
+		this->is_delete_ = true;
+		return OptionalMessage::Empty();
+	}
+	const User& executer = event.get_executer();
+	std::string prefix_message = executer.get_nick_name() + " QUIT : ";
+	for (std::vector<const Channel*>::iterator it =
+	this->joining_channels_.begin();
+	it != this->joining_channels_.end();
+	++it) {
+		if((*it)->ContainsUser(executer)) {
+			std::string context_message;
+			if (event.get_event_type() == POLLHUP)
+				context_message = "client dies and EOF occurs on socket";
+			else if (event.get_command_params().empty())
+				context_message = "client quit";
+			else
+				context_message = event.get_command_params()[0];
+			return OptionalMessage::Create(this->fd_, prefix_message + context_message + "\r\n");
+		}
+	}
+	return OptionalMessage::Empty();
+}
 //Execute
 
 //Check
@@ -382,6 +406,12 @@ void User::CkModeCommand(Event& event) const
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
+}
+
+void User::CkQuitCommand(Event& event) const
+{
+	(void)event;
+	return ;
 }
 //check
 

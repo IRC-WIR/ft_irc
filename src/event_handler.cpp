@@ -106,8 +106,7 @@ void	EventHandler::ExecutePoll() {
 void	EventHandler::HandlePollInEvent(pollfd entry) {
 	if (entry.revents& (POLLIN))
 	{
-		if (entry.fd == listening_socket_)
-		{
+		if (entry.fd == listening_socket_) {
 			Accept();
 			return;
 		}
@@ -115,16 +114,13 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 		char receive_buffer[kBufferSize + 1];
 		std::memset(receive_buffer, 0, kBufferSize + 1);
 		Receive(entry.fd, receive_buffer);
-		if (receive_buffer[0] == '\0')
-			Detach(entry);
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << receive_buffer << std::endl;
 		Execute(entry, receive_buffer);
 	}
 }
 
 void	EventHandler::HandlePollOutEvent(pollfd entry) {
-	if (entry.revents & POLLOUT)
-	{
+	if (entry.revents & POLLOUT) {
 		int target_fd = entry.fd;
     for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
 			it != response_map_[target_fd].end();) {
@@ -139,32 +135,13 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			}
 			//送信失敗
 			if (sent_msg_length < 0) {
-
-				switch (errno) {
-				//プログラム終了
-				case EFAULT:
-				case EMSGSIZE:
-					std::cout <<  strerror(errno) << std::endl;
-					std::exit(EXIT_FAILURE);
-				//次回POLLOUT発生時に再送
-				case EWOULDBLOCK:
-					return;
-				//直ちに再送
-			  case EINTR:
-					break ;
-				//接続切断
-				default:
-					Detach(entry);
-					Event event(entry.fd, entry.revents);
-					event.set_command(Command::kQuit);
-					AddResponseMap(database_.ExecuteEvent(event));
-					response_map_.erase(target_fd);
-					return;
-				}
-				continue;
-			} else {
-				it = response_map_[target_fd].erase(it);
+				Event* event = new Event(entry.fd, entry.revents);
+				event->set_command(Command::kQuit);
+				ExecuteCommand(event);
+				delete event;
+				return;
 			}
+			it = response_map_[target_fd].erase(it);
 		}
 		//対象ソケットへの、メッセージを送信し切った場合
 		if (response_map_[target_fd].empty()) {
@@ -176,21 +153,21 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 }
 
 void	EventHandler::HandlePollHupEvent(pollfd entry) {
-	if (entry.revents& (POLLHUP))
-	{
+	if (entry.revents& (POLLHUP)) {
 		std::cout << entry.fd << ">> disconnected" << std::endl;
 	}
 }
 
-void	EventHandler::Detach(pollfd event) {
-	std::cout << "connection hang up " << event.fd << std::endl;
-	int target_index = 0;
-	for (int i = 0; i < (int)poll_fd_.size(); i++)
-	{
-		if (poll_fd_[i].fd == event.fd)
-			target_index = i;
+void	EventHandler::Detach(int fd) {
+	std::cout << "connection hang up " << fd << std::endl;
+	response_map_.erase(fd);
+	for (std::vector<struct pollfd>::iterator it = poll_fd_.begin(); it != poll_fd_.end(); ++it) {
+		if (it->fd == fd) {
+			close(it->fd);
+			poll_fd_.erase(it);
+			return ;
+		}
 	}
-	poll_fd_.erase(poll_fd_.begin() + target_index);
 	return ;
 }
 
@@ -213,26 +190,8 @@ void	EventHandler::Accept() {
 	int connected_socket_ = accept(listening_socket_,
 			(struct sockaddr*)&(server_address_),
 			&server_address_len);
-	if (connected_socket_ == -1){
-		switch (errno)
-		{
-		//接続リトライ
-		case EWOULDBLOCK:
-		case EINTR:
-			break;
-		//プログラム終了
-		case EBADF:
-		case EFAULT:
-		case ECONNABORTED:
-		case EINVAL:
-		case ENOTSOCK:
-		case EOPNOTSUPP:
-			std::exit(EXIT_FAILURE);
-		//接続不可
-		default:
+	if (connected_socket_ == -1)
 			return;
-		}
-	}
 	SetNonBlockingMode(connected_socket_);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	AddEventSocket(connected_socket_);
@@ -248,6 +207,14 @@ void	EventHandler::Receive(int fd, char* buffer) {
 
 
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
+	//EOFの場合
+	if (msg[0] == '\0') {
+		Event* event = new Event(entry.fd, POLLHUP);
+		event->set_command(Command::kQuit);
+		ExecuteCommand(event);
+		delete event;
+		return ;
+	}
 	std::string request_buffer;
 	//prepare request_buffer
 	//find request fd's remain msg
@@ -307,6 +274,8 @@ void EventHandler::ExecuteCommand(Event*& event_ptr) {
 		this->AddNewChannel(event_ptr);
 	AddResponseMap(database_.ExecuteEvent(*event_ptr));
 	database_.DeleteFinishedElements();
+	if (!event_ptr->HasErrorOccurred() && event_ptr->get_command() == Command::kQuit)
+		Detach(event_ptr->get_fd());
 }
 
 bool EventHandler::CheckNewChannel(const Event& event) {

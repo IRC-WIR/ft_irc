@@ -74,6 +74,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkTopicCommand(Event*& event) const;
 		void CkModeCommand(Event& event) const;
 		void CkPrivmsgCommand(Event& event) const;
+		void CkQuitCommand(Event& event) const;
 
 		//execute command
 		OptionalMessage ExPassCommand(const Event& event);
@@ -85,6 +86,7 @@ class Channel: public EventListener, public EventConfigurator {
 		OptionalMessage ExTopicCommand(const Event& event);
 		OptionalMessage ExModeCommand(const Event& event);
 		OptionalMessage ExPrivmsgCommand(const Event& event);
+		OptionalMessage ExQuitCommand(const Event& event);
 };
 
 #endif

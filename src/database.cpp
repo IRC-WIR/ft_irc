@@ -27,9 +27,14 @@ const Channel& Database::CreateChannel(const User& op, const std::string& name) 
 
 void Database::CheckEvent(Event*& event) const {
 	Database::CheckCommandAndParams(*event);
+	if (event->HasErrorOccurred())
+		return ;
 	std::size_t vector_length = check_element_.size();
-	for (std::size_t i = 0; i < vector_length; i++)
+	for (std::size_t i = 0; i < vector_length; i++) {
 		check_element_[i] -> CheckCommand(event);
+		if (event->HasErrorOccurred())
+			return ;
+	}
 	this->AfterCheck(*event);
 }
 
@@ -80,6 +85,8 @@ void Database::CheckCommandAndParams(Event& event) const {
 		CkModeCommand(event);
 	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(event);
+	else if (command == Command::kQuit)
+		CkQuitCommand(event);
 
 }
 
@@ -141,20 +148,16 @@ void Database::CkPassCommand(Event& event) const {
 }
 
 void Database::CkNickCommand(Event& event) const {
-
 	const int kParamsSize = 1;
-
 	if (event.get_command_params().size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
 		return ;
 	}
-
 	const std::string& new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
-
 	const std::string must_not_contain = " ,*?!@.";
 	for (int i = 0; i < (int)must_not_contain.length(); i++) {
 		if (new_nickname.find(must_not_contain[i]) != std::string::npos) {
@@ -162,13 +165,11 @@ void Database::CkNickCommand(Event& event) const {
 			return;
 		}
 	}
-
 	const std::string must_not_start_with = "$:&#~%+";
 	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
-
 	return;
 }
 
@@ -210,9 +211,9 @@ void Database::CkInviteCommand(Event& event) const {
 }
 
 void Database::CkKickCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Kick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 2;
+	if (event.get_command_params().size() < kParamsSize)
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 }
 
 void Database::CkTopicCommand(Event& event) const {
@@ -235,5 +236,9 @@ void Database::CkModeCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
+}
+
+void Database::CkQuitCommand(Event& event) const {
+	(void)event;
 }
 //check
