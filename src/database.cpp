@@ -1,5 +1,5 @@
 #include "database.h"
-#include "message.h"
+#include "command.h"
 #include "channel.h"
 #include "channel_event.h"
 
@@ -62,37 +62,27 @@ void Database::DeleteFinishedElements() {
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
-	switch (event.get_command()) {
-		case message::kPass:
-			CkPassCommand(event);
-			break ;
-		case message::kNick:
-			CkNickCommand(event);
-			break ;
-		case message::kUser:
-			CkUserCommand(event);
-			break ;
-		case message::kJoin:
-			CkJoinCommand(event);
-			break ;
-		case message::kInvite:
-			CkInviteCommand(event);
-			break ;
-		case message::kKick:
-			CkKickCommand(event);
-			break ;
-		case message::kTopic:
-			CkTopicCommand(event);
-			break ;
-		case message::kMode:
-			CkModeCommand(event);
-			break ;
-		case message::kPrivmsg:
-			CkPrivmsgCommand(event);
-			break ;
-		default:
-			break ;
-	}
+	const Command& command = event.get_command();
+
+	if (command == Command::kPass)
+		CkPassCommand(event);
+	else if (command == Command::kNick)
+		CkNickCommand(event);
+	else if (command == Command::kUser)
+		CkUserCommand(event);
+	else if (command == Command::kJoin)
+		CkJoinCommand(event);
+	else if (command == Command::kInvite)
+		CkInviteCommand(event);
+	else if (command == Command::kKick)
+		CkKickCommand(event);
+	else if (command == Command::kTopic)
+		CkTopicCommand(event);
+	else if (command == Command::kMode)
+		CkModeCommand(event);
+	else if (command == Command::kPrivmsg)
+		CkPrivmsgCommand(event);
+
 }
 
 static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
@@ -102,7 +92,7 @@ static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
 }
 
 void Database::AfterCheck(Event& event) const {
-	if (event.get_command() == message::kJoin) {
+	if (event.get_command() == Command::kJoin) {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			if (channel.ContainsUser(event.get_executer())

@@ -16,7 +16,7 @@ class User : public EventListener, public EventConfigurator {
 
 		void CheckCommand(Event*& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-		std::string CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const;
+		std::string CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const;
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
 
@@ -30,6 +30,7 @@ class User : public EventListener, public EventConfigurator {
 		const std::string& get_nick_name(void) const;
 		const std::string& get_user_name(void) const;
 		const std::string& get_real_name(void) const;
+		std::string CreateNameWithHost(void) const;
 
 	private:
 		User(void);

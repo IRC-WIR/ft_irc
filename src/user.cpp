@@ -15,80 +15,75 @@ void User::CheckCommand(Event*& event) const {
 	if (event->get_fd() == this->get_fd())
 		event->set_executer(*this);
 
-	switch (event->get_command()) {
-		case message::kPass:
-			CkPassCommand(*event);
-			break;
-		case message::kNick:
-			CkNickCommand(*event);
-			break;
-		case message::kUser:
-			CkUserCommand(*event);
-			break;
-		case message::kJoin:
-			CkJoinCommand(*event);
-			break;
-		case message::kInvite:
-			CkInviteCommand(*event);
-			break;
-		case message::kKick:
-			CkKickCommand(*event);
-			break;
-		case message::kTopic:
-			CkTopicCommand(*event);
-			break;
-		case message::kMode:
-			CkModeCommand(*event);
-			break;
-		case message::kPrivmsg:
-			CkPrivmsgCommand(*event);
-			break;
-		default:
-			break;
-	}
+	const Command& command = event->get_command();
+
+	if (command == Command::kPass)
+		CkPassCommand(*event);
+	else if (command == Command::kNick)
+		CkNickCommand(*event);
+	else if (command == Command::kUser)
+		CkUserCommand(*event);
+	else if (command == Command::kJoin)
+		CkJoinCommand(*event);
+	else if (command == Command::kInvite)
+		CkInviteCommand(*event);
+	else if (command == Command::kKick)
+		CkKickCommand(*event);
+	else if (command == Command::kTopic)
+		CkTopicCommand(*event);
+	else if (command == Command::kMode)
+		CkModeCommand(*event);
+	else if (command == Command::kPrivmsg)
+		CkPrivmsgCommand(*event);
+
 }
 
 OptionalMessage User::ExecuteCommand(const Event& event) {
-	switch (event.get_command()) {
-		case message::kPass:
-			return ExPassCommand(event);
-		case message::kNick:
-			return ExNickCommand(event);
-		case message::kUser:
-			return ExUserCommand(event);
-		case message::kJoin:
-			return ExJoinCommand(event);
-		case message::kInvite:
-			return ExInviteCommand(event);
-		case message::kKick:
-			return ExKickCommand(event);
-		case message::kTopic:
-			return ExTopicCommand(event);
-		case message::kMode:
-			return ExModeCommand(event);
-		case message::kPrivmsg:
-			return ExPrivmsgCommand(event);
-		default:
-			return OptionalMessage::Empty();
-	}
+	const Command& command = event.get_command();
+
+	if (command == Command::kPass)
+		return ExPassCommand(event);
+	else if (command == Command::kNick)
+		return ExNickCommand(event);
+	else if (command == Command::kUser)
+		return ExUserCommand(event);
+	else if (command == Command::kJoin)
+		return ExJoinCommand(event);
+	else if (command == Command::kInvite)
+		return ExInviteCommand(event);
+	else if (command == Command::kKick)
+		return ExKickCommand(event);
+	else if (command == Command::kTopic)
+		return ExTopicCommand(event);
+	else if (command == Command::kMode)
+		return ExModeCommand(event);
+	else if (command == Command::kPrivmsg)
+		return ExPrivmsgCommand(event);
+	else
+		return OptionalMessage::Empty();
+
 }
 
-std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& err_status) const {
-	std::stringstream ret_ss;
+std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const {
+	std::stringstream ss;
+	//add hostname
+	ss << ":";
+	ss << utils::kHostName;
+	ss << " ";
 	//add error no
-	ret_ss << err_status.get_error_code();
-	ret_ss << " ";
+	ss << error_status.get_code();
+	ss << " ";
 	//add nick name
-	ret_ss << (nick_name_.empty()? "*" : nick_name_) ;
-	ret_ss << " ";
+	ss << (nick_name_.empty()? "*" : nick_name_) ;
+	ss << " ";
 	//add command
-	ret_ss << message::MessageParser::get_command_str_map().find(cmd)->second;
-	ret_ss << " ";
+	ss << cmd.get_name();
+	ss << " ";
 	//add Error Message
-	ret_ss << ": ";
-	ret_ss << err_status.get_error_message();
-	ret_ss << "\r\n";
-	return ret_ss.str();
+	ss << ":";
+	ss << error_status.get_message();
+	ss << "\r\n";
+	return ss.str();
 }
 
 bool User::IsFinished() const {
@@ -106,7 +101,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 	set_is_password_authenticated(true);
 	if (IsVerified() && !this->is_displayed_welcome()) {
 		set_displayed_welcome(true);
-		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, event.get_executer()));
 	}
 	return OptionalMessage::Empty();
 }
@@ -131,7 +126,7 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	if (IsVerified()) {
 		if (!this->is_displayed_welcome()) {
 			set_displayed_welcome(true);
-			return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+			return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, event.get_executer()));
 		}
 		return OptionalMessage::Create(get_fd(), ret_message);
 	}
@@ -156,16 +151,17 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	}
 	if (IsVerified() && !this->is_displayed_welcome()) {
 		set_displayed_welcome(true);
-		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString());
+		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, event.get_executer()));
 	}
 	return OptionalMessage::Empty();
 }
 
 static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
 	std::stringstream ss;
-	ss << target.get_nick_name() << " "
-		<< message::MessageParser::get_command_str_map().find(message::kJoin)->second << " :"
-		<< channel.get_name() << "\r\n";
+
+	ss << target.CreateNameWithHost() << " ";
+	ss << Command::kJoin.get_name() << " :";
+	ss << channel.get_name() << "\r\n";
 	return ss.str();
 }
 
@@ -173,16 +169,19 @@ std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
 	std::stringstream ss;
 	// topic
 	if (!channel.get_topic().empty())
-		ss << 332 << " "
+		ss << ":" << utils::kHostName << " "
+			<< 332 << " "
 			<< this->get_nick_name() << " "
 			<< channel.get_name() << " :"
 			<< channel.get_topic() << "\r\n";
 	// メンバーリスト
+	ss << ":" << utils::kHostName << " ";
 	ss << 353 << " "
 		<< this->get_nick_name() << " = "
 		<< channel.get_name() << " :"
 		<< channel.GenerateMemberListWithNewUser(*this) << "\r\n";
 	// End of NAMES list
+	ss << ":" << utils::kHostName << " ";
 	ss << 366 << " "
 		<< this->get_nick_name() << " "
 		<< channel.get_name() << " :"
@@ -246,9 +245,10 @@ OptionalMessage User::ExKickCommand(const Event& event){
 		} else {
 			base_message = "Kick message from " + event.get_executer().get_nick_name() + " to remove " + target_name + " from channel " + channel.get_name();
 		}
+		
 		std::string optional_message = event.get_command_params().size() > 2 ? 
 			" using \"" + event.get_command_params()[2] +"\" as the reason(comment)" : ""; 
-		return OptionalMessage::Create(this->get_fd(), base_message + optional_message);
+		return OptionalMessage::Create(this->get_fd(), base_message + optional_message + "\r\n");
 	}
 	return OptionalMessage::Empty();
 }
@@ -293,7 +293,7 @@ void User::CkNickCommand(Event& event) const
 		if (event.HasErrorOccurred())
 			return ;
 		const std::string& new_nickname = event.get_command_params()[0];
-		if (this->nick_name_ == new_nickname){
+		if (utils::StrToLower(this->nick_name_) == utils::StrToLower(new_nickname)){
 			event.set_error_status(ErrorStatus::ERR_NICKNAMEINUSE);
 		}
 	return ;
@@ -388,6 +388,15 @@ const std::string& User::get_user_name() const {
 
 const std::string& User::get_real_name() const {
 	return this->real_name_;
+}
+
+//<nick>!<user>@<host>
+std::string User::CreateNameWithHost() const {
+	std::stringstream ss;
+	ss << ":" << this->get_nick_name();
+	ss << "!" << this->get_user_name();
+	ss << "@" << utils::kHostName;
+	return ss.str();
 }
 
 bool	User::IsVerified() const

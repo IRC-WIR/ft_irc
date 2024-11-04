@@ -7,6 +7,7 @@
 #include "user.h"
 #include "optional_message.h"
 #include "channel_event.h"
+#include "error_status.h"
 #include <stdexcept>
 #include <map>
 

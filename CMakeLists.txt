@@ -19,7 +19,8 @@ add_executable(${PROJECT_NAME}-googletest
   test/MessageTest.cpp
   #MessageParsingErrorFile
   test/MessageErrorTest.cpp
-  src/message.cpp
+  src/command.cpp
+  src/message_parser.cpp
   src/utils.cpp
 )
 target_link_libraries(${PROJECT_NAME}-googletest
@@ -28,7 +29,8 @@ target_link_libraries(${PROJECT_NAME}-googletest
 
 target_include_directories(${PROJECT_NAME}-googletest PRIVATE
   includes
-  includes/message.h
+  includes/command.h
+  includes/message_parser.h
   includes/utils.h
 )
 
