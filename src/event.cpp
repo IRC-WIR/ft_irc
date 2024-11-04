@@ -6,7 +6,7 @@ const std::string Event::NoExecuterException::kMessage = "there is no executer."
 const std::string Event::AlreadySetException::kMessage = "already exists executer.";
 
 Event::Event(int fd, int event_type)
-		: fd_(fd), event_type_(event_type), command_(&message::Command::kNotFound),
+		: fd_(fd), event_type_(event_type), command_(&Command::kNotFound),
 		error_status_(NULL), executer_(NULL) {
 	return ;
 }
@@ -31,7 +31,7 @@ int Event::get_event_type() const {
 	return event_type_;
 }
 
-const message::Command& Event::get_command() const {
+const Command& Event::get_command() const {
 	return *command_;
 }
 
@@ -45,7 +45,7 @@ const ErrorStatus& Event::get_error_status() const {
 	return *this->error_status_;
 }
 
-void Event::set_command(const message::Command& command) {
+void Event::set_command(const Command& command) {
 	this->command_ = &command;
 }
 

@@ -15,56 +15,56 @@ void User::CheckCommand(Event*& event) const {
 	if (event->get_fd() == this->get_fd())
 		event->set_executer(*this);
 
-	const message::Command& command = event->get_command();
+	const Command& command = event->get_command();
 
-	if (command == message::Command::kPass)
+	if (command == Command::kPass)
 		CkPassCommand(*event);
-	else if (command == message::Command::kNick)
+	else if (command == Command::kNick)
 		CkNickCommand(*event);
-	else if (command == message::Command::kUser)
+	else if (command == Command::kUser)
 		CkUserCommand(*event);
-	else if (command == message::Command::kJoin)
+	else if (command == Command::kJoin)
 		CkJoinCommand(*event);
-	else if (command == message::Command::kInvite)
+	else if (command == Command::kInvite)
 		CkInviteCommand(*event);
-	else if (command == message::Command::kKick)
+	else if (command == Command::kKick)
 		CkKickCommand(*event);
-	else if (command == message::Command::kTopic)
+	else if (command == Command::kTopic)
 		CkTopicCommand(*event);
-	else if (command == message::Command::kMode)
+	else if (command == Command::kMode)
 		CkModeCommand(*event);
-	else if (command == message::Command::kPrivmsg)
+	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(*event);
 
 }
 
 OptionalMessage User::ExecuteCommand(const Event& event) {
-	const message::Command& command = event.get_command();
+	const Command& command = event.get_command();
 
-	if (command == message::Command::kPass)
+	if (command == Command::kPass)
 		return ExPassCommand(event);
-	else if (command == message::Command::kNick)
+	else if (command == Command::kNick)
 		return ExNickCommand(event);
-	else if (command == message::Command::kUser)
+	else if (command == Command::kUser)
 		return ExUserCommand(event);
-	else if (command == message::Command::kJoin)
+	else if (command == Command::kJoin)
 		return ExJoinCommand(event);
-	else if (command == message::Command::kInvite)
+	else if (command == Command::kInvite)
 		return ExInviteCommand(event);
-	else if (command == message::Command::kKick)
+	else if (command == Command::kKick)
 		return ExKickCommand(event);
-	else if (command == message::Command::kTopic)
+	else if (command == Command::kTopic)
 		return ExTopicCommand(event);
-	else if (command == message::Command::kMode)
+	else if (command == Command::kMode)
 		return ExModeCommand(event);
-	else if (command == message::Command::kPrivmsg)
+	else if (command == Command::kPrivmsg)
 		return ExPrivmsgCommand(event);
 	else
 		return OptionalMessage::Empty();
 
 }
 
-std::string User::CreateErrorMessage(const message::Command& cmd, const ErrorStatus& error_status) const {
+std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const {
 	std::stringstream ss;
 	//add hostname
 	ss << ":";
@@ -160,7 +160,7 @@ static std::string GenerateJoinCommonMessage(const User& target, const Channel& 
 	std::stringstream ss;
 
 	ss << target.CreateNameWithHost() << " ";
-	ss << message::Command::kJoin.get_name() << " :";
+	ss << Command::kJoin.get_name() << " :";
 	ss << channel.get_name() << "\r\n";
 	return ss.str();
 }

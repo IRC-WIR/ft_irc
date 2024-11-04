@@ -1,5 +1,5 @@
 #include "database.h"
-#include "message.h"
+#include "command.h"
 #include "channel.h"
 #include "channel_event.h"
 
@@ -62,25 +62,25 @@ void Database::DeleteFinishedElements() {
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
-	const message::Command& command = event.get_command();
+	const Command& command = event.get_command();
 
-	if (command == message::Command::kPass)
+	if (command == Command::kPass)
 		CkPassCommand(event);
-	else if (command == message::Command::kNick)
+	else if (command == Command::kNick)
 		CkNickCommand(event);
-	else if (command == message::Command::kUser)
+	else if (command == Command::kUser)
 		CkUserCommand(event);
-	else if (command == message::Command::kJoin)
+	else if (command == Command::kJoin)
 		CkJoinCommand(event);
-	else if (command == message::Command::kInvite)
+	else if (command == Command::kInvite)
 		CkInviteCommand(event);
-	else if (command == message::Command::kKick)
+	else if (command == Command::kKick)
 		CkKickCommand(event);
-	else if (command == message::Command::kTopic)
+	else if (command == Command::kTopic)
 		CkTopicCommand(event);
-	else if (command == message::Command::kMode)
+	else if (command == Command::kMode)
 		CkModeCommand(event);
-	else if (command == message::Command::kPrivmsg)
+	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(event);
 
 }
@@ -92,7 +92,7 @@ static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
 }
 
 void Database::AfterCheck(Event& event) const {
-	if (event.get_command() == message::Command::kJoin) {
+	if (event.get_command() == Command::kJoin) {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			if (channel.ContainsUser(event.get_executer())

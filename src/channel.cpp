@@ -127,49 +127,49 @@ std::string Channel::GenerateMemberList() const {
 }
 
 void Channel::CheckCommand(Event*& event) const {
-	const message::Command& command = event->get_command();
+	const Command& command = event->get_command();
 
-	if (command == message::Command::kPass)
+	if (command == Command::kPass)
 		CkPassCommand(*event);
-	else if (command == message::Command::kNick)
+	else if (command == Command::kNick)
 		CkNickCommand(*event);
-	else if (command == message::Command::kUser)
+	else if (command == Command::kUser)
 		CkUserCommand(*event);
-	else if (command == message::Command::kJoin)
+	else if (command == Command::kJoin)
 		CkJoinCommand(event);
-	else if (command == message::Command::kInvite)
+	else if (command == Command::kInvite)
 		CkInviteCommand(*event);
-	else if (command == message::Command::kKick)
+	else if (command == Command::kKick)
 		CkKickCommand(*event);
-	else if (command == message::Command::kTopic)
+	else if (command == Command::kTopic)
 		CkTopicCommand(*event);
-	else if (command == message::Command::kMode)
+	else if (command == Command::kMode)
 		CkModeCommand(*event);
-	else if (command == message::Command::kPrivmsg)
+	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(*event);
 
 }
 
 OptionalMessage Channel::ExecuteCommand(const Event& event) {
-	const message::Command& command = event.get_command();
+	const Command& command = event.get_command();
 
-	if (command == message::Command::kPass)
+	if (command == Command::kPass)
 		return ExPassCommand(event);
-	else if (command == message::Command::kNick)
+	else if (command == Command::kNick)
 		return ExNickCommand(event);
-	else if (command == message::Command::kUser)
+	else if (command == Command::kUser)
 		return ExUserCommand(event);
-	else if (command == message::Command::kJoin)
+	else if (command == Command::kJoin)
 		return ExJoinCommand(event);
-	else if (command == message::Command::kInvite)
+	else if (command == Command::kInvite)
 		return ExInviteCommand(event);
-	else if (command == message::Command::kKick)
+	else if (command == Command::kKick)
 		return ExKickCommand(event);
-	else if (command == message::Command::kTopic)
+	else if (command == Command::kTopic)
 		return ExTopicCommand(event);
-	else if (command == message::Command::kMode)
+	else if (command == Command::kMode)
 		return ExModeCommand(event);
-	else if (command == message::Command::kPrivmsg)
+	else if (command == Command::kPrivmsg)
 		return ExPrivmsgCommand(event);
 	else
 		return OptionalMessage::Empty();
