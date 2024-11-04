@@ -27,11 +27,18 @@ const Channel& Database::CreateChannel(const User& op, const std::string& name) 
 
 void Database::CheckEvent(Event*& event) const {
 	Database::CheckCommandAndParams(*event);
+	if (event->HasErrorOccurred())
+		return ;
 	std::size_t vector_length = check_element_.size();
 
-	for (std::size_t i = 0; i < vector_length; i++)
+	for (std::size_t i = 0; i < vector_length; i++) {
 		check_element_[i] -> CheckCommand(event);
+		if (event->HasErrorOccurred())
+			return ;
+	}
 
+	if (event->HasErrorOccurred())
+		return ;
 	this->AfterCheck(*event);
 }
 
