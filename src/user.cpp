@@ -262,10 +262,8 @@ std::string User::CreateTopicRplMessage(const Channel& channel, bool has_topic) 
 
 static std::string GenerateTopicMessage(const User& user, const Channel& channel,const Event& event) {
 	std::stringstream ss;
-	// hostname
-	ss << ":";
-	ss << utils::kHostName;
-	ss << " ";
+	ss << ":" << user.get_nick_name() << "!" << user.get_user_name() <<  "@"
+		<< utils::kHostName << " ";
 	// nick name
 	ss << user.get_nick_name();
 	ss << " ";
