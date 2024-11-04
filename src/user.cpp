@@ -210,10 +210,30 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 		return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExInviteCommand(const Event& event){
-	(void)event;
-	std::cout << "Invite method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+OptionalMessage User::ExInviteCommand(const Event& event) {
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() == this->get_fd())
+			return OptionalMessage::Create(this->get_fd(),
+					User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+		return OptionalMessage::Empty();
+	}
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < 2) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		// INVITE情報の表示
+		return OptionalMessage::Empty();
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (event.get_fd() == this->get_fd())
+		return OptionalMessage::Create(this->get_fd(), ""); // 未実装, RPL_INVITING を使う
+	else if (this->get_nick_name() == params[2]) {
+		if (!this->invited_channels_.Contains(&channel))
+			this->invited_channels_.push_back(&channel);
+		return OptionalMessage::Create(this->get_fd(), ""); // 未実装, RPL_INVITELIST RPL_ENDOFINVITELIST を使う
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -312,11 +332,10 @@ void User::CkJoinCommand(Event& event) const {
 	}
 }
 
-void User::CkInviteCommand(Event& event) const
-{
+void User::CkInviteCommand(Event& event) const {
 	(void)event;
-	std::cout << "Check vite called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	// ERR_NOSUCHNICK の処理の一部をここに書く 
+	return ;
 }
 
 void User::CkKickCommand(Event& event) const

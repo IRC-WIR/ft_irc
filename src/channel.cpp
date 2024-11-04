@@ -146,7 +146,7 @@ void Channel::CheckCommand(Event*& event) const {
 	else if (command == Command::kJoin)
 		CkJoinCommand(event);
 	else if (command == Command::kInvite)
-		CkInviteCommand(*event);
+		CkInviteCommand(event);
 	else if (command == Command::kKick)
 		CkKickCommand(*event);
 	else if (command == Command::kTopic)
@@ -286,10 +286,27 @@ void Channel::CkJoinCommand(Event*& event) const {
 		event->set_error_status(ErrorStatus::ERR_CHANNELISFULL);
 }
 
-void Channel::CkInviteCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vite called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkInviteCommand(Event*& event) const {
+	const std::vector<std::string> params = event->get_command_params();
+	if (params.size() < 2)
+		return ;
+	if (utils::StrToLower(params[1]) != utils::StrToLower(this->name_))
+		return ;
+
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+	if (SearchByFD(this->operators_, event->get_fd()) == NULL) {
+		if (SearchByFD(this->members_, event->get_fd()) == NULL)
+			event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		else
+			event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+		return ;
+	}
+	if (this->ContainsUserByNick(params[0])) {
+		event->set_error_status(ErrorStatus::ERR_USERONCHANNEL);
+		return ;
+	}
 }
 
 void Channel::CkKickCommand(Event& event) const {

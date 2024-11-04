@@ -110,6 +110,13 @@ void Database::AfterCheck(Event& event) const {
 		}
 		return ;
 	}
+	if (event.get_command() == Command::kInvite) {
+		if (!event.IsChannelEvent()) {
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+			return ;
+		}
+		// ERR_NOSUCHNICK は未対応
+	}
 }
 
 //Check
@@ -185,9 +192,8 @@ void Database::CkJoinCommand(Event& event) const {
 }
 
 void Database::CkInviteCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vite called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	(void) event;
+	return ;
 }
 
 void Database::CkKickCommand(Event& event) const {
