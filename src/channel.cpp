@@ -14,13 +14,13 @@ static const User* SearchByNick(const utils::MyVector<const User*>& vector, cons
 	return NULL;
 }
 
-//static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
-//	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
-//		if ((*it)->get_fd() == fd)
-//			return *it;
-//	}
-//	return NULL;
-//}
+static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if ((*it)->get_fd() == fd)
+			return *it;
+	}
+	return NULL;
+}
 
 Channel::Channel(const User& op, const std::string& name)
 		: name_(name) {
@@ -316,8 +316,7 @@ void Channel::CkModeCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkQuitCommand(Event& event) const
-{
+void Channel::CkQuitCommand(Event& event) const {
 	(void)event;
 	return ;
 }

@@ -121,7 +121,6 @@ void Database::CkPassCommand(Event& event) const {
 }
 
 void Database::CkNickCommand(Event& event) const {
-	std::cout << "database Nick is called" << std::endl;
 	const int kParamsSize = 1;
 	if (event.get_command_params().size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);

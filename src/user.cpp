@@ -111,7 +111,6 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 }
 
 OptionalMessage User::ExNickCommand(const Event& event){
-	std::cout << "ExNick called" << std::endl;
 
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
