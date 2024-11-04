@@ -113,8 +113,7 @@ void MessageParser::ParsingCommand(const std::string& input) {
 			command_params_.push_back(str);
 	}
 	//input like "/r/n"
-	if (command_params_.size() == 0)
-	{
+	if (command_params_.size() == 0) {
 		command_ = &Command::kNotFound;
 		state_ = kParseEmpty;
 		return;
