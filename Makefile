@@ -1,6 +1,6 @@
 NAME			=	ircserv
 
-CXX			=	c++
+CXX				=	c++
 CXXFLAGS		=	-Wall -Wextra -Werror -std=c++98
 
 SRC_DIR			=	src/
@@ -12,7 +12,7 @@ OBJS			=	$(patsubst $(SRC_DIR)%.cpp,$(OBJ_DIR)%.o,$(SRCS))
 
 INCLUDE			=	-I./includes
 
-RM			=	rm -rf
+RM				=	rm -rf
 MKDIR			=	mkdir -p
 
 TEST_BUILD_DIR		= test/build
