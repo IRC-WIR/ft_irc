@@ -135,8 +135,7 @@ void MessageParser::ParsingCommand(const std::string& input) {
 }
 
 
-void MessageParser::Init(const std::string& msg)
-{
+void MessageParser::Init(const std::string& msg) {
 	command_ = &Command::kNotFound;
 	state_ = kParseDefault;
 	message_ = msg;
