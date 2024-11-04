@@ -164,26 +164,8 @@ void	EventHandler::Accept() {
 	int connected_socket_ = accept(listening_socket_,
 			(struct sockaddr*)&(server_address_),
 			&server_address_len);
-	if (connected_socket_ == -1){
-		switch (errno)
-		{
-		//接続リトライ
-		case EWOULDBLOCK:
-		case EINTR:
-			break;
-		//プログラム終了
-		case EBADF:
-		case EFAULT:
-		case ECONNABORTED:
-		case EINVAL:
-		case ENOTSOCK:
-		case EOPNOTSUPP:
-			std::exit(EXIT_FAILURE);
-		//接続不可
-		default:
+	if (connected_socket_ == -1)
 			return;
-		}
-	}
 	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
 		std::exit(EXIT_FAILURE);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
