@@ -19,8 +19,15 @@ EventHandler::EventHandler(Database& database,int port_no)
 		std::cout << strerror(errno) << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
+	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0) {
+		std::cout << strerror(errno) << std::endl;
 		std::exit(EXIT_FAILURE);
+	}
+	int option_available = 1;
+	if (setsockopt(listening_socket_, SOL_SOCKET, SO_REUSEADDR, &option_available, sizeof(option_available)) < 0) {
+		std::cout << strerror(errno) << std::endl;
+		std::exit(EXIT_FAILURE);
+	}	
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
