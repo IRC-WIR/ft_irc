@@ -1,11 +1,11 @@
 #ifndef ERROR_STATUS_H_
-# define ERROR_STATUS_H_
+ #define ERROR_STATUS_H_
 
-# include <string>
+#include "response_status.h"
 
-class ErrorStatus {
-    public:
-        static const ErrorStatus
+class ErrorStatus : public ResponseStatus {
+	public:
+		static const ErrorStatus
 			ERR_NOSUCHCHANNEL,
 			ERR_TOOMANYCHANNELS,
             ERR_NONICKNAMEGIVEN,
@@ -22,19 +22,11 @@ class ErrorStatus {
 			ERR_WRONGMODEPARAMS
             ;
 
-        const std::string& get_error_message(void) const;
-        int get_error_code(void) const;
+	private:
+		ErrorStatus(void);
+		ErrorStatus(int, const std::string&);
+		~ErrorStatus();
 
-    private:
-        const int code_;
-        const std::string message_;
-
-        ErrorStatus(void);
-        ErrorStatus(int, const std::string&);
-        ~ErrorStatus();
 };
-
-bool operator ==(const ErrorStatus&, const ErrorStatus&);
-bool operator !=(const ErrorStatus&, const ErrorStatus&);
 
 #endif
