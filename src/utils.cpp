@@ -128,15 +128,14 @@ std::string GetWelcomeString(const ResponseStatus& res_status, const User& user)
 	ss << ":" << kHostName;
 	ss << " ";
 	//add RPL code
-	ss << res_status.RPL_WELCOME.get_response_code();
+	ss << res_status.RPL_WELCOME.get_code();
 	ss << " ";
 	//add message from motd file
 	for (std::string line; std::getline(s, line); ) {
 		ss << line << kNewLine;
 	}
-	//<nick>!<user>@<host>"
 	//add nick!user@host
-	ss << user.get_nick_name() << "!" << user.get_user_name() << "@" << kHostName << kNewLine;
+	ss << user.CereateNameWithHost() << kNewLine;
 	return ss.str();
 }
 

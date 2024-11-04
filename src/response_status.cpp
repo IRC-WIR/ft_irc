@@ -18,11 +18,11 @@ ResponseStatus::~ResponseStatus() {
     return ;
 }
 
-const std::string& ResponseStatus::get_response_message() const {
+const std::string& ResponseStatus::get_message() const {
     return this->message_;
 }
 
-int ResponseStatus::get_response_code() const {
+int ResponseStatus::get_code() const {
     return this->code_;
 }
 
