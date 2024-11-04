@@ -9,7 +9,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <unistd.h>
-#include "message.h"
+#include "message_parser.h"
 #include "event.h"
 #include "database.h"
 #include "optional_message.h"
@@ -32,19 +32,19 @@ class EventHandler{
 
 	private:
 		EventHandler();
-		void				Accept();
-		void				Receive(int fd, char* buffer);
-		void				Execute(const pollfd& entry, const std::string& msg);
-		message::ParseState	Parse(const std::string& buffer, Event& event);
-		void				Send(Event event);
-		void				Detach(int fd);
-		void				HandlePollInEvent(pollfd entry);
-		void				HandlePollOutEvent(pollfd entry);
-		void				HandlePollHupEvent(pollfd entry);
-		void				ExecuteCommand(Event*& event);
-		void				AddNewChannel(Event*&);
+		void						Accept();
+		void						Receive(int fd, char* buffer);
+		void						Execute(const pollfd& entry, const std::string& msg);
+		MessageParser::ParseState	Parse(const std::string& buffer, Event& event);
+		void						Send(Event event);
+		void						Detach(int fd);
+		void						HandlePollInEvent(pollfd entry);
+		void						HandlePollOutEvent(pollfd entry);
+		void						HandlePollHupEvent(pollfd entry);
+		void						ExecuteCommand(Event*& event);
+		void						AddNewChannel(Event*&);
 
-		static bool			CheckNewChannel(const Event&);
+		static bool					CheckNewChannel(const Event&);
 
 		Database&	database_;
 		std::vector<struct pollfd>	poll_fd_;

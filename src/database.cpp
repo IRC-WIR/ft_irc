@@ -1,5 +1,5 @@
 #include "database.h"
-#include "message.h"
+#include "command.h"
 #include "channel.h"
 #include "channel_event.h"
 
@@ -62,37 +62,29 @@ void Database::DeleteFinishedElements() {
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
-	switch (event.get_command()) {
-		case message::kPass:
-			CkPassCommand(event);
-			break ;
-		case message::kNick:
-			CkNickCommand(event);
-			break ;
-		case message::kUser:
-			CkUserCommand(event);
-			break ;
-		case message::kJoin:
-			CkJoinCommand(event);
-			break ;
-		case message::kInvite:
-			CkInviteCommand(event);
-			break ;
-		case message::kKick:
-			CkKickCommand(event);
-			break ;
-		case message::kTopic:
-			CkTopicCommand(event);
-			break ;
-		case message::kMode:
-			CkModeCommand(event);
-			break ;
-		case message::kPrivmsg:
-			CkPrivmsgCommand(event);
-			break ;
-		default:
-			break ;
-	}
+	const Command& command = event.get_command();
+
+	if (command == Command::kPass)
+		CkPassCommand(event);
+	else if (command == Command::kNick)
+		CkNickCommand(event);
+	else if (command == Command::kUser)
+		CkUserCommand(event);
+	else if (command == Command::kJoin)
+		CkJoinCommand(event);
+	else if (command == Command::kInvite)
+		CkInviteCommand(event);
+	else if (command == Command::kKick)
+		CkKickCommand(event);
+	else if (command == Command::kTopic)
+		CkTopicCommand(event);
+	else if (command == Command::kMode)
+		CkModeCommand(event);
+	else if (command == Command::kPrivmsg)
+		CkPrivmsgCommand(event);
+	else if (command == Command::kQuit)
+		CkQuitCommand(event);
+
 }
 
 static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
@@ -102,7 +94,7 @@ static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
 }
 
 void Database::AfterCheck(Event& event) const {
-	if (event.get_command() == message::kJoin) {
+	if (event.get_command() == Command::kJoin) {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 			if (channel.ContainsUser(event.get_executer())
@@ -129,20 +121,17 @@ void Database::CkPassCommand(Event& event) const {
 }
 
 void Database::CkNickCommand(Event& event) const {
-
+	std::cout << "database Nick is called" << std::endl;
 	const int kParamsSize = 1;
-
 	if (event.get_command_params().size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
 		return ;
 	}
-
 	const std::string& new_nickname = event.get_command_params().at(0);
 	if (new_nickname.length() > 9) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
-
 	const std::string must_not_contain = " ,*?!@.";
 	for (int i = 0; i < (int)must_not_contain.length(); i++) {
 		if (new_nickname.find(must_not_contain[i]) != std::string::npos) {
@@ -150,13 +139,11 @@ void Database::CkNickCommand(Event& event) const {
 			return;
 		}
 	}
-
 	const std::string must_not_start_with = "$:&#~%+";
 	if (must_not_start_with.find(new_nickname[0]) != std::string::npos) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;
 	}
-
 	return;
 }
 
@@ -219,5 +206,9 @@ void Database::CkModeCommand(Event& event) const {
 	(void)event;
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
+}
+
+void Database::CkQuitCommand(Event& event) const {
+	(void)event;
 }
 //check
