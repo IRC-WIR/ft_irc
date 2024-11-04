@@ -135,8 +135,6 @@ void Database::AfterCheck(Event& event) const {
 
 }
 
-
-
 //Check
 void Database::CkPassCommand(Event& event) const {
 	const int kParamsSize = 1;
