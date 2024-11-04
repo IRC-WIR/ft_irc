@@ -222,7 +222,7 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
 		// INVITE情報の表示
-		return OptionalMessage::Empty();
+		return OptionalMessage::Empty(); // 未実装, RPL_INVITELIST RPL_ENDOFINVITELIST を使う
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
@@ -232,7 +232,7 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 	else if (this->get_nick_name() == params[2]) {
 		if (!this->invited_channels_.Contains(&channel))
 			this->invited_channels_.push_back(&channel);
-		return OptionalMessage::Create(this->get_fd(), ""); // 未実装, RPL_INVITELIST RPL_ENDOFINVITELIST を使う
+		return OptionalMessage::Create(this->get_fd(), ""); // 未実装
 	}
 	return OptionalMessage::Empty();
 }
