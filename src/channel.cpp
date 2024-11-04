@@ -326,14 +326,30 @@ void Channel::CkModeCommand(Event*& event) const {
 			is_plus = (pos == kPlusPos);
 			continue ;
 		}
-		if (is_plus && this->mode_map_(mode[i])) {
-			event->set_do_nothing(true);
-			return ;
-		}
 		switch (mode[i]) {
 		case 'i':
+		case 'k':
+		case 't':
+			if (is_plus == this->mode_map_(mode[i]))
+				event->set_do_nothing(true);
+			break ;
+		case 'o':
+			if (!this->ContainsUserByNick(params[2]))
+				break ;
+			if (SearchByNick(this->operators_, params[2]) != NULL) {
+				if (is_plus)
+					event->set_do_nothing(true);
+			} else if (!is_plus)
+				event->set_do_nothing(true);
+			break ;
+		case 'l':
+			if (!is_plus && !this->mode_map_(mode[i]))
+				event->set_do_nothing(true);
+			break ;
+		default:
+			break ;
 		}
+		return ;
 	}
-	event->set_do_nothing(true);
 }
 //check

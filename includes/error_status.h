@@ -14,10 +14,12 @@ class ErrorStatus {
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
             ERR_PASSWDMISMATCH,
+			ERR_KEYSET,
 			ERR_CHANNELISFULL,
             ERR_UNKNOWNMODE,
 			ERR_INVITEONLYCHAN,
-			ERR_BADCHANNELKEY
+			ERR_BADCHANNELKEY,
+			ERR_WRONGMODEPARAMS
             ;
 
         const std::string& get_error_message(void) const;

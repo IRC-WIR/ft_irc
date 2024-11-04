@@ -183,7 +183,7 @@ void Database::CkJoinCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 		return ;
 	}
-	for (std::size_t i = 0; i < kMustNotContain.length(); i++) {
+	for (std::string::size_type i = 0; i < kMustNotContain.length(); i++) {
 		if (channel_name.find(kMustNotContain[i]) != std::string::npos) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
@@ -217,21 +217,60 @@ void Database::CkPrivmsgCommand(Event& event) const {
 
 void Database::CkModeCommand(Event& event) const {
 	const std::string kSigns = "+-";
+	const std::string::size_type kPlusPos = kSigns.find('+');
+	const std::string kKeyMustNotContain = ": ";
 
 	switch (event.get_command_params().size()) {
 	case 0:
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return ;
 	case 1:
 		return ;
 	default:
 		const std::string& mode = event.get_command_params()[1];
+		bool is_plus = true;
 		for (std::string::size_type i = 0; i < mode.length(); i++) {
-			if (kSigns.find(mode[i]) != std::string::npos)
+			std::string::size_type pos = kSigns.find(mode[i]);
+			if (pos != std::string::npos) {
+				is_plus = (pos == kPlusPos);
 				continue ;
-			if (Channel::kHandlingModes.find(mode[i]) == std::string::npos)
+			}
+			if (Channel::kHandlingModes.find(mode[i]) == std::string::npos) {
 				event.set_error_status(ErrorStatus::ERR_UNKNOWNMODE);
-			break ;
+				return ;
+			}
+			if (mode[i] == 'k' || mode[i] == 'o' || (is_plus && mode[i] == 'l')) {
+				if (event.get_command_params() < 3) {
+					event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+					return ;
+				}
+				if (event.get_command_params()[2].empty()) {
+					event.set_error_status(ErrorStatus::ERR_WRONGMODEPARAMS);
+					return ;
+				}
+				if (is_plus && mode[i] == 'k') {
+					const std::string& key = event.get_command_params()[2];
+					for (std::string::size_type j = 0; j < kKeyMustNotContain.length(); j++) {
+						if (key.find(kKeyMustNotContain[j]) != std::string::npos) {
+							event.set_error_status(ErrorStatus::ERR_WRONGMODEPARAMS);
+							return ;
+						}
+					}
+				}
+				if (mode[i] == 'l') {
+					std::stringstream ss;
+					int limit = 0;
+					ss << event.get_command_params()[2];
+					ss >> limit;
+					if (limit < 0) {
+						event.set_error_status(ErrorStatus::ERR_WRONGMODEPARAMS);
+						return ;
+					}
+				}
+			}
+			return ;
 		}
+		event.set_do_nothing(true);
 		return ;
 	}
 }
