@@ -14,13 +14,13 @@ static const User* SearchByNick(const utils::MyVector<const User*>& vector, cons
 	return NULL;
 }
 
-//static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
-//	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
-//		if ((*it)->get_fd() == fd)
-//			return *it;
-//	}
-//	return NULL;
-//}
+static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if ((*it)->get_fd() == fd)
+			return *it;
+	}
+	return NULL;
+}
 
 Channel::Channel(const User& op, const std::string& name)
 		: name_(name) {
@@ -309,13 +309,13 @@ void Channel::CkKickCommand(Event*& event) const {
 	if (!this->ContainsUserByNick(event->get_command_params()[1]))
 		event->set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
 
-	const User& executer = event->get_executer();
-	//実行者がチャンネルオペレータか否か
-	if (!this->IsOperator(executer))
-		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+	const User* executer = SearchByFD(this->members_, event->get_fd());
 	//実行者がチャンネルメンバか否か
-	if (!this->ContainsUser(executer))
+	if (executer == NULL)
 		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+	//実行者がチャンネルオペレータか否か
+	else if (!this->IsOperator(*executer))
+		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
 
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
