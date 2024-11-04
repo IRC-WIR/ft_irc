@@ -84,20 +84,16 @@ void MessageParser::ParsingMessage(const std::string& msg) {
 		command = message_.substr(0, delim_pos);
 	}
 	state_ = kParseCommand;
-	while (!IsFinishParsing())
-	{
-		switch (state_)
-		{
+	while (!IsFinishParsing()) {
+		switch (state_) {
 			case kParseCommand:
 				ParsingCommand(command);
 				break;
-
 			case kParseParam:
 				if (has_delim)
 					command_params_.push_back(last_param);
 				state_ = kParseComplete;
 				break;
-
 			default:
 				return;
 		}
@@ -143,8 +139,7 @@ void MessageParser::Init(const std::string& msg) {
 }
 
 
-bool MessageParser::IsEndOfMessage(const char& ch)
-{
+bool MessageParser::IsEndOfMessage(const char& ch) {
 	if (ch == '\r' || ch == '\n')
 		return true;
 	return false;
