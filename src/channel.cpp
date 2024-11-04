@@ -6,6 +6,22 @@
 template <typename T, typename U>
 const std::string Channel::MyMap<T, U>::kErrMsg("not found the key");
 
+static const User* SearchByNick(const utils::MyVector<const User*>& vector, const std::string& nick_name) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if (utils::StrToLower((*it)->get_nick_name()) == utils::StrToLower(nick_name))
+			return *it;
+	}
+	return NULL;
+}
+
+static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if ((*it)->get_fd() == fd)
+			return *it;
+	}
+	return NULL;
+}
+
 Channel::Channel(const User& op, const std::string& name)
 		: name_(name) {
 	this->operators_.push_back(&op);
@@ -37,14 +53,6 @@ bool Channel::RemoveUser(const User& user) {
 		return true;
 	}
 	return false;
-}
-
-static const User* SearchByNick(const utils::MyVector<const User*>& vector, const std::string& nick_name) {
-	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
-		if (utils::StrToLower((*it)->get_nick_name()) == utils::StrToLower(nick_name))
-			return *it;
-	}
-	return NULL;
 }
 
 bool Channel::RemoveUserByNick(const std::string& nick_name) {
