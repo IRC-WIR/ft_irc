@@ -12,37 +12,6 @@ EventHandler::~EventHandler() {
 	return ;
 }
 
-static int GetCurrentFlags(int socket_fd) {
-	int current_flags = fcntl(socket_fd, F_GETFL, 0);
-	if (current_flags < 0) {
-		switch (errno) {
-		case EWOULDBLOCK:
-		case EINTR:
-			return GetCurrentFlags(socket_fd);
-		default:
-			std::cout << strerror(errno) << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-	}
-	return current_flags;
-}
-
-static int	SetNonBlockingMode(int socket_fd) {
-	int flags = GetCurrentFlags(socket_fd) | O_NONBLOCK;
-	int ret = fcntl(socket_fd, F_SETFL, flags);
-	if (ret < 0) {
-		switch (errno) {
-		case EWOULDBLOCK:
-		case EINTR:
-			return SetNonBlockingMode(socket_fd);
-		default:
-			std::cout << strerror(errno) << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-	}
-	return ret;
-}
-
 EventHandler::EventHandler(Database& database,int port_no)
 	: database_(database) {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -50,7 +19,8 @@ EventHandler::EventHandler(Database& database,int port_no)
 		std::cout << strerror(errno) << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	SetNonBlockingMode(listening_socket_);
+	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
+		std::exit(EXIT_FAILURE);
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
@@ -214,7 +184,8 @@ void	EventHandler::Accept() {
 			return;
 		}
 	}
-	SetNonBlockingMode(connected_socket_);
+	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
+		std::exit(EXIT_FAILURE);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	AddEventSocket(connected_socket_);
 	database_.CreateUser(connected_socket_);
