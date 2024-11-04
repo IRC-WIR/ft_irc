@@ -1,5 +1,5 @@
 #include "event_handler.h"
-#include "message.h"
+#include "command.h"
 #include "channel.h"
 #include "channel_event.h"
 #include <errno.h>
@@ -156,7 +156,7 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 				default:
 					Detach(entry);
 					Event event(entry.fd, entry.revents);
-					event.set_command(message::kQuit);
+					event.set_command(Command::kQuit);
 					AddResponseMap(database_.ExecuteEvent(event));
 					response_map_.erase(target_fd);
 					return;
@@ -269,24 +269,22 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 		//eventを作成
 		Event* event = new Event(entry.fd, entry.revents);
 		//parse
-		message::ParseState parse_state = Parse(parsing_msg, *event);
+		MessageParser::ParseState parse_state = Parse(parsing_msg, *event);
 		//debug print parse
-		const std::map<message::Command, std::string> &str_map = message::MessageParser::get_command_str_map();
-		if (str_map.find(event->get_command()) != str_map.end())
-			std::cout << "command:" << str_map.find(event->get_command()) -> second << std::endl;
+		std::cout << "command:" << event->get_command().get_name() << std::endl;
 		std::cout << "command param:" << std::endl;
 		utils::PrintStringVector(event->get_command_params());
 		//debug
 		//judge parse result
 		switch (parse_state) {
-		case message::kParseError:
+		case MessageParser::kParseError:
 			std::cout << "Parse Error" <<std::endl;
 			break ;
-		case message::kParseNotAscii:
+		case MessageParser::kParseNotAscii:
 			//have to define the action of inputting out range of Ascii
 			std::cout << "Not Ascii code input" << std::endl;
 			break;
-		case message::kParseEmpty:
+		case MessageParser::kParseEmpty:
 			//have to define the action of emmpty inputting
 			std::cout << "Parse Empty" <<std::endl;
 			break ;
@@ -313,7 +311,7 @@ void EventHandler::ExecuteCommand(Event*& event_ptr) {
 
 bool EventHandler::CheckNewChannel(const Event& event) {
 	return (!event.HasErrorOccurred()
-			&& event.get_command() == message::kJoin
+			&& event.get_command() == Command::kJoin
 			&& !event.IsChannelEvent());
 }
 
@@ -327,9 +325,9 @@ void EventHandler::AddNewChannel(Event*& event_ptr) {
 	event_ptr = channel_event;
 }
 
-message::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
+MessageParser::ParseState	EventHandler::Parse(const std::string& buffer, Event &event) {
 	std::string str_buffer(buffer);
-	message::MessageParser message_parser(str_buffer);
+	MessageParser message_parser(str_buffer);
 
 	event.set_command(message_parser.get_command());
 	event.set_command_params(message_parser.get_params());

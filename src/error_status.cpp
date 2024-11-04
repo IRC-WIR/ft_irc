@@ -18,5 +18,11 @@ const ErrorStatus
     ErrorStatus::ERR_CHANOPRIVSNEEDED(482, "You do not have access to change the topic on this channel")
     ;
 
-ErrorStatus::ErrorStatus():ResponseStatus() {}
-ErrorStatus::ErrorStatus(int i, const std::string& s) : ResponseStatus(i,s) {}
+ErrorStatus::ErrorStatus() : ResponseStatus() {
+}
+
+ErrorStatus::ErrorStatus(int code, const std::string& message) : ResponseStatus(code, message) {
+}
+
+ErrorStatus::~ErrorStatus() {
+}
