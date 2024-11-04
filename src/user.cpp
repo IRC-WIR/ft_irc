@@ -251,19 +251,23 @@ OptionalMessage User::ExModeCommand(const Event& event){
 OptionalMessage User::ExQuitCommand(const Event& event){
 	if (event.get_fd() == this->get_fd()) {
 		this->is_delete_ = true;
-	} else {
-		const User& executer = event.get_executer();
-		std::string prefix_message = executer.get_nick_name() + " QUIT : ";
-		for (std::vector<const Channel*>::iterator it =
-		this->joining_channels_.begin();
-		it != this->joining_channels_.end();
-		it++){
-			if((*it)->ContainsUser(executer)) {
-				std::string context_message = event.get_command_params().empty() ? "client quit" : event.get_command_params()[0];
-				if (event.get_event_type() == POLL_HUP)
-					context_message = "client dies and EOF occurs on socket";
-				return OptionalMessage::Create(this->fd_, prefix_message + context_message + "\r\n");
-			}
+		return OptionalMessage::Empty();
+	}
+	const User& executer = event.get_executer();
+	std::string prefix_message = executer.get_nick_name() + " QUIT : ";
+	for (std::vector<const Channel*>::iterator it =
+	this->joining_channels_.begin();
+	it != this->joining_channels_.end();
+	++it) {
+		if((*it)->ContainsUser(executer)) {
+			std::string context_message;
+			if (event.get_event_type() == POLL_HUP)
+				context_message = "client dies and EOF occurs on socket";
+			else if (event.get_command_params().empty())
+				context_message = "client quit";
+			else
+				context_message = event.get_command_params()[0];
+			return OptionalMessage::Create(this->fd_, prefix_message + context_message + "\r\n");
 		}
 	}
 	return OptionalMessage::Empty();
