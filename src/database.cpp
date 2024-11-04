@@ -230,7 +230,7 @@ void Database::CkModeCommand(Event& event) const {
 				return ;
 			}
 			if (mode[i] == 'k' || mode[i] == 'o' || (is_plus && mode[i] == 'l')) {
-				if (event.get_command_params() < 3) {
+				if (event.get_command_params().size() < 3) {
 					event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 					return ;
 				}

@@ -316,11 +316,7 @@ void User::CkPrivmsgCommand(Event& event) const
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void User::CkModeCommand(Event& event) const
-{
-	(void)event;
-	std::cout << "Check Mode called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void User::CkModeCommand(Event& event) const {
 }
 //check
 
@@ -340,13 +336,11 @@ bool User::is_displayed_welcome(void) const {
 	return is_displayed_welcome_;
 }
 
-int User::get_fd() const
-{
+int User::get_fd() const {
 	return fd_;
 }
 
-bool User::get_is_delete() const
-{
+bool User::get_is_delete() const {
 	return is_delete_;
 }
 
@@ -371,8 +365,7 @@ std::string User::CreateNameWithHost() const {
 	return ss.str();
 }
 
-bool	User::IsVerified() const
-{
+bool	User::IsVerified() const {
 	if (!this->is_password_authenticated_
 		|| this->nick_name_.empty()
 		|| this->user_name_.empty()){

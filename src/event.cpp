@@ -86,7 +86,7 @@ void Event::set_do_nothing(bool is_do_nothing) {
 }
 
 bool Event::is_do_nothing() const {
-	return this->is_do_nothing_;
+	return !this->HasErrorOccurred() && this->is_do_nothing_;
 }
 
 Event::NoErrorException::NoErrorException()
