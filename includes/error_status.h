@@ -6,6 +6,7 @@
 class ErrorStatus : public ResponseStatus {
 	public:
 		static const ErrorStatus
+			ERR_NOSUCHNICK,
 			ERR_NOSUCHCHANNEL,
 			ERR_TOOMANYCHANNELS,
             ERR_NONICKNAMEGIVEN,
@@ -19,6 +20,7 @@ class ErrorStatus : public ResponseStatus {
             ERR_UNKNOWNMODE,
 			ERR_INVITEONLYCHAN,
 			ERR_BADCHANNELKEY,
+			ERR_CHANOPRIVSNEEDED,
 			ERR_WRONGMODEPARAMS
             ;
 

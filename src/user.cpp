@@ -1,6 +1,7 @@
 #include "user.h"
 #include "channel.h"
 #include "channel_event.h"
+#include "mode.h"
 
 User::User(int fd) :
 	fd_(fd), is_password_authenticated_(false),
@@ -156,16 +157,22 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
+std::string User::CreateCommonMessage(const Command& command, const std::vector<std::string>& messages) const {
 	std::stringstream ss;
 
-	ss << target.CreateNameWithHost() << " ";
-	ss << Command::kJoin.get_name() << " :";
-	ss << channel.get_name() << "\r\n";
+	ss << this->CreateNameWithHost() << " ";
+	ss << command.get_name();
+	for (std::vector<std::string>::size_type i = 0; i < messages.size(); i++) {
+		ss << " ";
+		if (i == messages.size() - 1)
+			ss << ":";
+		ss << messages[i];
+	}
+	ss << "\r\n";
 	return ss.str();
 }
 
-std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
+std::string User::CreateJoinDetailMessage(const Channel& channel) const {
 	std::stringstream ss;
 	// topic
 	if (!channel.get_topic().empty())
@@ -200,10 +207,12 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	const std::string common_message = GenerateJoinCommonMessage(event.get_executer(), channel);
+	std::vector<std::string> messages;
+	messages.push_back(channel.get_name());
+	const std::string common_message = event.get_executer().CreateCommonMessage(event.get_command(), messages);
 	if (event.get_fd() == this->get_fd()) {
 		this->joining_channels_.push_back(&channel);
-		return OptionalMessage::Create(this->get_fd(), common_message + this->GenerateJoinDetailMessage(channel));
+		return OptionalMessage::Create(this->get_fd(), common_message + this->CreateJoinDetailMessage(channel));
 	}
 	if (this->joining_channels_.Contains(&channel))
 		return OptionalMessage::Create(this->get_fd(), common_message);
@@ -239,10 +248,38 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event){
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExModeCommand(const Event& event){
-	(void)event;
-	std::cout << "Mode method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+OptionalMessage User::ExModeCommand(const Event& event) {
+	const std::vector<std::string>& params = event.get_command_params();
+
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		return OptionalMessage::Create(this->get_fd(),
+				User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (params.size() == 1) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		// チャンネル情報出力
+	}
+	if (!channel.ContainsUser(*this))
+		return OptionalMessage::Empty();
+	const Mode mode = Mode::Analyze(params[1]);
+	std::vector<std::string> messages;
+	messages.push_back(channel.get_name());
+	messages.push_back(mode.ToString());
+	switch (mode.get_mode()) {
+	case 'i':
+	case 't':
+		return OptionalMessage::Create(this->get_fd(),
+				event.get_executer().CreateCommonMessage(event.get_command(), messages));
+	case 'k':
+	case 'o':
+		messages.push_back()
+	}
 	return OptionalMessage::Empty();
 }
 //Execute
@@ -271,16 +308,14 @@ void User::CkNickCommand(Event& event) const
 }
 
 void User::CkUserCommand(Event& event) const {
-	if (event.get_fd() != this->get_fd()
-			|| event.HasErrorOccurred())
+	if (event.get_fd() != this->get_fd())
 		return ;
 	if (!this->user_name_.empty())
 		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 }
 
 void User::CkJoinCommand(Event& event) const {
-	if (event.get_fd() != this->get_fd()
-			|| event.HasErrorOccurred())
+	if (event.get_fd() != this->get_fd())
 		return ;
 	if (this->joining_channels_.size() >= Channel::kMaxJoiningChannels) {
 		event.set_error_status(ErrorStatus::ERR_TOOMANYCHANNELS);
@@ -317,6 +352,12 @@ void User::CkPrivmsgCommand(Event& event) const
 }
 
 void User::CkModeCommand(Event& event) const {
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() <= 1)
+		return ;
+	const Mode mode = Mode::Analyze(params[1]);
+	if (mode.get_mode() == 'o' && params[2] == this->nick_name_)
+		event.IncreaseCount();
 }
 //check
 

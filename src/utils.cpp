@@ -30,7 +30,8 @@ void CheckPassword(std::string password) {
 
 int Stoi(std::string num_str) {
 	std::stringstream ss(num_str);
-	int num_int;	ss >> num_int;
+	int num_int;
+	ss >> num_int;
 	return (num_int);
 }
 

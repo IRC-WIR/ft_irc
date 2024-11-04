@@ -2,6 +2,7 @@
 
 const ErrorStatus
 
+    ErrorStatus::ERR_NOSUCHNICK(401, "No such nick"),
 	ErrorStatus::ERR_NOSUCHCHANNEL(403, "No such channel"),
 	ErrorStatus::ERR_TOOMANYCHANNELS(405, "You have joined too many channels"),
     ErrorStatus::ERR_NONICKNAMEGIVEN(431, "No nickname given"),
@@ -15,6 +16,7 @@ const ErrorStatus
     ErrorStatus::ERR_UNKNOWNMODE(472, "is unknown mode char to me"),
 	ErrorStatus::ERR_INVITEONLYCHAN(473, "Cannot join channel (+i)"),
 	ErrorStatus::ERR_BADCHANNELKEY(475, "Cannot join channel (+k)"),
+    ErrorStatus::ERR_CHANOPRIVSNEEDED(482, "You're not channel operator"),
 	ErrorStatus::ERR_WRONGMODEPARAMS(696, "Invalid mode parameter.")
     ;
 

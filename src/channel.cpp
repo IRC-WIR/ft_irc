@@ -1,6 +1,7 @@
 #include "channel.h"
 #include "channel_event.h"
 #include "utils.h"
+#include "mode.h"
 #include <algorithm>
 
 const std::string Channel::kHandlingModes = "itkol";
@@ -304,9 +305,6 @@ void Channel::CkPrivmsgCommand(Event& event) const {
 }
 
 void Channel::CkModeCommand(Event*& event) const {
-	const std::string kSigns = "+-";
-	const std::string::size_type kPlusPos = kSigns.find('+');
-
 	if (event->HasErrorOccurred())
 		return ;
 	const std::vector<std::string>& params = event->get_command_params();
@@ -317,38 +315,42 @@ void Channel::CkModeCommand(Event*& event) const {
 	delete event;
 	event = channel_event;
 
-	bool is_plus = true;
-	const std::string& mode = params[1];
-	for (std::string::size_type i = 0; i < mode.length(); i++) {
-		std::string::size_type pos = kSigns.find(mode[i]);
-		if (pos != std::string::npos) {
-			is_plus = (pos == kPlusPos);
-			continue ;
-		}
-		switch (mode[i]) {
-		case 'i':
-		case 'k':
-		case 't':
-			if (is_plus == this->mode_map_(mode[i]))
-				event->set_do_nothing(true);
-			break ;
-		case 'o':
-			if (!this->ContainsUserByNick(params[2]))
-				break ;
-			if (SearchByNick(this->operators_, params[2]) != NULL) {
-				if (is_plus)
-					event->set_do_nothing(true);
-			} else if (!is_plus)
-				event->set_do_nothing(true);
-			break ;
-		case 'l':
-			if (!is_plus && !this->mode_map_(mode[i]))
-				event->set_do_nothing(true);
-			break ;
-		default:
-			break ;
-		}
+	if (params.size() <= 1)
 		return ;
+	if (SearchByFD(this->operators_, event->get_fd()) == NULL) {
+		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+		return ;
+	}
+	const Mode mode = Mode::Analyze(params[1]);
+	switch (mode.get_mode()) {
+	case 'i':
+	case 't':
+		if (mode.is_plus() == this->mode_map_(mode.get_mode()))
+			event->set_do_nothing(true);
+		break ;
+	case 'k':
+		if (mode.is_plus() == this->mode_map_(mode.get_mode()))
+			event->set_do_nothing(true);
+		else if (!mode.is_plus() && params[2] != this->key_) {
+			event->set_error_status(ErrorStatus::ERR_KEYSET);
+			return ;
+		}
+		break ;
+	case 'o':
+		if (!this->ContainsUserByNick(params[2]))
+			break ;
+		if (SearchByNick(this->operators_, params[2]) != NULL) {
+			if (mode.is_plus())
+				event->set_do_nothing(true);
+		} else if (!mode.is_plus())
+			event->set_do_nothing(true);
+		break ;
+	case 'l':
+		if (!mode.is_plus() && !this->mode_map_(mode.get_mode()))
+			event->set_do_nothing(true);
+		break ;
+	default:
+		break ;
 	}
 }
 //check
