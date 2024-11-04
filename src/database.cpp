@@ -106,7 +106,6 @@ void Database::AfterCheck(Event& event) const {
 			if (channel.ContainsUser(event.get_executer())
 					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status()))) {
 						event.set_do_nothing(true);
-						return ;
 					}
 		}
 		return ;
