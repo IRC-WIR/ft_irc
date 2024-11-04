@@ -38,7 +38,8 @@ Channel::~Channel() {
 void Channel::InitModeMap() {
 	this->mode_map_.clear();
 	this->mode_map_['i'] = false;
-	this->mode_map_['t'] = false;
+	// tモードはデフォルトでtrueっぽい
+	this->mode_map_['t'] = true;
 	this->mode_map_['k'] = false;
 	this->mode_map_['l'] = false;
 }
@@ -135,6 +136,30 @@ std::string Channel::GenerateMemberList() const {
 		ss << this->members_[i]->get_nick_name();
 	}
 	return ss.str();
+}
+
+std::vector<std::string> Channel::RequestModeInfo(const User& client) const {
+	std::vector<std::string> ret;
+	for (std::string::size_type i = 0; i < Channel::kHandlingModes.length(); i++) {
+		if (Channel::kHandlingModes[i] == 'o')
+			continue ;
+		if (this->mode_map_(Channel::kHandlingModes[i])) {
+			if (ret.empty())
+				ret.push_back("+");
+			ret[0] += Channel::kHandlingModes[i];
+			if (Channel::kHandlingModes[i] == 'k') {
+				if (this->ContainsUser(client))
+					ret.push_back(this->key_);
+				else
+					ret.push_back("<key>");
+			} else if (Channel::kHandlingModes[i] == 'l') {
+				std::stringstream ss;
+				ss << this->max_member_num_;
+				ret.push_back(ss.str());
+			}
+		}
+	}
+	return ret;
 }
 
 void Channel::CheckCommand(Event*& event) const {
@@ -238,7 +263,46 @@ OptionalMessage Channel::ExTopicCommand(const Event& event) {
 }
 
 OptionalMessage Channel::ExModeCommand(const Event& event) {
-	(void)event;
+	const int kKeyMaxLength = 32;
+
+	if (event.HasErrorOccurred()
+			|| !event.IsChannelEvent())
+		return OptionalMessage::Empty();
+
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this != &channel)
+		return OptionalMessage::Empty();
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() <= 1)
+		return OptionalMessage::Empty();
+	const Mode mode = Mode::Analyze(params[1]);
+	if (mode.get_mode() != 'o')
+		this->mode_map_[mode.get_mode()] = mode.is_plus();
+	switch (mode.get_mode()) {
+	case 'i':
+	case 't':
+		break ;
+	case 'k':
+		if (mode.is_plus())
+			this->key_ = params[2].substr(0, kKeyMaxLength);
+		else
+			this->key_.clear();
+		break ;
+	case 'l':
+		if (mode.is_plus())
+			this->max_member_num_ = utils::Stoi(params[2]);
+		else
+			this->max_member_num_ = 0;
+		break ;
+	case 'o':
+		if (mode.is_plus())
+			this->GiveOperator(*SearchByNick(this->members_, params[2]));
+		else
+			this->TakeOperator(*SearchByNick(this->operators_, params[2]));
+		break ;
+	default:
+		break ;
+	}
 	return OptionalMessage::Empty();
 }
 

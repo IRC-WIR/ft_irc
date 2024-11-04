@@ -6,7 +6,8 @@
 class ResponseStatus {
     public:
         static const ResponseStatus
-            RPL_WELCOME
+            RPL_WELCOME,
+            RPL_CHANNELMODEIS
             ;
 
         int get_code(void) const;

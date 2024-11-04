@@ -35,6 +35,7 @@ class Channel: public EventListener, public EventConfigurator {
 		const std::string& get_name(void) const;
 		std::string GenerateMemberList(void) const;
 		std::string GenerateMemberListWithNewUser(const User&) const;
+		std::vector<std::string> RequestModeInfo(const User&) const;
 
 	private:
 		template <typename T, typename U>

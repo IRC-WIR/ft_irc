@@ -23,6 +23,14 @@ Event::~Event() {
 	return ;
 }
 
+void Event::IncreaseUserCount() {
+	this->user_count_++;
+}
+
+int Event::get_user_count() const {
+	return this->user_count_;
+}
+
 int Event::get_fd() const {
 	return fd_;
 }

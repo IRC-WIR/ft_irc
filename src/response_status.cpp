@@ -2,7 +2,8 @@
 
 const ResponseStatus
 
-	ResponseStatus::RPL_WELCOME(101, "Welcome to the Internet Relay Network")
+	ResponseStatus::RPL_WELCOME(101, "Welcome to the Internet Relay Network"),
+    ResponseStatus::RPL_CHANNELMODEIS(324, "")
     ;
 
 // 呼ばれない

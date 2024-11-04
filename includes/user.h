@@ -46,6 +46,7 @@ class User : public EventListener, public EventConfigurator {
 
 		std::string CreateJoinDetailMessage(const Channel&) const;
 		std::string CreateCommonMessage(const Command&, const std::vector<std::string>&) const;
+		std::string CreateReplyMessage(int, const std::vector<std::string>&) const;
 
 		//check command
 		void CkPassCommand(Event& event) const;

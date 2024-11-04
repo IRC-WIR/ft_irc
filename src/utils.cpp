@@ -62,8 +62,8 @@ void PrintStringVector(const std::vector<std::string>& str_vec) {
 
 void EraseNewline(std::string& str) {
 	std::string::size_type pos;
-	while ((pos = str.find("\r\n")) != std::string::npos)
-		str.erase(pos, 2);
+	while ((pos = str.find(kNewLine)) != std::string::npos)
+		str.erase(pos, kNewLine.length());
 	while((pos = str.find('\n')) != std::string::npos)
 		str.erase(pos, 1);
 }

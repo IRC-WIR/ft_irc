@@ -121,7 +121,7 @@ void Database::AfterCheck(Event& event) const {
 		const std::vector<std::string>& params = event.get_command_params();
 		if (params.size() >= 3) {
 			const Mode mode = Mode::Analyze(params[1]);
-			if (mode.get_mode() == 'o' && event.get_count() == 0) {
+			if (mode.get_mode() == 'o' && event.get_user_count() == 0) {
 				event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
 				return ;
 			}

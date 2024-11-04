@@ -1,4 +1,5 @@
 #include "mode.h"
+#include <sstream>
 
 const std::string Mode::kSigns = "+-";
 const std::string::size_type Mode::kPlusPos = Mode::kSigns.find('+');
@@ -39,5 +40,11 @@ bool Mode::is_plus() const {
 }
 
 std::string Mode::ToString() const {
-	return (this->is_plus() ? "+" : "-") + this->get_mode();
+	std::stringstream ss;
+	if (this->is_plus())
+		ss << "+";
+	else
+		ss << "-";
+	ss << this->get_mode();
+	return ss.str();
 }
