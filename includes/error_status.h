@@ -22,7 +22,7 @@ class ErrorStatus : public ResponseStatus {
 	private:
 		ErrorStatus(void);
 		ErrorStatus(int, const std::string&);
-        ~ErrorStatus();
+		~ErrorStatus();
 
 };
 
