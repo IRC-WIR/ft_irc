@@ -338,11 +338,18 @@ void Channel::CkTopicCommand(Event*& event) const {
 void Channel::CkPrivmsgCommand(Event*& event) const {
 	if (event->get_command_params()[0] != this->get_name())
 		return ;
-	event->add_target_num();
 	//チャンネルイベントを作成する
+	
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
+	//チームメンバーか否か
+	const User* member_excuter = SearchByFD(this->get_members(), event->get_fd());
+	const User* operator_excuter = SearchByFD(this->operators_, event->get_fd());
+	if (!member_excuter && !operator_excuter) {
+		event->set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
+		return ;
+	}
 }
 
 void Channel::CkModeCommand(Event& event) const {

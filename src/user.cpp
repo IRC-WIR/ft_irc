@@ -91,16 +91,16 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 	return ss.str();
 }
 
-std::string User::CreateMessage(const std::string& to, const Command& cmd, const std::vector<std::string>& params) const {
+std::string User::CreateMessage(const User& from, const std::string& target, const Command& cmd, const std::vector<std::string>& params) const {
 	std::stringstream ss;
-	//add msg from name
-	// ss << ":";
-	// ss << " ";
-	//add command
+	// from hostname
+	ss << from.CreateNameWithHost();
+	ss << " ";
+	// command
 	ss << cmd.get_name();
 	ss << " ";
-	//add the to subject
-	ss << to;
+	// to name
+	ss << target;
 	ss << " ";
 	//add message
 	ss << ":";
@@ -318,17 +318,19 @@ OptionalMessage User::ExTopicCommand(const Event& event) {
 }
 
 OptionalMessage User::ExPrivmsgCommand(const Event& event) {
+	//失敗
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
 		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
 		return OptionalMessage::Create(this->get_fd(), err_msg);
 	}
+	//成功
 	//送信相手確認
 	const std::vector<std::string>& params = event.get_command_params();
 	const std::string& target = params[0];
 	if (IsTarget(target, event)) {
-		const std::string& send_msg = CreateMessage(target, event.get_command(), params);
+		const std::string& send_msg = CreateMessage(event.get_executer(), target, event.get_command(), params);
 		return OptionalMessage::Create(this->get_fd(), send_msg);
 	}
 	return OptionalMessage::Empty();
@@ -429,8 +431,6 @@ void User::CkTopicCommand(Event& event) const
 
 void User::CkPrivmsgCommand(Event& event) const
 {
-	if (event.HasErrorOccurred())
-		return ;
 	if (event.get_command_params()[0] != this->get_nick_name())
 		return ;
 	event.add_target_num();
