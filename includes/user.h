@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "error_status.h"
 #include "optional_message.h"
-#include "message_parser.h"
+#include "command.h"
 
 class Channel;
 
