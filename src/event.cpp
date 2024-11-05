@@ -61,6 +61,10 @@ void Event::set_error_status(const ErrorStatus& error_status) {
 	this->error_status_ = &error_status;
 }
 
+void Event::ResetErrorStatus() {
+	error_status_ = NULL;
+}
+
 bool Event::HasErrorOccurred() const {
 	return (this->error_status_ != NULL);
 }
@@ -87,6 +91,14 @@ void Event::set_do_nothing(bool is_do_nothing) {
 
 bool Event::is_do_nothing() const {
 	return this->is_do_nothing_;
+}
+
+void Event::add_target_num() {
+	target_num_ += 1;
+}
+
+int Event::get_target_num() const {
+	return target_num_;
 }
 
 Event::NoErrorException::NoErrorException()

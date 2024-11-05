@@ -99,6 +99,10 @@ bool Channel::IsOperator(const User& user) const {
 	return this->operators_.Contains(&user);
 }
 
+bool Channel::IsMode(const char& c) const{
+	return mode_map_(c);
+}
+
 void Channel::set_topic(const std::string& topic) {
 	this->topic_ = topic;
 }
@@ -109,6 +113,10 @@ const std::string& Channel::get_topic() const {
 
 const std::string& Channel::get_name() const {
 	return this->name_;
+}
+
+const utils::MyVector<const User*>& Channel::get_members(void) const {
+	return members_ ;
 }
 
 std::string Channel::GenerateMemberListWithNewUser(const User& new_user) const {
@@ -150,14 +158,13 @@ void Channel::CheckCommand(Event*& event) const {
 	else if (command == Command::kKick)
 		CkKickCommand(*event);
 	else if (command == Command::kTopic)
-		CkTopicCommand(*event);
+		CkTopicCommand(event);
 	else if (command == Command::kMode)
 		CkModeCommand(*event);
 	else if (command == Command::kPrivmsg)
-		CkPrivmsgCommand(*event);
+		CkPrivmsgCommand(event);
 	else if (command == Command::kQuit)
 		CkQuitCommand(*event);
-
 }
 
 OptionalMessage Channel::ExecuteCommand(const Event& event) {
@@ -185,7 +192,6 @@ OptionalMessage Channel::ExecuteCommand(const Event& event) {
 		return ExQuitCommand(event);
 	else
 		return OptionalMessage::Empty();
-
 }
 
 bool Channel::IsFinished() const {
@@ -230,7 +236,19 @@ OptionalMessage Channel::ExKickCommand(const Event& event) {
 }
 
 OptionalMessage Channel::ExTopicCommand(const Event& event) {
-	(void)event;
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this == &channel) {
+		std::vector<std::string> params = event.get_command_params();
+		std::stringstream ss;
+		for (size_t i = 1; i < params.size(); i ++) {
+			if (i != 1)
+				ss << " ";
+			ss << params[i];
+		}
+		this->set_topic(ss.str());
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -298,16 +316,40 @@ void Channel::CkKickCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkTopicCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkTopicCommand(Event*& event) const {
+	if (event->HasErrorOccurred())
+		return ;
+	const std::vector<std::string> params = event->get_command_params();
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
+		return ;
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+	if (!(SearchByFD(operators_, event->get_fd()) || SearchByFD(members_, event->get_fd()))) {
+		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		return ;
+	}
+	if (this->mode_map_('t') && SearchByFD(members_, event->get_fd())) {
+		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		return ;
+	}
 }
 
-void Channel::CkPrivmsgCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkPrivmsgCommand(Event*& event) const {
+	if (event->get_command_params()[0] != this->get_name())
+		return ;
+	//チャンネルイベントを作成する
+	
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+	//チームメンバーか否か
+	const User* member_excuter = SearchByFD(this->get_members(), event->get_fd());
+	const User* operator_excuter = SearchByFD(this->operators_, event->get_fd());
+	if (!member_excuter && !operator_excuter) {
+		event->set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
+		return ;
+	}
 }
 
 void Channel::CkModeCommand(Event& event) const {

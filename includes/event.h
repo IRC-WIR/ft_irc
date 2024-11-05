@@ -20,12 +20,15 @@ class Event {
 		void	set_command(const Command& command);
 		void	set_command_params(const std::vector<std::string>& commmand_params);
 		void	set_error_status(const ErrorStatus&);
+		void	ResetErrorStatus();
 		bool	HasErrorOccurred(void) const;
 		virtual bool IsChannelEvent(void) const;
 		void set_executer(const User&);
 		const User& get_executer(void) const;
 		void set_do_nothing(bool);
 		bool is_do_nothing(void) const;
+		void add_target_num(void);
+		int get_target_num(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
@@ -44,7 +47,6 @@ class Event {
 		class AlreadySetException : public std::runtime_error {
 			public:
 				AlreadySetException(void);
-
 			private:
 				static const std::string kMessage;
 		};
@@ -60,6 +62,7 @@ class Event {
 		const ErrorStatus* error_status_;
 		const User* executer_;
 		bool is_do_nothing_;
+		int target_num_;
 };
 
 #endif

@@ -6,9 +6,10 @@
 #include "utils.h"
 #include "user.h"
 #include "optional_message.h"
-#include "error_status.h"
+#include "response_status.h"
 #include <stdexcept>
 #include <map>
+#include <sstream>
 
 class Channel: public EventListener, public EventConfigurator {
 	public:
@@ -29,9 +30,11 @@ class Channel: public EventListener, public EventConfigurator {
 		bool GiveOperator(const User&);
 		bool TakeOperator(const User&);
 		bool IsOperator(const User&) const;
+		bool IsMode(const char& c) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
+		const utils::MyVector<const User*>& get_members(void) const;
 		std::string GenerateMemberList(void) const;
 		std::string GenerateMemberListWithNewUser(const User&) const;
 
@@ -68,9 +71,9 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkJoinCommand(Event*& event) const;
 		void CkInviteCommand(Event& event) const;
 		void CkKickCommand(Event& event) const;
-		void CkTopicCommand(Event& event) const;
+		void CkTopicCommand(Event*& event) const;
 		void CkModeCommand(Event& event) const;
-		void CkPrivmsgCommand(Event& event) const;
+		void CkPrivmsgCommand(Event*& event) const;
 		void CkQuitCommand(Event& event) const;
 
 		//execute command

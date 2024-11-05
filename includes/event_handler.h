@@ -18,7 +18,7 @@ class EventHandler{
 	public:
 		EventHandler(Database& database,int port_no);
 		~EventHandler();
-		bool				IsListeningSocket();
+		bool				IsAuthenticated(const Event& event);
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
 		void				AddEventSocket(int new_fd);
@@ -32,17 +32,18 @@ class EventHandler{
 
 	private:
 		EventHandler();
-		void						Accept();
-		void						Receive(int fd, char* buffer);
-		void						Execute(const pollfd& entry, const std::string& msg);
+		void				Accept();
+		void				Receive(int fd, char* buffer);
+		void				Execute(const pollfd& entry, const std::string& msg);
 		MessageParser::ParseState	Parse(const std::string& buffer, Event& event);
-		void						Send(Event event);
-		void						Detach(int fd);
-		void						HandlePollInEvent(pollfd entry);
-		void						HandlePollOutEvent(pollfd entry);
-		void						HandlePollHupEvent(pollfd entry);
-		void						ExecuteCommand(Event*& event);
-		void						AddNewChannel(Event*&);
+		void				Send(Event event);
+		void				Detach(int entry);
+		void				HandlePollInEvent(pollfd entry);
+		void				HandlePollOutEvent(pollfd entry);
+		void				HandlePollHupEvent(pollfd entry);
+		void				CheckChannelTarget(Event& event);
+		void				ExecuteCommand(Event*& event);
+		void				AddNewChannel(Event*&);
 
 		static bool					CheckNewChannel(const Event&);
 
