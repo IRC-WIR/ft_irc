@@ -14,6 +14,7 @@
 class Channel: public EventListener, public EventConfigurator {
 	public:
 		static const int kMaxJoiningChannels = 10;
+		static const std::string kHandlingModes;
 
 		Channel(const User& op, const std::string& name);
 		~Channel();
@@ -37,6 +38,7 @@ class Channel: public EventListener, public EventConfigurator {
 		const utils::MyVector<const User*>& get_members(void) const;
 		std::string GenerateMemberList(void) const;
 		std::string GenerateMemberListWithNewUser(const User&) const;
+		std::vector<std::string> RequestModeInfo(const User&) const;
 
 	private:
 		template <typename T, typename U>
@@ -72,7 +74,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkInviteCommand(Event& event) const;
 		void CkKickCommand(Event*& event) const;
 		void CkTopicCommand(Event*& event) const;
-		void CkModeCommand(Event& event) const;
+		void CkModeCommand(Event*& event) const;
 		void CkPrivmsgCommand(Event*& event) const;
 		void CkQuitCommand(Event& event) const;
 

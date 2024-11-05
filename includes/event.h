@@ -27,8 +27,8 @@ class Event {
 		const User& get_executer(void) const;
 		void set_do_nothing(bool);
 		bool is_do_nothing(void) const;
-		void add_target_num(void);
-		int get_target_num(void) const;
+		void IncreaseUserCount(void);
+		int get_user_count(void) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
@@ -62,7 +62,7 @@ class Event {
 		const ErrorStatus* error_status_;
 		const User* executer_;
 		bool is_do_nothing_;
-		int target_num_;
+		int user_count_;
 };
 
 #endif

@@ -14,10 +14,13 @@ const ErrorStatus
     ErrorStatus::ERR_NEEDMOREPARAMS(461, "Not enough parameters."),
     ErrorStatus::ERR_ALREADYREGISTRED(462, "You may not reregister."),
     ErrorStatus::ERR_PASSWDMISMATCH(464, "Password incorrect"),
+	ErrorStatus::ERR_KEYSET(467, "Channel key already set"),
 	ErrorStatus::ERR_CHANNELISFULL(471, "Cannot join channel (+l)"),
+    ErrorStatus::ERR_UNKNOWNMODE(472, "is unknown mode char to me"),
 	ErrorStatus::ERR_INVITEONLYCHAN(473, "Cannot join channel (+i)"),
 	ErrorStatus::ERR_BADCHANNELKEY(475, "Cannot join channel (+k)"),
-    ErrorStatus::ERR_CHANOPRIVSNEEDED(482, "You're not channel operator")
+    ErrorStatus::ERR_CHANOPRIVSNEEDED(482, "You're not channel operator"),
+	ErrorStatus::ERR_WRONGMODEPARAMS(696, "Invalid mode parameter.")
     ;
 
 ErrorStatus::ErrorStatus() : ResponseStatus() {

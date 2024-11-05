@@ -1,6 +1,7 @@
 #include "user.h"
 #include "channel.h"
 #include "channel_event.h"
+#include "mode.h"
 #include <poll.h>
 
 User::User(int fd) :
@@ -10,6 +11,35 @@ User::User(int fd) :
 }
 
 User::~User() {
+}
+
+std::string User::CreateCommonMessage(const Command& command, const std::vector<std::string>& messages) const {
+	std::stringstream ss;
+
+	ss << this->CreateNameWithHost() << " ";
+	ss << command.get_name();
+	if (!messages.empty()) {
+		if (messages.size() > 1)
+			ss << " " << utils::Join(messages.begin(), messages.end() - 1, " ");
+		ss << " :" << messages.back();
+	}
+	ss << utils::kNewLine;
+	return ss.str();
+}
+
+std::string User::CreateReplyMessage(int code, const std::vector<std::string>& messages) const {
+	std::stringstream ss;
+
+	ss << ":" << utils::kHostName;
+	ss << " " << code;
+	ss << " " << this->get_nick_name();
+	if (!messages.empty()) {
+		if (messages.size() > 1)
+			ss << " " << utils::Join(messages.begin(), messages.end() - 1, " ");
+		ss << " :" << messages.back();
+	}
+	ss << utils::kNewLine;
+	return ss.str();
 }
 
 void User::CheckCommand(Event*& event) const {
@@ -87,7 +117,7 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 	//add Error Message
 	ss << ": ";
 	ss << error_status.get_message();
-	ss << "\r\n";
+	ss << utils::kNewLine;
 	return ss.str();
 }
 
@@ -178,16 +208,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
-	std::stringstream ss;
-
-	ss << target.CreateNameWithHost() << " ";
-	ss << Command::kJoin.get_name() << " :";
-	ss << channel.get_name() << "\r\n";
-	return ss.str();
-}
-
-std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
+std::string User::CreateJoinDetailMessage(const Channel& channel) const {
 	std::stringstream ss;
 	// topic
 	if (!channel.get_topic().empty())
@@ -195,19 +216,19 @@ std::string User::GenerateJoinDetailMessage(const Channel& channel) const {
 			<< 332 << " "
 			<< this->get_nick_name() << " "
 			<< channel.get_name() << " :"
-			<< channel.get_topic() << "\r\n";
+			<< channel.get_topic() << utils::kNewLine;
 	// メンバーリスト
 	ss << ":" << utils::kHostName << " ";
 	ss << 353 << " "
 		<< this->get_nick_name() << " = "
 		<< channel.get_name() << " :"
-		<< channel.GenerateMemberListWithNewUser(*this) << "\r\n";
+		<< channel.GenerateMemberListWithNewUser(*this) << utils::kNewLine;
 	// End of NAMES list
 	ss << ":" << utils::kHostName << " ";
 	ss << 366 << " "
 		<< this->get_nick_name() << " "
 		<< channel.get_name() << " :"
-		<< "End of /NAMES list." << "\r\n";
+		<< "End of /NAMES list." << utils::kNewLine;
 	return ss.str();
 }
 
@@ -222,10 +243,12 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	const std::string common_message = GenerateJoinCommonMessage(event.get_executer(), channel);
+	std::vector<std::string> messages;
+	messages.push_back(channel.get_name());
+	const std::string common_message = event.get_executer().CreateCommonMessage(event.get_command(), messages);
 	if (event.get_fd() == this->get_fd()) {
 		this->joining_channels_.push_back(&channel);
-		return OptionalMessage::Create(this->get_fd(), common_message + this->GenerateJoinDetailMessage(channel));
+		return OptionalMessage::Create(this->get_fd(), common_message + this->CreateJoinDetailMessage(channel));
 	}
 	if (this->joining_channels_.Contains(&channel))
 		return OptionalMessage::Create(this->get_fd(), common_message);
@@ -365,11 +388,55 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExModeCommand(const Event& event){
-	(void)event;
-	std::cout << "Mode method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
-	return OptionalMessage::Empty();
+OptionalMessage User::ExModeCommand(const Event& event) {
+	const int kKeyMaxLength = 32;
+	const std::vector<std::string>& params = event.get_command_params();
+
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		return OptionalMessage::Create(this->get_fd(),
+				User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (params.size() == 1) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		std::vector<std::string> messages = channel.RequestModeInfo(*this);
+		messages.insert(messages.begin(), channel.get_name());
+		return OptionalMessage::Create(this->get_fd(),
+				this->CreateReplyMessage(ResponseStatus::RPL_CHANNELMODEIS.get_code(), messages));
+	}
+	if (!channel.ContainsUser(*this))
+		return OptionalMessage::Empty();
+	const Mode mode = Mode::Analyze(params[1]);
+	std::vector<std::string> messages;
+	messages.push_back(channel.get_name());
+	messages.push_back(mode.ToString());
+	switch (mode.get_mode()) {
+	case 'i':
+	case 't':
+		break ;
+	case 'o':
+		messages.push_back(params[2]);
+		break ;
+	case 'k':
+		messages.push_back(params[2].substr(0, kKeyMaxLength));
+		break ;
+	case 'l':
+		if (mode.is_plus()) {
+			std::stringstream ss;
+			ss << utils::Stoi(params[2]);
+			messages.push_back(ss.str());
+		}
+		break ;
+	default:
+		break ;
+	}
+	return OptionalMessage::Create(this->get_fd(),
+			event.get_executer().CreateCommonMessage(event.get_command(), messages));
 }
 
 OptionalMessage User::ExQuitCommand(const Event& event){
@@ -389,10 +456,8 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 				context_message = "client dies and EOF occurs on socket";
 			else if (event.get_command_params().empty())
 				context_message = "client quit";
-			else {
-				std::vector<std::string> params = event.get_command_params();
-				context_message = utils::Join(params.begin(), params.end(), " ");
-			}
+			else
+				context_message = event.get_command_params()[0];
 			return OptionalMessage::Create(this->fd_, prefix_message + context_message + "\r\n");
 		}
 	}
@@ -424,16 +489,14 @@ void User::CkNickCommand(Event& event) const
 }
 
 void User::CkUserCommand(Event& event) const {
-	if (event.get_fd() != this->get_fd()
-			|| event.HasErrorOccurred())
+	if (event.get_fd() != this->get_fd())
 		return ;
 	if (!this->user_name_.empty())
 		event.set_error_status(ErrorStatus::ERR_ALREADYREGISTRED);
 }
 
 void User::CkJoinCommand(Event& event) const {
-	if (event.get_fd() != this->get_fd()
-			|| event.HasErrorOccurred())
+	if (event.get_fd() != this->get_fd())
 		return ;
 	if (this->joining_channels_.size() >= Channel::kMaxJoiningChannels) {
 		event.set_error_status(ErrorStatus::ERR_TOOMANYCHANNELS);
@@ -463,14 +526,16 @@ void User::CkPrivmsgCommand(Event& event) const
 {
 	if (event.get_command_params()[0] != this->get_nick_name())
 		return ;
-	event.add_target_num();
+	event.IncreaseUserCount();
 }
 
-void User::CkModeCommand(Event& event) const
-{
-	(void)event;
-	std::cout << "Check Mode called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void User::CkModeCommand(Event& event) const {
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() <= 1)
+		return ;
+	const Mode mode = Mode::Analyze(params[1]);
+	if (mode.get_mode() == 'o' && params[2] == this->nick_name_)
+		event.IncreaseUserCount();
 }
 
 void User::CkQuitCommand(Event& event) const
@@ -496,8 +561,7 @@ bool User::is_displayed_welcome(void) const {
 	return is_displayed_welcome_;
 }
 
-int User::get_fd() const
-{
+int User::get_fd() const {
 	return fd_;
 }
 
@@ -526,7 +590,7 @@ std::string User::CreateNameWithHost() const {
 	return ss.str();
 }
 
-bool User::IsVerified() const
+bool	User::IsVerified() const
 {
 	if (!this->is_password_authenticated_
 		|| this->nick_name_.empty()

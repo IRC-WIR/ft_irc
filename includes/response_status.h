@@ -8,7 +8,8 @@ class ResponseStatus {
         static const ResponseStatus
             RPL_WELCOME,
             RPL_NOTOPIC,
-            RPL_TOPIC
+            RPL_TOPIC,
+            RPL_CHANNELMODEIS
             ;
 
         int get_code(void) const;

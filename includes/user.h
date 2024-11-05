@@ -47,6 +47,10 @@ class User : public EventListener, public EventConfigurator {
 		bool is_displayed_welcome_;
 		bool IsTarget(const std::string& target, const Event& event) const;
 
+		std::string CreateJoinDetailMessage(const Channel&) const;
+		std::string CreateCommonMessage(const Command&, const std::vector<std::string>&) const;
+		std::string CreateReplyMessage(int, const std::vector<std::string>&) const;
+
 		//check command
 		void CkPassCommand(Event& event) const;
 		void CkNickCommand(Event& event) const;
