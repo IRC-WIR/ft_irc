@@ -115,10 +115,6 @@ const std::string& Channel::get_name() const {
 	return this->name_;
 }
 
-const utils::MyVector<const User*>& Channel::get_members(void) const {
-	return members_ ;
-}
-
 std::string Channel::GenerateMemberListWithNewUser(const User& new_user) const {
 	std::string ret = this->GenerateMemberList();
 	if (this->ContainsUser(new_user))
@@ -339,12 +335,12 @@ void Channel::CkPrivmsgCommand(Event*& event) const {
 	if (event->get_command_params()[0] != this->get_name())
 		return ;
 	//チャンネルイベントを作成する
-	
+
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
 	//チームメンバーか否か
-	const User* member_excuter = SearchByFD(this->get_members(), event->get_fd());
+	const User* member_excuter = SearchByFD(this->members_, event->get_fd());
 	const User* operator_excuter = SearchByFD(this->operators_, event->get_fd());
 	if (!member_excuter && !operator_excuter) {
 		event->set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);

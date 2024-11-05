@@ -20,7 +20,6 @@ class Event {
 		void	set_command(const Command& command);
 		void	set_command_params(const std::vector<std::string>& commmand_params);
 		void	set_error_status(const ErrorStatus&);
-		void	ResetErrorStatus();
 		bool	HasErrorOccurred(void) const;
 		virtual bool IsChannelEvent(void) const;
 		void set_executer(const User&);

@@ -251,7 +251,8 @@ static bool IsRPL(const Event& event) {
 	return event.get_command_params().size() == 1;
 }
 
-std::string User::CreateTopicRplMessage(const Channel& channel, bool has_topic) const {
+std::string User::CreateTopicRplMessage(const Channel& channel) const {
+	bool has_topic = !channel.get_topic().empty();
 	std::stringstream ss;
 	ss << ":";
 	ss << utils::kHostName;
@@ -305,7 +306,7 @@ OptionalMessage User::ExTopicCommand(const Event& event) {
 	//topic <target>
 	if (IsRPL(event)) {
 		const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-		bool has_topic = !channel.get_topic().empty();
+
 		const std::string& rpl_msg = CreateTopicRplMessage(channel, has_topic);
 		return OptionalMessage::Create(event.get_fd(), rpl_msg);
 	}

@@ -34,7 +34,6 @@ class Channel: public EventListener, public EventConfigurator {
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
-		const utils::MyVector<const User*>& get_members(void) const;
 		std::string GenerateMemberList(void) const;
 		std::string GenerateMemberListWithNewUser(const User&) const;
 
