@@ -36,6 +36,8 @@ void Database::CheckEvent(Event*& event) const {
 			return ;
 	}
 	this->AfterCheck(*event);
+	if (event->HasErrorOccurred())
+			return ;
 }
 
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
@@ -108,10 +110,7 @@ void Database::AfterCheck(Event& event) const {
 		return ;
 	}
 	if (event.get_command() == Command::kTopic) {
-		//topic <target>
-		if (event.IsChannelEvent() && event.get_command_params().size() == 1)
-			return ;
-		if (!event.HasErrorOccurred() && !event.IsChannelEvent()) {
+		if (!event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}

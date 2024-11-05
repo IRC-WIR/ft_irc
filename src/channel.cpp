@@ -317,7 +317,7 @@ void Channel::CkTopicCommand(Event*& event) const {
 		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 		return ;
 	}
-	if (this->mode_map_('t') && SearchByFD(members_, event->get_fd())) {
+	if (this->mode_map_('t') && SearchByFD(operators_, event->get_fd()) == NULL) {
 		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
@@ -327,7 +327,6 @@ void Channel::CkPrivmsgCommand(Event*& event) const {
 	if (event->get_command_params()[0] != this->get_name())
 		return ;
 	//チャンネルイベントを作成する
-
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
