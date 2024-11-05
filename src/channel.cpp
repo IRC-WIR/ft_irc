@@ -313,7 +313,7 @@ void Channel::CkTopicCommand(Event*& event) const {
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
-	if (!(SearchByFD(operators_, event->get_fd()) || SearchByFD(members_, event->get_fd()))) {
+	if (SearchByFD(operators_, event->get_fd()) == NULL && SearchByFD(members_, event->get_fd()) == NULL) {
 		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 		return ;
 	}
