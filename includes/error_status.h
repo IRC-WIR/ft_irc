@@ -1,5 +1,5 @@
-#ifndef error_status_H_
- #define error_status_H_
+#ifndef ERROR_STATUS_H_
+ #define ERROR_STATUS_H_
 
 #include "response_status.h"
 
