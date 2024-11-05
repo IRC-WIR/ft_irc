@@ -41,7 +41,6 @@ class EventHandler{
 		void				HandlePollInEvent(pollfd entry);
 		void				HandlePollOutEvent(pollfd entry);
 		void				HandlePollHupEvent(pollfd entry);
-		void				CheckChannelTarget(Event& event);
 		void				ExecuteCommand(Event*& event);
 		void				AddNewChannel(Event*&);
 
