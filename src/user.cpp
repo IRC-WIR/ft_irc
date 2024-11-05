@@ -512,6 +512,8 @@ bool User::IsTarget(const std::string& target, const Event& event) const
 	if (target == this->get_nick_name())
 		return true;
 	if (event.IsChannelEvent()) {
+		if (event.get_fd() == this->get_fd())
+			return false;
 		const ChannelEvent& channel_event = dynamic_cast<const ChannelEvent&>(event);
 		return channel_event.get_channel().ContainsUser(*this);
 	}
