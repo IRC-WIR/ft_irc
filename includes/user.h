@@ -17,15 +17,13 @@ class User : public EventListener, public EventConfigurator {
 
 		void CheckCommand(Event*& event) const;
 		OptionalMessage ExecuteCommand(const Event& event);
-
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
-		bool IsTarget(const std::string& target, const Event& event) const;
-		void set_is_password_authenticated(bool is_authenticated);
+		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
 		void set_displayed_welcome(bool is_verified);
 		bool is_displayed_welcome(void) const;
-
+		bool IsTarget(const std::string& target, const Event& event) const;
 		int get_fd(void) const;
 		bool get_is_delete(void) const;
 		const std::string& get_nick_name(void) const;
@@ -46,7 +44,7 @@ class User : public EventListener, public EventConfigurator {
 		std::string GenerateJoinDetailMessage(const Channel&) const;
 		std::string CreateMessage(const std::string& to, const Command& cmd, const std::vector<std::string>& params) const;
 		std::string CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const;
-		std::string CreateTopicRplMessage(const Channel& channel, const ErrorStatus& err_status) const;
+		std::string CreateTopicRplMessage(const Channel& channel, bool has_topic) const;
 		bool is_displayed_welcome_;
 
 		//check command

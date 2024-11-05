@@ -1,10 +1,8 @@
 #include "error_status.h"
 
 const ErrorStatus
-    ErrorStatus::RPL_NOTOPIC(331, "No topic is set."),
-    ErrorStatus::RPL_TOPIC(332, ""),
     ErrorStatus::ERR_NOSUCHNICK(401, "No such nick"),
-    ErrorStatus::ERR_NOSUCHCHANNEL(403, "No such channel"),
+	ErrorStatus::ERR_NOSUCHCHANNEL(403, "No such channel"),
     ErrorStatus::ERR_CANNOTSENDTOCHAN(404, "Cannot send to channel"),
     ErrorStatus::ERR_TOOMANYCHANNELS(405, "You have joined too many channels"),
     ErrorStatus::ERR_NOTEXTTOSEND(412, "No text to send"),

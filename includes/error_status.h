@@ -1,13 +1,11 @@
-#ifndef ERROR_STATUS_H_
- #define ERROR_STATUS_H_
+#ifndef error_status_H_
+ #define error_status_H_
 
 #include "response_status.h"
 
 class ErrorStatus : public ResponseStatus {
     public:
         static const ErrorStatus
-            RPL_NOTOPIC,
-            RPL_TOPIC,
             ERR_NOSUCHNICK,
             ERR_NOSUCHCHANNEL,
             ERR_CANNOTSENDTOCHAN,

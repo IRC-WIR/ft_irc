@@ -30,15 +30,11 @@ void Database::CheckEvent(Event*& event) const {
 	if (event->HasErrorOccurred())
 		return ;
 	std::size_t vector_length = check_element_.size();
-
 	for (std::size_t i = 0; i < vector_length; i++) {
 		check_element_[i] -> CheckCommand(event);
 		if (event->HasErrorOccurred())
 			return ;
 	}
-
-	if (event->HasErrorOccurred())
-		return ;
 	this->AfterCheck(*event);
 }
 
@@ -107,52 +103,21 @@ void Database::AfterCheck(Event& event) const {
 			if (channel.ContainsUser(event.get_executer())
 					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status()))) {
 						event.set_do_nothing(true);
-						return ;
 					}
 		}
 		return ;
 	}
 	if (event.get_command() == Command::kTopic) {
-		if (event.IsChannelEvent()) {
-			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-			if (!channel.ContainsUser(event.get_executer())) {
-				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
-				return ;
-			}
-			if (channel.IsMode('t') && channel.get_members_().Contains(&event.get_executer())) {
-				event.set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
-				return ;
-			}
-		}
-		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
+		//topic <target>
+		if (event.IsChannelEvent() && event.get_command_params().size() == 1)
+			return ;
+		if (!event.HasErrorOccurred() && !event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
 		return ;
 	}
-	if (event.get_command() == Command::kPrivmsg) {
-		if (!event.get_executer().IsVerified())
-			event.set_do_nothing(true);
-		if (event.IsChannelEvent()) {
-			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-			if (!channel.ContainsUser(event.get_executer())) {
-				event.set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
-				return ;
-			}
-		}
-		if (!event.HasErrorOccurred() && event.get_target_num() == 0) {
-			if (*event.get_command_params()[0].c_str() == '#') {
-				event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
-				return ;
-			}
-			event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
-			return ;
-		}
-		return ;
-	}
 }
-
-
 
 //Check
 void Database::CkPassCommand(Event& event) const {
@@ -240,20 +205,12 @@ void Database::CkKickCommand(Event& event) const {
 
 void Database::CkTopicCommand(Event& event) const {
 	const int kParamsSize = 1;
-	const int kNameMaxLength = 50;
-	const char kStartChar = '#';
 
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() < kParamsSize) {
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 		return ;
 	}
-	const std::string& channel_name = params[0];
-	if (channel_name.empty() || channel_name[0] != kStartChar || channel_name.length() > kNameMaxLength) {
-		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
-		return ;
-	}
-
 }
 
 void Database::CkPrivmsgCommand(Event& event) const {
