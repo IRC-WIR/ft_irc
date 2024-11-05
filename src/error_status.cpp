@@ -21,31 +21,11 @@ const ErrorStatus
     ErrorStatus::ERR_CHANOPRIVSNEEDED(482, "You do not have access to change the topic on this channel")
     ;
 
-// 呼ばれない
-ErrorStatus::ErrorStatus() : code_(0), message_("") {
-    return ;
+ErrorStatus::ErrorStatus() : ResponseStatus() {
 }
 
-ErrorStatus::ErrorStatus(int code, const std::string& message) : code_(code), message_(message) {
-    return ;
+ErrorStatus::ErrorStatus(int code, const std::string& message) : ResponseStatus(code, message) {
 }
 
 ErrorStatus::~ErrorStatus() {
-    return ;
-}
-
-const std::string& ErrorStatus::get_error_message() const {
-    return this->message_;
-}
-
-int ErrorStatus::get_error_code() const {
-    return this->code_;
-}
-
-bool operator ==(const ErrorStatus& status1, const ErrorStatus& status2) {
-    return (&status1 == &status2);
-}
-
-bool operator !=(const ErrorStatus& status1, const ErrorStatus& status2) {
-    return !(status1 == status2);
 }

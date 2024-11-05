@@ -1,25 +1,23 @@
 #include "utils.h"
 #include <iterator> // for std::back_inserter
+#include "user.h"
 
 namespace utils {
 
 void CheckPort(std::string num_str) {
-	for (int i = 0; i < (int)num_str.length(); i++)
-	{
-		if (!isdigit(num_str[i]))
-		{
+	for (int i = 0; i < (int)num_str.length(); i++) {
+		if (!isdigit(num_str[i])) {
 			//数字で構成されていない例外を投げる
 			throw (UtilsException(kNotDigitalNumber));
 		}
-	};
+	}
 }
 
 void CheckPassword(std::string password) {
 	//printable ASCII code 33~126, at least 8 characters
 	const char* input_chr_ptr = password.c_str();
 	int i = 0;
-	while (*input_chr_ptr)
-	{
+	while (*input_chr_ptr) {
 		if (*input_chr_ptr < 33 || *input_chr_ptr > 126)
 			throw(UtilsException(kNotPrintableAscii));
 		input_chr_ptr ++;
@@ -54,8 +52,7 @@ void PrintStringVector(const std::vector<std::string>& str_vec) {
 	int i = 0;
 	for (std::vector<std::string>::const_iterator it = str_vec.begin();
 		it != str_vec.end();
-		it ++)
-	{
+		it ++) {
 		std::cout << "i: " << i << ", size: " << it->size();
 		std::cout << ", \"" << *it << "\"" << std::endl;
 		i ++;
@@ -82,8 +79,7 @@ bool IsAscii(char c) {
 
 bool IsAsciiStr(const std::string& str) {
 	std::string::const_iterator it = str.begin();
-	while (it != str.end())
-	{
+	while (it != str.end()) {
 		if (!IsAscii(*it))
 			return false;
 		it ++;
@@ -94,8 +90,7 @@ bool IsAsciiStr(const std::string& str) {
 
 void ConvertToUpper(std::string& str) {
 	std::string::iterator it = str.begin();
-	while (it != str.end())
-	{
+	while (it != str.end()) {
 		if ('a' <= *it && *it <= 'z')
 			*it = (*it) - ('a' - 'A');
 		it ++;
@@ -114,18 +109,28 @@ bool HasNewlines(const std::string& str) {
 	return true;
 }
 
-std::string GetWelcomeString() {
+std::string GetWelcomeString(const ResponseStatus& res_status, const User& user) {
 	std::fstream s;
+
 	s.open(kFilePath.c_str(), std::ios::in);
 	if (!s.is_open()) {
 		std::cerr << "Could not open file : " << kFilePath << std::endl;
 		return "";
 	}
-	std::stringstream ret_ss;
+	std::stringstream ss;
+	//add server
+	ss << ":" << kHostName;
+	ss << " ";
+	//add RPL code
+	ss << res_status.RPL_WELCOME.get_code();
+	ss << " ";
+	//add message from motd file
 	for (std::string line; std::getline(s, line); ) {
-		ret_ss << line << kNewLine;
+		ss << line << kNewLine;
 	}
-	return ret_ss.str();
+	//add nick!user@host
+	ss << user.CreateNameWithHost() << kNewLine;
+	return ss.str();
 }
 
 std::string StrToLower(const std::string& str) {

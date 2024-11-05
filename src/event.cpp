@@ -6,12 +6,14 @@ const std::string Event::NoExecuterException::kMessage = "there is no executer."
 const std::string Event::AlreadySetException::kMessage = "already exists executer.";
 
 Event::Event(int fd, int event_type)
-		: fd_(fd), event_type_(event_type), error_status_(NULL), executer_(NULL), target_num_(0) {
+		: fd_(fd), event_type_(event_type), command_(&Command::kNotFound),
+		error_status_(NULL), executer_(NULL) {
 	return ;
 }
 
 Event::Event(const Event& src)
-		: fd_(src.get_fd()), event_type_(src.get_event_type()), error_status_(src.error_status_), executer_(src.executer_) {
+		: fd_(src.get_fd()), event_type_(src.get_event_type()), command_(&src.get_command()),
+		error_status_(src.error_status_), executer_(src.executer_) {
 	this->set_command(src.get_command());
 	this->set_command_params(src.get_command_params());
 	this->set_do_nothing(src.is_do_nothing());
@@ -29,8 +31,8 @@ int Event::get_event_type() const {
 	return event_type_;
 }
 
-message::Command Event::get_command() const {
-	return command_;
+const Command& Event::get_command() const {
+	return *command_;
 }
 
 const std::vector<std::string>& Event::get_command_params() const {
@@ -43,8 +45,8 @@ const ErrorStatus& Event::get_error_status() const {
 	return *this->error_status_;
 }
 
-void Event::set_command(message::Command command) {
-	command_ = command;
+void Event::set_command(const Command& command) {
+	this->command_ = &command;
 }
 
 void Event::set_command_params(const std::vector<std::string>& commmand_params) {

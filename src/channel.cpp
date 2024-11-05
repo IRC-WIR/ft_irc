@@ -6,6 +6,22 @@
 template <typename T, typename U>
 const std::string Channel::MyMap<T, U>::kErrMsg("not found the key");
 
+static const User* SearchByNick(const utils::MyVector<const User*>& vector, const std::string& nick_name) {
+	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+		if (utils::StrToLower((*it)->get_nick_name()) == utils::StrToLower(nick_name))
+			return *it;
+	}
+	return NULL;
+}
+
+// static const User* SearchByFD(const utils::MyVector<const User*>& vector, int fd) {
+// 	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
+// 		if ((*it)->get_fd() == fd)
+// 			return *it;
+// 	}
+// 	return NULL;
+// }
+
 Channel::Channel(const User& op, const std::string& name)
 		: name_(name) {
 	this->operators_.push_back(&op);
@@ -37,14 +53,6 @@ bool Channel::RemoveUser(const User& user) {
 		return true;
 	}
 	return false;
-}
-
-static const User* SearchByNick(const utils::MyVector<const User*>& vector, const std::string& nick_name) {
-	for (utils::MyVector<const User*>::const_iterator it = vector.begin(); it != vector.end(); ++it) {
-		if (utils::StrToLower((*it)->get_nick_name()) == utils::StrToLower(nick_name))
-			return *it;
-	}
-	return NULL;
 }
 
 bool Channel::RemoveUserByNick(const std::string& nick_name) {
@@ -135,62 +143,57 @@ std::string Channel::GenerateMemberList() const {
 }
 
 void Channel::CheckCommand(Event*& event) const {
-	switch (event->get_command()) {
-		case message::kPass:
-			CkPassCommand(*event);
-			break;
-		case message::kNick:
-			CkNickCommand(*event);
-			break;
-		case message::kUser:
-			CkUserCommand(*event);
-			break;
-		case message::kJoin:
-			CkJoinCommand(event);
-			break;
-		case message::kInvite:
-			CkInviteCommand(*event);
-			break;
-		case message::kKick:
-			CkKickCommand(*event);
-			break;
-		case message::kTopic:
-			CkTopicCommand(event);
-			break;
-		case message::kMode:
-			CkModeCommand(*event);
-			break;
-		case message::kPrivmsg:
-			CkPrivmsgCommand(event);
-			break;
-		default:
-			return;
-	}
+	const Command& command = event->get_command();
+
+	if (command == Command::kPass)
+		CkPassCommand(*event);
+	else if (command == Command::kNick)
+		CkNickCommand(*event);
+	else if (command == Command::kUser)
+		CkUserCommand(*event);
+	else if (command == Command::kJoin)
+		CkJoinCommand(event);
+	else if (command == Command::kInvite)
+		CkInviteCommand(*event);
+	else if (command == Command::kKick)
+		CkKickCommand(*event);
+	else if (command == Command::kTopic)
+		CkTopicCommand(event);
+	else if (command == Command::kMode)
+		CkModeCommand(*event);
+	else if (command == Command::kPrivmsg)
+		CkPrivmsgCommand(event);
+	else if (command == Command::kQuit)
+		CkQuitCommand(*event);
+
 }
 
 OptionalMessage Channel::ExecuteCommand(const Event& event) {
-	switch (event.get_command()) {
-		case message::kPass:
-			return ExPassCommand(event);
-		case message::kNick:
-			return ExNickCommand(event);
-		case message::kUser:
-			return ExUserCommand(event);
-		case message::kJoin:
-			return ExJoinCommand(event);
-		case message::kInvite:
-			return ExInviteCommand(event);
-		case message::kKick:
-			return ExKickCommand(event);
-		case message::kTopic:
-			return ExTopicCommand(event);
-		case message::kMode:
-			return ExModeCommand(event);
-		case message::kPrivmsg:
-			return ExPrivmsgCommand(event);
-		default:
-			return OptionalMessage::Empty();
-	}
+	const Command& command = event.get_command();
+
+	if (command == Command::kPass)
+		return ExPassCommand(event);
+	else if (command == Command::kNick)
+		return ExNickCommand(event);
+	else if (command == Command::kUser)
+		return ExUserCommand(event);
+	else if (command == Command::kJoin)
+		return ExJoinCommand(event);
+	else if (command == Command::kInvite)
+		return ExInviteCommand(event);
+	else if (command == Command::kKick)
+		return ExKickCommand(event);
+	else if (command == Command::kTopic)
+		return ExTopicCommand(event);
+	else if (command == Command::kMode)
+		return ExModeCommand(event);
+	else if (command == Command::kPrivmsg)
+		return ExPrivmsgCommand(event);
+	else if (command == Command::kQuit)
+		return ExQuitCommand(event);
+	else
+		return OptionalMessage::Empty();
+
 }
 
 bool Channel::IsFinished() const {
@@ -260,6 +263,11 @@ OptionalMessage Channel::ExModeCommand(const Event& event) {
 
 OptionalMessage Channel::ExPrivmsgCommand(const Event& event) {
 	(void)event;
+	return OptionalMessage::Empty();
+}
+OptionalMessage Channel::ExQuitCommand(const Event& event){
+
+	RemoveUser(event.get_executer());
 	return OptionalMessage::Empty();
 }
 //Execute
@@ -346,4 +354,8 @@ void Channel::CkModeCommand(Event& event) const {
 	std::cout << "Check Mode called!" << std::endl;
 	utils::PrintStringVector(event.get_command_params());
 }
-//check
+
+void Channel::CkQuitCommand(Event& event) const {
+	(void)event;
+	return ;
+}

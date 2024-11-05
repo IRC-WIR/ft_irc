@@ -1,9 +1,9 @@
 #ifndef ERROR_STATUS_H_
-# define ERROR_STATUS_H_
+ #define ERROR_STATUS_H_
 
-# include <string>
+#include "response_status.h"
 
-class ErrorStatus {
+class ErrorStatus : public ResponseStatus {
     public:
         static const ErrorStatus
             RPL_NOTOPIC,
@@ -26,19 +26,11 @@ class ErrorStatus {
             ERR_CHANOPRIVSNEEDED
             ;
 
-        const std::string& get_error_message(void) const;
-        int get_error_code(void) const;
+	private:
+		ErrorStatus(void);
+		ErrorStatus(int, const std::string&);
+		~ErrorStatus();
 
-    private:
-        const int code_;
-        const std::string message_;
-
-        ErrorStatus(void);
-        ErrorStatus(int, const std::string&);
-        ~ErrorStatus();
 };
-
-bool operator ==(const ErrorStatus&, const ErrorStatus&);
-bool operator !=(const ErrorStatus&, const ErrorStatus&);
 
 #endif
