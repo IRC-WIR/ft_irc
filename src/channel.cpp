@@ -156,7 +156,7 @@ void Channel::CheckCommand(Event*& event) const {
 	else if (command == Command::kInvite)
 		CkInviteCommand(*event);
 	else if (command == Command::kKick)
-		CkKickCommand(*event);
+		CkKickCommand(event);
 	else if (command == Command::kTopic)
 		CkTopicCommand(event);
 	else if (command == Command::kMode)
@@ -230,8 +230,13 @@ OptionalMessage Channel::ExInviteCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
+//Parameters: <channel> <user> [<comment>]
 OptionalMessage Channel::ExKickCommand(const Event& event) {
-	(void)event;
+	if (event.HasErrorOccurred() || !event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this == &channel)
+		this->RemoveUserByNick(event.get_command_params()[1]);
 	return OptionalMessage::Empty();
 }
 
@@ -310,10 +315,30 @@ void Channel::CkInviteCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkKickCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Kick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+//Parameters: <channel> <user> [<comment>]
+void Channel::CkKickCommand(Event*& event) const {
+
+	if (event->HasErrorOccurred())
+		return ;
+	if (event->get_command_params()[0] != this->name_)
+		return ;
+
+	//ターゲットがチャンネルメンバか否か
+	if (!this->ContainsUserByNick(event->get_command_params()[1]))
+		event->set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
+
+	const User* executer = SearchByFD(this->members_, event->get_fd());
+	//実行者がチャンネルメンバか否か
+	if (executer == NULL)
+		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+	//実行者がチャンネルオペレータか否か
+	else if (!this->IsOperator(*executer))
+		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+	return ;
 }
 
 void Channel::CkTopicCommand(Event*& event) const {
@@ -339,7 +364,7 @@ void Channel::CkPrivmsgCommand(Event*& event) const {
 	if (event->get_command_params()[0] != this->get_name())
 		return ;
 	//チャンネルイベントを作成する
-	
+
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;

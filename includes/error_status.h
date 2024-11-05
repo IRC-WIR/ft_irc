@@ -14,6 +14,7 @@ class ErrorStatus : public ResponseStatus {
             ERR_NONICKNAMEGIVEN,
             ERR_ERRONEUSNICKNAME,
             ERR_NICKNAMEINUSE,
+			ERR_USERNOTINCHANNEL,
             ERR_NOTONCHANNEL,
             ERR_NEEDMOREPARAMS,
             ERR_ALREADYREGISTRED,
