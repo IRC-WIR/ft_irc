@@ -332,9 +332,7 @@ void Channel::CkPrivmsgCommand(Event*& event) const {
 	delete event;
 	event = channel_event;
 	//チームメンバーか否か
-	const User* member_excuter = SearchByFD(this->members_, event->get_fd());
-	const User* operator_excuter = SearchByFD(this->operators_, event->get_fd());
-	if (!member_excuter && !operator_excuter) {
+	if (SearchByFD(this->members_, event->get_fd()) == NULL && SearchByFD(this->operators_, event->get_fd()) == NULL) {
 		event->set_error_status(ErrorStatus::ERR_CANNOTSENDTOCHAN);
 		return ;
 	}
