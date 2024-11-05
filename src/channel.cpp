@@ -326,7 +326,7 @@ void Channel::CkTopicCommand(Event*& event) const {
 		return ;
 	}
 	if (this->mode_map_('t') && SearchByFD(members_, event->get_fd())) {
-		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
+		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
 }

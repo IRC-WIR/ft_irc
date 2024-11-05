@@ -306,8 +306,7 @@ OptionalMessage User::ExTopicCommand(const Event& event) {
 	//topic <target>
 	if (IsRPL(event)) {
 		const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-
-		const std::string& rpl_msg = CreateTopicRplMessage(channel, has_topic);
+		const std::string& rpl_msg = CreateTopicRplMessage(channel);
 		return OptionalMessage::Create(event.get_fd(), rpl_msg);
 	}
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
