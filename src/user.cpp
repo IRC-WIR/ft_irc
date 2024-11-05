@@ -305,6 +305,8 @@ OptionalMessage User::ExTopicCommand(const Event& event) {
 		return OptionalMessage::Empty();
 	//topic <target>
 	if (IsRPL(event)) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
 		const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 		const std::string& rpl_msg = CreateTopicRplMessage(channel);
 		return OptionalMessage::Create(event.get_fd(), rpl_msg);
@@ -512,6 +514,8 @@ bool User::IsTarget(const std::string& target, const Event& event) const
 	if (target == this->get_nick_name())
 		return true;
 	if (event.IsChannelEvent()) {
+		if (event.get_fd() == this->get_fd())
+			return false;
 		const ChannelEvent& channel_event = dynamic_cast<const ChannelEvent&>(event);
 		return channel_event.get_channel().ContainsUser(*this);
 	}
