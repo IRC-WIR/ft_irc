@@ -85,7 +85,7 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 	ss << cmd.get_name();
 	ss << " ";
 	//add Error Message
-	ss << ": ";
+	ss << ":";
 	ss << error_status.get_message();
 	ss << "\r\n";
 	return ss.str();
