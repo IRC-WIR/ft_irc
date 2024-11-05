@@ -313,7 +313,7 @@ OptionalMessage User::ExTopicCommand(const Event& event) {
 	}
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	const std::string common_message = GenerateTopicMessage(event.get_executer(), channel, event);
-	if (this->joining_channels_.Contains(&channel))
+	if (channel.ContainsUser(*this))
 		return OptionalMessage::Create(this->get_fd(), common_message);
 	else
 		return OptionalMessage::Empty();
