@@ -237,7 +237,8 @@ OptionalMessage Channel::ExTopicCommand(const Event& event) {
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	if (this == &channel) {
 		std::vector<std::string> params = event.get_command_params();
-		this->set_topic(utils::Join(params.begin() + 1, params.end(), " "));
+		if (params.size() > 1)
+			this->set_topic(utils::Join(params.begin() + 1, params.end(), " "));
 	}
 	return OptionalMessage::Empty();
 }

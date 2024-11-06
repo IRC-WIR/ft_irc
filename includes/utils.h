@@ -38,8 +38,7 @@ namespace utils {
 		std::ostringstream os;
 		std::copy(begin, end, std::ostream_iterator<std::string>(os, delim.c_str()));
 		std::string ret = os.str();
-		if (ret.find(ret.length() - delim.length()) != ret.npos)
-			ret.erase(ret.length() - delim.length());
+		ret.erase(ret.length() - delim.length());
 		return ret;
 	}
 
