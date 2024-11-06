@@ -102,7 +102,6 @@ static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
 }
 
 void Database::AfterCheck(Event& event) const {
-	// 別ブランチで修正
 	if (event.get_command() == Command::kJoin) {
 		if (event.IsChannelEvent()) {
 			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
@@ -112,7 +111,6 @@ void Database::AfterCheck(Event& event) const {
 		}
 		return ;
 	}
-	// 別ブランチで修正 ここまで
 	if (event.get_command() == Command::kMode) {
 		if (!event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);

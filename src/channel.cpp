@@ -378,8 +378,6 @@ void Channel::CkPrivmsgCommand(Event& event) const {
 }
 
 void Channel::CkModeCommand(Event*& event) const {
-	if (event->HasErrorOccurred())
-		return ;
 	const std::vector<std::string>& params = event->get_command_params();
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
