@@ -260,8 +260,10 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	//成功
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	const std::string& target_name = event.get_command_params()[1];
+	
 	//対象チャンネルに所属している場合
-	if (channel.ContainsUser(*this)) {
+	if (channel.ContainsUser(*this) 
+		|| utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
 		std::string base_message;
 		if (event.get_fd() == this->get_fd()) {
 			base_message = "Kick " + target_name + " from " + channel.get_name();
@@ -273,6 +275,9 @@ OptionalMessage User::ExKickCommand(const Event& event){
 		if (params.size() > 2)
 			optional_message = " using \"" + utils::Join(params.begin() + 2, params.end(), " ") + "\" as the reason(comment)";
 		return OptionalMessage::Create(this->get_fd(), base_message + optional_message + "\r\n");
+	}
+	if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
+		this->joining_channels_.Remove(&channel);
 	}
 	return OptionalMessage::Empty();
 }

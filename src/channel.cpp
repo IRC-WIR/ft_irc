@@ -367,19 +367,20 @@ void Channel::CkInviteCommand(Event& event) const {
 //Parameters: <channel> <user> [<comment>]
 void Channel::CkKickCommand(Event*& event) const {
 
-	if (event->get_command_params()[0] != this->name_)
+	if (utils::StrToLower(event->get_command_params()[0]) != utils::StrToLower(this->name_))
 		return ;
 
 	//ターゲットがチャンネルメンバか否か
 	if (!this->ContainsUserByNick(event->get_command_params()[1]))
 		event->set_error_status(ErrorStatus::ERR_USERNOTINCHANNEL);
 
-	const User* executer = SearchByFD(this->members_, event->get_fd());
+	const User* member_executer = SearchByFD(this->members_, event->get_fd());
+	const User* operator_executer = SearchByFD(this->operators_, event->get_fd());
 	//実行者がチャンネルメンバか否か
-	if (executer == NULL)
+	if (member_executer == NULL && operator_executer == NULL)
 		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 	//実行者がチャンネルオペレータか否か
-	else if (!this->IsOperator(*executer))
+	else if (operator_executer == NULL)
 		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
 
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
