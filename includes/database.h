@@ -25,7 +25,7 @@ class Database {
 		Database();
 		std::vector<EventConfigurator*> check_element_;
 		std::vector<EventListener*> execute_element_;
-		const std::string& server_password_;
+		const std::string server_password_;
 
 		void CheckCommandAndParams(Event& event) const;
 		void AfterCheck(Event&) const;

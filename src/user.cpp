@@ -170,17 +170,18 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
-		return OptionalMessage::Create(this->get_fd(), message);
+		return OptionalMessage::Create(this->get_fd(),
+				User::CreateErrorMessage(event.get_command(), event.get_error_status()));
 	}
 
 	const std::vector<std::string>& params = event.get_command_params();
 	// 今回は1,2番目の要素(= 2, 3番目の引数)は無視する
 	this->user_name_ = params[0];
 	this->real_name_ = utils::Join(params.begin() + 2, params.end(), " ");
-	if (IsVerified() && !this->is_displayed_welcome()) {
-		set_displayed_welcome(true);
-		return OptionalMessage::Create(get_fd(), utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, event.get_executer()));
+	if (this->IsVerified() && !this->is_displayed_welcome()) {
+		this->set_displayed_welcome(true);
+		return OptionalMessage::Create(this->get_fd(),
+				utils::GetWelcomeString(ResponseStatus::RPL_WELCOME, *this));
 	}
 	return OptionalMessage::Empty();
 }
