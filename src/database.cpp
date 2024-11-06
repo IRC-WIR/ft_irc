@@ -35,9 +35,9 @@ void Database::CheckEvent(Event*& event) const {
 		if (event->HasErrorOccurred())
 			return ;
 	}
-	this->AfterCheck(*event);
 	if (event->HasErrorOccurred())
 			return ;
+	this->AfterCheck(*event);
 }
 
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
