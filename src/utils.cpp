@@ -30,7 +30,8 @@ void CheckPassword(std::string password) {
 
 int Stoi(std::string num_str) {
 	std::stringstream ss(num_str);
-	int num_int;	ss >> num_int;
+	int num_int;
+	ss >> num_int;
 	return (num_int);
 }
 
@@ -61,8 +62,8 @@ void PrintStringVector(const std::vector<std::string>& str_vec) {
 
 void EraseNewline(std::string& str) {
 	std::string::size_type pos;
-	while ((pos = str.find("\r\n")) != std::string::npos)
-		str.erase(pos, 2);
+	while ((pos = str.find(kNewLine)) != std::string::npos)
+		str.erase(pos, kNewLine.length());
 	while((pos = str.find('\n')) != std::string::npos)
 		str.erase(pos, 1);
 }
