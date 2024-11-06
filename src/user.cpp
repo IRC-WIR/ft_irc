@@ -104,12 +104,8 @@ std::string User::CreateMessage(const User& from, const std::string& target, con
 	ss << " ";
 	//add message
 	ss << ":";
-	//パラメータ１個目を飛ばす（ターゲットになるので）
-	for (std::vector<std::string>::const_iterator it = ++params.begin();
-		it != params.end();
-		it ++) {
-			ss << *it <<  " ";
-		}
+	//パラメータの１個目を飛ばして最後まで表示する
+	ss << utils::Join(params.begin() + 1, params.end(), " ");
 	ss << "\r\n";
 	return ss.str();
 }
@@ -135,7 +131,6 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 }
 
 OptionalMessage User::ExNickCommand(const Event& event){
-
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
@@ -288,7 +283,8 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 	ss << " ";
 	// channel topic name(get from event because channel topic setted is uncertain)
 	ss << ":";
-	ss << event.get_command_params()[1];
+	const std::vector<std::string>& params = event.get_command_params();
+	ss << utils::Join(params.begin() + 1, params.end(), " ");
 	ss << "\r\n";
 	return ss.str();
 }
