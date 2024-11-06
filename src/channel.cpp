@@ -1,7 +1,10 @@
 #include "channel.h"
 #include "channel_event.h"
 #include "utils.h"
+#include "mode.h"
 #include <algorithm>
+
+const std::string Channel::kHandlingModes = "itkol";
 
 template <typename T, typename U>
 const std::string Channel::MyMap<T, U>::kErrMsg("not found the key");
@@ -35,7 +38,8 @@ Channel::~Channel() {
 void Channel::InitModeMap() {
 	this->mode_map_.clear();
 	this->mode_map_['i'] = false;
-	this->mode_map_['t'] = false;
+	// tモードはデフォルトでtrueっぽい
+	this->mode_map_['t'] = true;
 	this->mode_map_['k'] = false;
 	this->mode_map_['l'] = false;
 }
@@ -134,6 +138,30 @@ std::string Channel::GenerateMemberList() const {
 	return ss.str();
 }
 
+std::vector<std::string> Channel::RequestModeInfo(const User& client) const {
+	std::vector<std::string> ret;
+	for (std::string::size_type i = 0; i < Channel::kHandlingModes.length(); i++) {
+		if (Channel::kHandlingModes[i] == 'o')
+			continue ;
+		if (this->mode_map_(Channel::kHandlingModes[i])) {
+			if (ret.empty())
+				ret.push_back("+");
+			ret[0] += Channel::kHandlingModes[i];
+			if (Channel::kHandlingModes[i] == 'k') {
+				if (this->ContainsUser(client))
+					ret.push_back(this->key_);
+				else
+					ret.push_back("<key>");
+			} else if (Channel::kHandlingModes[i] == 'l') {
+				std::stringstream ss;
+				ss << this->max_member_num_;
+				ret.push_back(ss.str());
+			}
+		}
+	}
+	return ret;
+}
+
 void Channel::CheckCommand(Event*& event) const {
 	const Command& command = event->get_command();
 
@@ -152,7 +180,7 @@ void Channel::CheckCommand(Event*& event) const {
 	else if (command == Command::kTopic)
 		CkTopicCommand(*event);
 	else if (command == Command::kMode)
-		CkModeCommand(*event);
+		CkModeCommand(event);
 	else if (command == Command::kPrivmsg)
 		CkPrivmsgCommand(*event);
 	else if (command == Command::kQuit)
@@ -235,7 +263,46 @@ OptionalMessage Channel::ExTopicCommand(const Event& event) {
 }
 
 OptionalMessage Channel::ExModeCommand(const Event& event) {
-	(void)event;
+	const int kKeyMaxLength = 32;
+
+	if (event.HasErrorOccurred()
+			|| !event.IsChannelEvent())
+		return OptionalMessage::Empty();
+
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (this != &channel)
+		return OptionalMessage::Empty();
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() <= 1)
+		return OptionalMessage::Empty();
+	const Mode mode = Mode::Analyze(params[1]);
+	if (mode.get_mode() != 'o')
+		this->mode_map_[mode.get_mode()] = mode.is_plus();
+	switch (mode.get_mode()) {
+	case 'i':
+	case 't':
+		break ;
+	case 'k':
+		if (mode.is_plus())
+			this->key_ = params[2].substr(0, kKeyMaxLength);
+		else
+			this->key_.clear();
+		break ;
+	case 'l':
+		if (mode.is_plus())
+			this->max_member_num_ = utils::Stoi(params[2]);
+		else
+			this->max_member_num_ = 0;
+		break ;
+	case 'o':
+		if (mode.is_plus())
+			this->GiveOperator(*SearchByNick(this->members_, params[2]));
+		else
+			this->TakeOperator(*SearchByNick(this->operators_, params[2]));
+		break ;
+	default:
+		break ;
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -270,7 +337,7 @@ void Channel::CkUserCommand(Event& event) const {
 void Channel::CkJoinCommand(Event*& event) const {
 	if (event->HasErrorOccurred())
 		return ;
-	const std::vector<std::string> params = event->get_command_params();
+	const std::vector<std::string>& params = event->get_command_params();
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
 
@@ -310,10 +377,52 @@ void Channel::CkPrivmsgCommand(Event& event) const {
 	utils::PrintStringVector(event.get_command_params());
 }
 
-void Channel::CkModeCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Mode called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void Channel::CkModeCommand(Event*& event) const {
+	const std::vector<std::string>& params = event->get_command_params();
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
+		return ;
+
+	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
+	delete event;
+	event = channel_event;
+
+	if (params.size() <= 1)
+		return ;
+	if (SearchByFD(this->operators_, event->get_fd()) == NULL) {
+		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
+		return ;
+	}
+	const Mode mode = Mode::Analyze(params[1]);
+	switch (mode.get_mode()) {
+	case 'i':
+	case 't':
+		if (mode.is_plus() == this->mode_map_(mode.get_mode()))
+			event->set_do_nothing(true);
+		break ;
+	case 'k':
+		if (mode.is_plus() == this->mode_map_(mode.get_mode()))
+			event->set_do_nothing(true);
+		else if (!mode.is_plus() && params[2] != this->key_) {
+			event->set_error_status(ErrorStatus::ERR_KEYSET);
+			return ;
+		}
+		break ;
+	case 'o':
+		if (!this->ContainsUserByNick(params[2]))
+			break ;
+		if (SearchByNick(this->operators_, params[2]) != NULL) {
+			if (mode.is_plus())
+				event->set_do_nothing(true);
+		} else if (!mode.is_plus())
+			event->set_do_nothing(true);
+		break ;
+	case 'l':
+		if (!mode.is_plus() && !this->mode_map_(mode.get_mode()))
+			event->set_do_nothing(true);
+		break ;
+	default:
+		break ;
+	}
 }
 
 void Channel::CkQuitCommand(Event& event) const {
