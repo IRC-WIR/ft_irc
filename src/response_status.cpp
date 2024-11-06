@@ -2,7 +2,7 @@
 
 const ResponseStatus
 
-	ResponseStatus::RPL_WELCOME(101, "Welcome to the Internet Relay Network"),
+	ResponseStatus::RPL_WELCOME(001, "Welcome to the Internet Relay Network"),
     ResponseStatus::RPL_NOTOPIC(331, "No topic is set."),
     ResponseStatus::RPL_TOPIC(332, "")
     ;

@@ -76,7 +76,7 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 	ss << utils::kHostName;
 	ss << " ";
 	//add error no
-	ss << error_status.get_code();
+	ss << utils::FillZero(error_status.get_code(), 3);
 	ss << " ";
 	//add nick name
 	ss << (nick_name_.empty()? "*" : nick_name_) ;
@@ -93,13 +93,15 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 
 std::string User::CreateMessage(const User& from, const std::string& target, const Command& cmd, const std::vector<std::string>& params) const {
 	std::stringstream ss;
-	// from hostname
-	ss << from.CreateNameWithHost();
-	ss << " ";
+	// "Nickname@Hostname for Channel" or "Nickname for User"
+	if (target.at(0) == '#')
+		ss << ":" << from.CreateNameWithHost() << " ";
+	else
+		ss << ":" << from.get_nick_name() << " ";
 	// command
 	ss << cmd.get_name();
 	ss << " ";
-	// to name
+	// target nickname
 	ss << target;
 	ss << " ";
 	//add message
@@ -176,7 +178,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 static std::string GenerateJoinCommonMessage(const User& target, const Channel& channel) {
 	std::stringstream ss;
 
-	ss << target.CreateNameWithHost() << " ";
+	ss << ":" << target.CreateNameWithHost() << " ";
 	ss << Command::kJoin.get_name() << " :";
 	ss << channel.get_name() << "\r\n";
 	return ss.str();
@@ -253,7 +255,8 @@ std::string User::CreateTopicRplMessage(const Channel& channel) const {
 	ss << utils::kHostName;
 	ss << " ";
 	// response no
-	ss << (has_topic ? ResponseStatus::RPL_TOPIC.get_code() :  ResponseStatus::RPL_NOTOPIC.get_code()) ;
+	int res_no = has_topic ? ResponseStatus::RPL_TOPIC.get_code() : ResponseStatus::RPL_NOTOPIC.get_code();
+	ss << utils::FillZero(res_no, 3);
 	ss << " ";
 	// nick name
 	ss << (nick_name_.empty()? "*" : nick_name_) ;
@@ -488,7 +491,7 @@ const std::string& User::get_real_name() const {
 //<nick>!<user>@<host>
 std::string User::CreateNameWithHost() const {
 	std::stringstream ss;
-	ss << ":" << this->get_nick_name();
+	ss << this->get_nick_name();
 	ss << "!" << this->get_user_name();
 	ss << "@" << utils::kHostName;
 	return ss.str();

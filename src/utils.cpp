@@ -118,12 +118,15 @@ std::string GetWelcomeString(const ResponseStatus& res_status, const User& user)
 		return "";
 	}
 	std::stringstream ss;
-	//add server
+	//add hostname
 	ss << ":" << kHostName;
 	ss << " ";
 	//add RPL code
-	ss << res_status.RPL_WELCOME.get_code();
+	ss << utils::FillZero(res_status.RPL_WELCOME.get_code(), 3);
 	ss << " ";
+	//add nickname
+	ss << user.get_nick_name();
+	ss << " :";
 	//add message from motd file
 	for (std::string line; std::getline(s, line); ) {
 		ss << line << kNewLine;
@@ -138,6 +141,13 @@ std::string StrToLower(const std::string& str) {
 	std::transform(str.begin(), str.end(), std::back_inserter(ret), ::tolower);
 	return ret;
 }
+
+std::string FillZero(int src, int digits) {
+	std::stringstream ss;
+	ss << std::setfill('0') << std::setw(digits) << src;
+	return ss.str();
+}
+
 
 UtilsException::UtilsException(const std::string& msg) : std::invalid_argument(msg) {};
 
