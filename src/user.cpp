@@ -31,7 +31,7 @@ std::string User::CreateReplyMessage(int code, const std::vector<std::string>& m
 	std::stringstream ss;
 
 	ss << ":" << utils::kHostName;
-	ss << " " << code;
+	ss << " " << utils::FillZero(code, 3);
 	ss << " " << this->get_nick_name();
 	if (!messages.empty()) {
 		if (messages.size() > 1)
