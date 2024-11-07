@@ -122,7 +122,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 void	EventHandler::HandlePollOutEvent(pollfd entry) {
 	if (entry.revents & POLLOUT) {
 		int target_fd = entry.fd;
-    for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
+	for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
 			it != response_map_[target_fd].end();) {
 			const char *res_msg_char = (*it).c_str();
 			int	res_msg_length = (*it).length();
