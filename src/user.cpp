@@ -283,11 +283,11 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	if (event.get_fd() == this->get_fd()) {
 		std::vector<std::string> messages;
-		messages.push_back(params[2]);
+		messages.push_back(params[0]);
 		messages.push_back(channel.get_name());
 		return OptionalMessage::Create(this->get_fd(),
 				this->CreateReplyMessage(ResponseStatus::RPL_INVITING.get_code(), messages));
-	} else if (utils::StrToLower(this->get_nick_name()) == utils::StrToLower(params[2])) {
+	} else if (utils::StrToLower(this->get_nick_name()) == utils::StrToLower(params[0])) {
 		if (!this->invited_channels_.Contains(&channel))
 			this->invited_channels_.push_back(&channel);
 		std::vector<std::string> messages;
