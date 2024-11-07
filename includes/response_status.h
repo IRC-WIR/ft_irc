@@ -4,27 +4,27 @@
 # include <string>
 
 class ResponseStatus {
-    public:
-        static const ResponseStatus
-            RPL_WELCOME,
-            RPL_CHANNELMODEIS,
-            RPL_NOTOPIC,
+	public:
+		static const ResponseStatus
+			RPL_WELCOME,
+			RPL_CHANNELMODEIS,
+			RPL_NOTOPIC,
 			RPL_TOPIC,
 			RPL_NAMREPLY,
 			RPL_ENDOFNAMES
-            ;
+			;
 
-        int get_code(void) const;
-        const std::string& get_message(void) const;
+		int get_code(void) const;
+		const std::string& get_message(void) const;
 
-    protected:
-        ResponseStatus(void);
-        ResponseStatus(int, const std::string&);
-        virtual ~ResponseStatus();
+	protected:
+		ResponseStatus(void);
+		ResponseStatus(int, const std::string&);
+		virtual ~ResponseStatus();
 
-    private:
-        const int code_;
-        const std::string message_;
+	private:
+		const int code_;
+		const std::string message_;
 };
 
 bool operator ==(const ResponseStatus&, const ResponseStatus&);

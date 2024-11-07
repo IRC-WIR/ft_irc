@@ -16,7 +16,7 @@ Mode Mode::Analyze(const std::string& input) {
 		mode = input[i];
 		break ;
 	}
-    return Mode(mode, is_plus);
+	return Mode(mode, is_plus);
 }
 
 Mode::Mode() : mode_('\0'), is_plus_(false) {
@@ -32,11 +32,11 @@ Mode::~Mode() {
 }
 
 char Mode::get_mode() const {
-    return this->mode_;
+	return this->mode_;
 }
 
 bool Mode::is_plus() const {
-    return this->is_plus_;
+	return this->is_plus_;
 }
 
 std::string Mode::ToString() const {
