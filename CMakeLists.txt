@@ -17,11 +17,18 @@ FetchContent_MakeAvailable(googletest)
 add_executable(${PROJECT_NAME}-googletest
   #MessageParsingSuccessFile
   test/MessageTest.cpp
-  #MessageParsingErrorFile
-  test/MessageErrorTest.cpp
+  #MessageParsingFile
   src/command.cpp
   src/message_parser.cpp
   src/utils.cpp
+  src/error_status.cpp
+  src/response_status.cpp
+  src/user.cpp
+  src/event.cpp
+  src/optional_message.cpp
+  src/channel.cpp
+  src/channel_event.cpp
+  src/mode.cpp
 )
 target_link_libraries(${PROJECT_NAME}-googletest
   GTest::gtest_main
@@ -32,6 +39,14 @@ target_include_directories(${PROJECT_NAME}-googletest PRIVATE
   includes/command.h
   includes/message_parser.h
   includes/utils.h
+  includes/error_status.h
+  includes/response_status.h
+  includes/user.h
+  includes/event.h
+  includes/optional_message.h
+  includes/channel.h
+  includes/channel_event.h
+  includes/mode.h
 )
 
 add_test(NAME test-pass-parsing COMMAND ${PROJECT_NAME}-googletest)

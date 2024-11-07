@@ -10,7 +10,7 @@ TEST(MessageTest, ParsingTest1) {
   MessageParser message_parser(raw_message);
 
   // Expect PASS command.
-  EXPECT_EQ(kPass, message_parser.get_command());
+  EXPECT_EQ(Command::kPass, message_parser.get_command());
   // Expect first command params.
   EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
   // Expect last command params.
@@ -27,9 +27,9 @@ TEST(MessageTest, ParsingTest2) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect NICK command.
-  EXPECT_EQ(kNick, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kNick, message_upper_parser.get_command());
   // Expect NICK command.
-  EXPECT_EQ(kNick, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kNick, message_lower_parser.get_command());
 }
 //test USER command
 TEST(MessageTest, ParsingTest3) {
@@ -41,9 +41,9 @@ TEST(MessageTest, ParsingTest3) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect USER command.
-  EXPECT_EQ(kUser, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kUser, message_upper_parser.get_command());
   // Expect USER command.
-  EXPECT_EQ(kUser, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kUser, message_lower_parser.get_command());
   // Expect USER command param[0]
   EXPECT_EQ("user", message_upper_parser.get_params()[0]);
   // Expect USER command param[1]
@@ -63,9 +63,9 @@ TEST(MessageTest, ParsingTest4) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect JOIN command.
-  EXPECT_EQ(kJoin, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kJoin, message_upper_parser.get_command());
   // Expect JOIN command.
-  EXPECT_EQ(kJoin, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kJoin, message_lower_parser.get_command());
   // Expect JOIN command param[0]
   EXPECT_EQ("#ch", message_upper_parser.get_params()[0]);
   // Expect JOIN command param[1]
@@ -82,9 +82,9 @@ TEST(MessageTest, ParsingTest5) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect INVITE command.
-  EXPECT_EQ(kInvite, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kInvite, message_upper_parser.get_command());
   // Expect INVITE command.
-  EXPECT_EQ(kInvite, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kInvite, message_lower_parser.get_command());
   // Expect INVITE command param[0]
   EXPECT_EQ("user1", message_upper_parser.get_params()[0]);
   // Expect INVITE command param[1]
@@ -101,9 +101,9 @@ TEST(MessageTest, ParsingTest6) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect KICK command.
-  EXPECT_EQ(kKick, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kKick, message_upper_parser.get_command());
   // Expect KICK command.
-  EXPECT_EQ(kKick, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kKick, message_lower_parser.get_command());
   // Expect INVITE command param[0]
   EXPECT_EQ("#ch1", message_upper_parser.get_params()[0]);
   // Expect INVITE command param[1]
@@ -120,9 +120,9 @@ TEST(MessageTest, ParsingTest7) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect TOPIC command.
-  EXPECT_EQ(kTopic, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kTopic, message_upper_parser.get_command());
   // Expect TOPIC command.
-  EXPECT_EQ(kTopic, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kTopic, message_lower_parser.get_command());
   // Expect INVITE command param[0]
   EXPECT_EQ("#ch1", message_upper_parser.get_params()[0]);
   // Expect INVITE command param[1]
@@ -139,9 +139,9 @@ TEST(MessageTest, ParsingTest8) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect MODE command.
-  EXPECT_EQ(kMode, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kMode, message_upper_parser.get_command());
   // Expect MODE command.
-  EXPECT_EQ(kMode, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kMode, message_lower_parser.get_command());
   // Expect MODE command param[0]
   EXPECT_EQ("#ch1", message_upper_parser.get_params()[0]);
   // Expect MODE command param[1]
@@ -163,9 +163,9 @@ TEST(MessageTest, ParsingTest9) {
   MessageParser message_num_1(num_1);
   MessageParser message_num_2(num_2);
   // Expect PRIVMSG command.
-  EXPECT_EQ(kPrivmsg, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kPrivmsg, message_upper_parser.get_command());
   // Expect PRIVMSG command.
-  EXPECT_EQ(kPrivmsg, message_num_1.get_command());
+  EXPECT_EQ(Command::kPrivmsg, message_num_1.get_command());
   // Expect PRIVMSG command param[0]
   EXPECT_EQ("user", message_upper_parser.get_params()[0]);
   // Expect PRIVMSG last command param
@@ -188,9 +188,9 @@ TEST(MessageTest, ParsingTest10) {
   MessageParser message_upper_parser(raw_upper_message);
   MessageParser message_lower_parser(raw_lower_message);
   // Expect QUIT command.
-  EXPECT_EQ(kQuit, message_upper_parser.get_command());
+  EXPECT_EQ(Command::kQuit, message_upper_parser.get_command());
   // Expect QUIT command.
-  EXPECT_EQ(kQuit, message_lower_parser.get_command());
+  EXPECT_EQ(Command::kQuit, message_lower_parser.get_command());
 }
 
 // // test the endof \n parsing
@@ -201,7 +201,7 @@ TEST(MessageTest, ParsingTest11) {
   MessageParser message_parser(raw_message);
 
   // Expect PASS command.
-  EXPECT_EQ(kPass, message_parser.get_command());
+  EXPECT_EQ(Command::kPass, message_parser.get_command());
   // Expect first command params.
   EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
   // Expect last command params.
@@ -215,7 +215,7 @@ TEST(MessageTest, ParsingTest12) {
     "pass 1234abcd\r\n";
   MessageParser message_parser(raw_message);
   // Expect PASS command.
-  EXPECT_EQ(kPass, message_parser.get_command());
+  EXPECT_EQ(Command::kPass, message_parser.get_command());
   // Expect first command params.
   EXPECT_EQ("1234abcd", message_parser.get_params()[0]);
 }
@@ -227,7 +227,7 @@ TEST(MessageTest, ParsingTest13) {
     "PASS    abcd1234      efgh5678\r\n";
   MessageParser message_parser(raw_message);
   // Expect PASS command.
-  EXPECT_EQ(kPass, message_parser.get_command());
+  EXPECT_EQ(Command::kPass, message_parser.get_command());
   // Expect first command params.
   EXPECT_EQ("abcd1234", message_parser.get_params()[0]);
   // Expect first command params.
