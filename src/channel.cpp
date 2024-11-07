@@ -257,12 +257,8 @@ OptionalMessage Channel::ExKickCommand(const Event& event) {
 	if (event.HasErrorOccurred() || !event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	if (this == &channel) {
+	if (this == &channel)
 		this->RemoveUserByNick(event.get_command_params()[1]);
-		if (this->operators_.empty() && !this->members_.empty()) {
-			GiveOperator(*(this->members_[0]));
-		}
-	}
 	return OptionalMessage::Empty();
 }
 
@@ -323,8 +319,6 @@ OptionalMessage Channel::ExPrivmsgCommand(const Event& event) {
 OptionalMessage Channel::ExQuitCommand(const Event& event){
 
 	RemoveUser(event.get_executer());
-	if (this->operators_.empty() && !this->members_.empty())
-		GiveOperator(*(this->members_[0]));
 	return OptionalMessage::Empty();
 }
 //Execute
