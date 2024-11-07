@@ -3,7 +3,10 @@
 const ResponseStatus
 
 	ResponseStatus::RPL_WELCOME(101, "Welcome to the Internet Relay Network"),
-    ResponseStatus::RPL_CHANNELMODEIS(324, "")
+    ResponseStatus::RPL_CHANNELMODEIS(324, ""),
+	ResponseStatus::RPL_TOPIC(332, ""),
+	ResponseStatus::RPL_NAMREPLY(353, ""),
+	ResponseStatus::RPL_ENDOFNAMES(366, "End of /NAMES list")
     ;
 
 // 呼ばれない
