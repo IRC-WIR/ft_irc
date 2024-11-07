@@ -13,6 +13,11 @@ User::User(int fd) :
 User::~User() {
 }
 
+void User::DeleteChannelFromList(const Channel& channel) {
+	this->joining_channels_.Remove(&channel);
+	this->invited_channels_.Remove(&channel);
+}
+
 std::string User::CreateCommonMessage(const Command& command, const std::vector<std::string>& messages) const {
 	std::stringstream ss;
 
@@ -243,6 +248,7 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	messages.push_back(channel.get_name());
 	const std::string common_message = event.get_executer().CreateCommonMessage(event.get_command(), messages);
 	if (event.get_fd() == this->get_fd()) {
+		this->invited_channels_.Remove(&channel);
 		this->joining_channels_.push_back(&channel);
 		return OptionalMessage::Create(this->get_fd(), common_message + this->CreateJoinDetailMessage(channel));
 	}
@@ -251,10 +257,53 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-OptionalMessage User::ExInviteCommand(const Event& event){
-	(void)event;
-	std::cout << "Invite method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+std::string User::CreateInviteDetailMessage() const {
+	std::stringstream ss;
+	std::vector<std::string> messages;
+	// 招待を受けたチャンネルリスト
+	for (std::vector<const Channel*>::const_iterator it = this->invited_channels_.begin();
+			it != this->invited_channels_.end(); ++it) {
+		messages.push_back((*it)->get_name());
+		ss << this->CreateReplyMessage(ResponseStatus::RPL_INVITELIST.get_code(), messages);
+	}
+	// End of INVITE list
+	messages.clear();
+	messages.push_back(ResponseStatus::RPL_ENDOFINVITELIST.get_message());
+	ss << this->CreateReplyMessage(ResponseStatus::RPL_ENDOFINVITELIST.get_code(), messages);
+	return ss.str();
+}
+
+OptionalMessage User::ExInviteCommand(const Event& event) {
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() == this->get_fd())
+			return OptionalMessage::Create(this->get_fd(),
+					User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+		return OptionalMessage::Empty();
+	}
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < 2) {
+		if (event.get_fd() != this->get_fd())
+			return OptionalMessage::Empty();
+		return OptionalMessage::Create(this->get_fd(), this->CreateInviteDetailMessage());
+	}
+	if (!event.IsChannelEvent())
+		return OptionalMessage::Empty();
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	if (event.get_fd() == this->get_fd()) {
+		std::vector<std::string> messages;
+		messages.push_back(params[0]);
+		messages.push_back(channel.get_name());
+		return OptionalMessage::Create(this->get_fd(),
+				this->CreateReplyMessage(ResponseStatus::RPL_INVITING.get_code(), messages));
+	} else if (utils::StrToLower(this->get_nick_name()) == utils::StrToLower(params[0])) {
+		if (!this->invited_channels_.Contains(&channel))
+			this->invited_channels_.push_back(&channel);
+		std::vector<std::string> messages;
+		messages.push_back(this->get_nick_name());
+		messages.push_back(channel.get_name());
+		return OptionalMessage::Create(this->get_fd(),
+				event.get_executer().CreateCommonMessage(event.get_command(), messages));
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -510,11 +559,13 @@ void User::CkJoinCommand(Event& event) const {
 	}
 }
 
-void User::CkInviteCommand(Event& event) const
-{
-	(void)event;
-	std::cout << "Check vite called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+void User::CkInviteCommand(Event& event) const {
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.empty())
+		return ;
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->get_nick_name()))
+		return ;
+	event.IncreaseUserCount();
 }
 
 void User::CkKickCommand(Event& event) const
@@ -540,7 +591,7 @@ void User::CkModeCommand(Event& event) const {
 	if (params.size() <= 1)
 		return ;
 	const Mode mode = Mode::Analyze(params[1]);
-	if (mode.get_mode() == 'o' && params[2] == this->nick_name_)
+	if (mode.get_mode() == 'o' && params[2] == this->get_nick_name())
 		event.IncreaseUserCount();
 }
 
@@ -605,6 +656,9 @@ bool	User::IsVerified() const {
 	return true;
 }
 
+bool User::IsInvitedChannel(const Channel& channel) const {
+	return this->invited_channels_.Contains(&channel);
+}
 
 bool User::IsTarget(const std::string& target, const Event& event) const
 {

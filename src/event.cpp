@@ -7,13 +7,13 @@ const std::string Event::AlreadySetException::kMessage = "already exists execute
 
 Event::Event(int fd, int event_type)
 		: fd_(fd), event_type_(event_type), command_(&Command::kNotFound),
-		error_status_(NULL), executer_(NULL) {
+		error_status_(NULL), executer_(NULL), user_count_(0) {
 	return ;
 }
 
 Event::Event(const Event& src)
 		: fd_(src.get_fd()), event_type_(src.get_event_type()), command_(&src.get_command()),
-		error_status_(src.error_status_), executer_(src.executer_) {
+		error_status_(src.error_status_), executer_(src.executer_), user_count_(src.get_user_count()) {
 	this->set_command(src.get_command());
 	this->set_command_params(src.get_command_params());
 	this->set_do_nothing(src.is_do_nothing());

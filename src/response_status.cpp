@@ -1,11 +1,13 @@
 #include "response_status.h"
 
 const ResponseStatus
-
 	ResponseStatus::RPL_WELCOME(001, "Welcome to the Internet Relay Network"),
 	ResponseStatus::RPL_CHANNELMODEIS(324, ""),
 	ResponseStatus::RPL_NOTOPIC(331, "No topic is set."),
 	ResponseStatus::RPL_TOPIC(332, ""),
+	ResponseStatus::RPL_INVITELIST(336, ""),
+	ResponseStatus::RPL_ENDOFINVITELIST(337, "End of INVITE list"),
+	ResponseStatus::RPL_INVITING(341, ""),
 	ResponseStatus::RPL_NAMREPLY(353, ""),
 	ResponseStatus::RPL_ENDOFNAMES(366, "End of /NAMES list")
 	;

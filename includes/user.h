@@ -19,6 +19,7 @@ class User : public EventListener, public EventConfigurator {
 		OptionalMessage ExecuteCommand(const Event& event);
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
+		bool IsInvitedChannel(const Channel&) const;
 		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
 		void set_displayed_welcome(bool is_verified);
@@ -29,6 +30,7 @@ class User : public EventListener, public EventConfigurator {
 		const std::string& get_user_name(void) const;
 		const std::string& get_real_name(void) const;
 		std::string CreateNameWithHost(void) const;
+		void DeleteChannelFromList(const Channel&);
 
 	private:
 		User(void);
@@ -40,6 +42,7 @@ class User : public EventListener, public EventConfigurator {
 		std::string	real_name_;
 		bool is_delete_;
 		utils::MyVector<const Channel*> joining_channels_;
+		utils::MyVector<const Channel*> invited_channels_;
 		bool is_displayed_welcome_;
 
 		bool IsTarget(const std::string& target, const Event& event) const;
@@ -47,6 +50,7 @@ class User : public EventListener, public EventConfigurator {
 		std::string CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const;
 		std::string CreateTopicRplMessage(const Channel& channel) const;
 		std::string CreateJoinDetailMessage(const Channel&) const;
+		std::string CreateInviteDetailMessage(void) const;
 		std::string CreateCommonMessage(const Command&, const std::vector<std::string>&) const;
 		std::string CreateReplyMessage(int, const std::vector<std::string>&) const;
 

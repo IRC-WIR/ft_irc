@@ -33,7 +33,7 @@ class Channel: public EventListener, public EventConfigurator {
 		bool GiveOperator(const User&);
 		bool TakeOperator(const User&);
 		bool IsOperator(const User&) const;
-		bool IsMode(const char& c) const;
+		bool IsMode(char c) const;
 		void set_topic(const std::string&);
 		const std::string& get_topic(void) const;
 		const std::string& get_name(void) const;
@@ -72,7 +72,7 @@ class Channel: public EventListener, public EventConfigurator {
 		void CkNickCommand(Event& event) const;
 		void CkUserCommand(Event& event) const;
 		void CkJoinCommand(Event*& event) const;
-		void CkInviteCommand(Event& event) const;
+		void CkInviteCommand(Event*& event) const;
 		void CkKickCommand(Event*& event) const;
 		void CkTopicCommand(Event*& event) const;
 		void CkModeCommand(Event*& event) const;
