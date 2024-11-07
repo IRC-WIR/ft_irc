@@ -31,15 +31,13 @@ void Database::CheckEvent(Event*& event) const {
 	if (event->HasErrorOccurred())
 		return ;
 	std::size_t vector_length = check_element_.size();
-
 	for (std::size_t i = 0; i < vector_length; i++) {
 		check_element_[i] -> CheckCommand(event);
 		if (event->HasErrorOccurred())
 			return ;
 	}
-
 	if (event->HasErrorOccurred())
-		return ;
+			return ;
 	this->AfterCheck(*event);
 }
 
@@ -96,6 +94,23 @@ void Database::CheckCommandAndParams(Event& event) const {
 }
 
 void Database::AfterCheck(Event& event) const {
+	if (event.get_command() == Command::kTopic) {
+		if (!event.IsChannelEvent()) {
+			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+			return ;
+		}
+		return ;
+	}
+	if (event.get_command() == Command::kPrivmsg) {
+		if (event.get_user_count() == 0 && !event.IsChannelEvent()) {
+			if (event.get_command_params()[0].at(0) == '#') {
+				event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+				return ;
+			}
+			event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
+		}
+		return ;
+	}
 	if (event.get_command() == Command::kMode) {
 		if (!event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
@@ -197,15 +212,26 @@ void Database::CkKickCommand(Event& event) const {
 }
 
 void Database::CkTopicCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check opic called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const int kParamsSize = 1;
+
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.size() < kParamsSize) {
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return ;
+	}
 }
 
 void Database::CkPrivmsgCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vmsg called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const std::vector<std::string> &params = event.get_command_params();
+
+	if (params.size() <  2) {
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return;
+	}
+	if (params[1].empty()) {
+		event.set_error_status(ErrorStatus::ERR_NOTEXTTOSEND);
+		return;
+	}
 }
 
 void Database::CkModeCommand(Event& event) const {

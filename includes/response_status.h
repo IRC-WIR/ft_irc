@@ -8,6 +8,7 @@ class ResponseStatus {
         static const ResponseStatus
             RPL_WELCOME,
             RPL_CHANNELMODEIS,
+            RPL_NOTOPIC,
 			RPL_TOPIC,
 			RPL_NAMREPLY,
 			RPL_ENDOFNAMES
