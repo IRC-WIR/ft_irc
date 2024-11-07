@@ -93,11 +93,10 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 
 std::string User::CreateMessage(const User& from, const std::string& target, const Command& cmd, const std::vector<std::string>& params) const {
 	std::stringstream ss;
-	// "Nickname@Hostname for Channel" or "Nickname for User"
+	ss << ":";
+	// "Nickname@Hostname for Channel"
 	if (target.at(0) == '#')
-		ss << ":" << from.CreateNameWithHost() << " ";
-	else
-		ss << ":" << from.get_nick_name() << " ";
+		ss << from.CreateNameWithHost() << " ";
 	// command
 	ss << cmd.get_name();
 	ss << " ";
