@@ -17,7 +17,6 @@ class EventHandler{
 	public:
 		EventHandler(Database& database,int port_no);
 		~EventHandler();
-		bool				IsAuthenticated(const Event& event);
 		void				ExecutePoll();
 		void				WaitMillSecond(int ms);
 		void				AddEventSocket(int new_fd);
@@ -32,7 +31,6 @@ class EventHandler{
 	private:
 		EventHandler();
 		void				Accept();
-		void				Receive(int fd, char* buffer);
 		void				Execute(const pollfd& entry, const std::string& msg);
 		MessageParser::ParseState	Parse(const std::string& buffer, Event& event);
 		void				Send(Event event);

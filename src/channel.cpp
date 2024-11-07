@@ -337,8 +337,7 @@ OptionalMessage Channel::ExQuitCommand(const Event& event){
 //Check
 void Channel::CkPassCommand(Event& event) const {
 	(void)event;
-	std::cout << "Check Nick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	return ;
 }
 
 void Channel::CkNickCommand(Event& event) const {
