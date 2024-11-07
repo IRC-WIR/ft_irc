@@ -167,6 +167,8 @@ std::vector<std::string> Channel::RequestModeInfo(const User& client) const {
 }
 
 void Channel::CheckCommand(Event*& event) const {
+	if (event->HasErrorOccurred())
+		return ;
 	const Command& command = event->get_command();
 
 	if (command == Command::kPass)

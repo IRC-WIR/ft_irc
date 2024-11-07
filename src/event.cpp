@@ -94,6 +94,17 @@ void Event::set_do_nothing(bool is_do_nothing) {
 }
 
 bool Event::is_do_nothing() const {
+	if (!(this->get_command() == Command::kPass
+			|| this->get_command() == Command::kNick
+			|| this->get_command() == Command::kUser
+			|| this->get_command() == Command::kQuit)) {
+		try {
+			if (!this->get_executer().IsVerified())
+				return true;
+		} catch (const Event::NoExecuterException& e) {
+			std::cerr << e.what() << std::endl;
+		}
+	}
 	return !this->HasErrorOccurred() && this->is_do_nothing_;
 }
 
