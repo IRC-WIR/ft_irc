@@ -344,8 +344,6 @@ void Channel::CkUserCommand(Event& event) const {
 }
 
 void Channel::CkJoinCommand(Event*& event) const {
-	if (event->HasErrorOccurred())
-		return ;
 	const std::vector<std::string>& params = event->get_command_params();
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->name_))
 		return ;
@@ -353,6 +351,11 @@ void Channel::CkJoinCommand(Event*& event) const {
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);
 	delete event;
 	event = channel_event;
+	if (SearchByFD(this->operators_, event->get_fd()) != NULL
+			|| SearchByFD(this->members_, event->get_fd()) != NULL) {
+		event->set_do_nothing(true);
+		return ;
+	}
 	const std::string key = params.size() >= 2 ? params[1] : "";
 	if (this->mode_map_('k') && this->key_ != key)
 		event->set_error_status(ErrorStatus::ERR_BADCHANNELKEY);
