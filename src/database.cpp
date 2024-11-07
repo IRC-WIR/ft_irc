@@ -99,6 +99,7 @@ static bool CheckNoSuchChannel(const Event& event) {
 		return !event.IsChannelEvent();
 	else if (event.get_command() == Command::kMode)
 		return !event.IsChannelEvent();
+	return false;
 }
 
 static bool CheckNoSuchNick(const Event& event) {
