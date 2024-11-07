@@ -63,8 +63,18 @@ void Database::DeleteFinishedElements() {
 
 	Database::EraseAndAdd(check_element_, ptr_set);
 	Database::EraseAndAdd(execute_element_, ptr_set);
-	for (std::set<Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
+	for (std::set<Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it) {
+		const Channel* channel_ptr = dynamic_cast<const Channel*>(*it);
+		if (channel_ptr != NULL) {
+			for (std::vector<EventListener*>::iterator it2 = this->execute_element_.begin();
+					it2 != this->execute_element_.end(); ++it2) {
+				User* target = dynamic_cast<User*>(*it2);
+				if (target != NULL)
+					target->DeleteChannelFromList(*channel_ptr);
+			}
+		}
 		delete *it;
+	}
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
