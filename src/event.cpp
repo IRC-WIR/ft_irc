@@ -97,14 +97,6 @@ bool Event::is_do_nothing() const {
 	return !this->HasErrorOccurred() && this->is_do_nothing_;
 }
 
-void Event::add_target_num() {
-	target_num_ += 1;
-}
-
-int Event::get_target_num() const {
-	return target_num_;
-}
-
 Event::NoErrorException::NoErrorException()
 		: std::runtime_error(Event::NoErrorException::kMessage) {
 	return ;

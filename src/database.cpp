@@ -118,7 +118,7 @@ void Database::AfterCheck(Event& event) const {
 		return ;
 	}
 	if (event.get_command() == Command::kPrivmsg) {
-		if (event.get_target_num() == 0 && !event.IsChannelEvent()) {
+		if (event.get_user_count() == 0 && !event.IsChannelEvent()) {
 			if (event.get_command_params()[0].at(0) == '#') {
 				event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 				return ;

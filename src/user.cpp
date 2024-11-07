@@ -499,7 +499,7 @@ void User::CkPrivmsgCommand(Event& event) const
 {
 	if (event.get_command_params()[0] != this->get_nick_name())
 		return ;
-	event.add_target_num();
+	event.IncreaseUserCount();
 }
 
 void User::CkModeCommand(Event& event) const {
