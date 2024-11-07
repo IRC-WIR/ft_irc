@@ -23,6 +23,14 @@ Event::~Event() {
 	return ;
 }
 
+void Event::IncreaseUserCount() {
+	this->user_count_++;
+}
+
+int Event::get_user_count() const {
+	return this->user_count_;
+}
+
 int Event::get_fd() const {
 	return fd_;
 }
@@ -86,7 +94,7 @@ void Event::set_do_nothing(bool is_do_nothing) {
 }
 
 bool Event::is_do_nothing() const {
-	return this->is_do_nothing_;
+	return !this->HasErrorOccurred() && this->is_do_nothing_;
 }
 
 void Event::add_target_num() {
