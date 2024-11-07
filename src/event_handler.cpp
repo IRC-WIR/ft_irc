@@ -2,7 +2,6 @@
 #include "command.h"
 #include "channel.h"
 #include "channel_event.h"
-#include <errno.h>
 
 const	int	EventHandler::kQueueLimit = 10;
 const	int EventHandler::kBufferSize = 512;
@@ -12,45 +11,16 @@ EventHandler::~EventHandler() {
 	return ;
 }
 
-static int GetCurrentFlags(int socket_fd) {
-	int current_flags = fcntl(socket_fd, F_GETFL, 0);
-	if (current_flags < 0) {
-		switch (errno) {
-		case EWOULDBLOCK:
-		case EINTR:
-			return GetCurrentFlags(socket_fd);
-		default:
-			std::cout << strerror(errno) << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-	}
-	return current_flags;
-}
-
-static int	SetNonBlockingMode(int socket_fd) {
-	int flags = GetCurrentFlags(socket_fd) | O_NONBLOCK;
-	int ret = fcntl(socket_fd, F_SETFL, flags);
-	if (ret < 0) {
-		switch (errno) {
-		case EWOULDBLOCK:
-		case EINTR:
-			return SetNonBlockingMode(socket_fd);
-		default:
-			std::cout << strerror(errno) << std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-	}
-	return ret;
-}
-
 EventHandler::EventHandler(Database& database,int port_no)
 	: database_(database) {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-	if (listening_socket_ < 0) {
-		std::cout << strerror(errno) << std::endl;
+	if (listening_socket_ < 0)
 		std::exit(EXIT_FAILURE);
-	}
-	SetNonBlockingMode(listening_socket_);
+	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
+		std::exit(EXIT_FAILURE);
+	int option_available = 1;
+	if (setsockopt(listening_socket_, SOL_SOCKET, SO_REUSEADDR, &option_available, sizeof(option_available)) < 0)
+		std::exit(EXIT_FAILURE);
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
@@ -82,13 +52,8 @@ void	EventHandler::ExecutePoll() {
 	//	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
-	{
-		//bebug
-		std::cerr << strerror(errno) << std::endl;
 		throw (EventHandlerException(kPollErrMsg));
-	}
-	if (pollResult == 0)
-	{
+	if (pollResult == 0) {
 		//debug
 		std::cout << "no event in 1000ms" << std::endl;
 		return;
@@ -122,7 +87,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 void	EventHandler::HandlePollOutEvent(pollfd entry) {
 	if (entry.revents & POLLOUT) {
 		int target_fd = entry.fd;
-    for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
+	for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
 			it != response_map_[target_fd].end();) {
 			const char *res_msg_char = (*it).c_str();
 			int	res_msg_length = (*it).length();
@@ -192,7 +157,8 @@ void	EventHandler::Accept() {
 			&server_address_len);
 	if (connected_socket_ == -1)
 			return;
-	SetNonBlockingMode(connected_socket_);
+	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
+		std::exit(EXIT_FAILURE);
 	std::cout << ">> NEW CONNECTION [ " << connected_socket_ << " ]" << std::endl;
 	AddEventSocket(connected_socket_);
 	database_.CreateUser(connected_socket_);
@@ -315,7 +281,7 @@ void	EventHandler::AddEventSocket(int new_fd) {
 	poll_fd_.push_back(new_pollfd);
 }
 
-void	EventHandler::AddResponseMap(std::map<int, std::string> new_response){
+void	EventHandler::AddResponseMap(std::map<int, std::string> new_response) {
 
 	for (std::map<int, std::string>::iterator new_map_iterator =
 		new_response.begin();
