@@ -257,9 +257,43 @@ OptionalMessage User::ExInviteCommand(const Event& event){
 }
 
 OptionalMessage User::ExKickCommand(const Event& event){
-	(void)event;
-	std::cout << "Kick method called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	//失敗
+	if (event.HasErrorOccurred()) {
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			return OptionalMessage::Create(this->get_fd(), message);
+		}
+		return OptionalMessage::Empty();
+	}
+	if (!event.IsChannelEvent()) {
+		if (event.get_fd() == this->get_fd()) {
+			const std::string& message = User::CreateErrorMessage(event.get_command(), ErrorStatus::ERR_NOSUCHCHANNEL);
+			return OptionalMessage::Create(this->get_fd(), message);
+		}
+		return OptionalMessage::Empty();
+	}
+	//成功
+	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+	const std::string& target_name = event.get_command_params()[1];
+	
+	//対象チャンネルに所属している場合
+	if (channel.ContainsUser(*this) 
+		|| utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
+		std::string base_message;
+		if (event.get_fd() == this->get_fd()) {
+			base_message = "Kick " + target_name + " from " + channel.get_name();
+		} else {
+			base_message = "Kick message from " + event.get_executer().get_nick_name() + " to remove " + target_name + " from channel " + channel.get_name();
+		}
+		const std::vector<std::string>& params = event.get_command_params();
+		std::string optional_message = "";
+		if (params.size() > 2)
+			optional_message = " using \"" + utils::Join(params.begin() + 2, params.end(), " ") + "\" as the reason(comment)";
+		return OptionalMessage::Create(this->get_fd(), base_message + optional_message + "\r\n");
+	}
+	if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
+		this->joining_channels_.Remove(&channel);
+	}
 	return OptionalMessage::Empty();
 }
 
@@ -424,8 +458,10 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 				context_message = "client dies and EOF occurs on socket";
 			else if (event.get_command_params().empty())
 				context_message = "client quit";
-			else
-				context_message = event.get_command_params()[0];
+			else {
+				std::vector<std::string> params = event.get_command_params();
+				context_message = utils::Join(params.begin(), params.end(), " "); 
+			}
 			return OptionalMessage::Create(this->fd_, prefix_message + context_message + utils::kNewLine);
 		}
 	}
@@ -482,8 +518,7 @@ void User::CkInviteCommand(Event& event) const
 void User::CkKickCommand(Event& event) const
 {
 	(void)event;
-	std::cout << "Check Kick called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	return ;
 }
 
 void User::CkTopicCommand(Event& event) const
