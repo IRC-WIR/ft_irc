@@ -4,19 +4,26 @@
 #include "channel_event.h"
 #include "mode.h"
 
-Database::Database(const std::string& password):server_password_(password){};
-Database::~Database(){};
+Database::Database(const std::string& password):server_password_(password){}
+Database::~Database() {
+	std::set<Finishable*> ptr_set;
+
+	for (std::vector<EventConfigurator*>::iterator it = this->check_element_.begin();
+			it != this->check_element_.end(); ++it) {
+		ptr_set.insert(*it);
+	}
+	for (std::vector<EventListener*>::iterator it = this->execute_element_.begin();
+			it != this->execute_element_.end(); ++it) {
+		ptr_set.insert(*it);
+	}
+	for (std::set<Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
+		delete *it;
+}
 
 void Database::CreateUser(int fd) {
-	try {
-		User* user = new User(fd);
-		check_element_.push_back(user);
-		execute_element_.push_back(user);
-	} catch(const std::bad_alloc& e) {
-		std::cerr << "bad to alloc memory" << e.what() << std::endl;
-	} catch(const std::invalid_argument& e) {
-		std::cerr << e.what() << std::endl;
-	}
+	User* user = new User(fd);
+	check_element_.push_back(user);
+	execute_element_.push_back(user);
 }
 
 const Channel& Database::CreateChannel(const User& op, const std::string& name) {
@@ -38,9 +45,7 @@ void Database::CheckEvent(Event*& event) const {
 
 std::map<int, std::string>	Database::ExecuteEvent(const Event& event) {
 	std::map<int, std::string> ret;
-	std::size_t vector_length = execute_element_.size();
-	std::cout << "vector_length: " << vector_length << std::endl;
-	for (size_t i = 0; i < vector_length; i++) {
+	for (size_t i = 0; i < execute_element_.size(); i++) {
 		OptionalMessage message = execute_element_[i] -> ExecuteCommand(event);
 		if (!message.IsEmpty())
 			ret.insert(message.MakePair());

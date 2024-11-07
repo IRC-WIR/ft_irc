@@ -42,19 +42,9 @@ EventHandler::EventHandler(Database& database,int port_no)
 
 void	EventHandler::ExecutePoll() {
 	int	pollResult = poll(poll_fd_.data(), poll_fd_.size(), 1000);
-	//debug
-	// std::cout << "-- pollfd --" << std::endl;
-	// for (int i = 0; i < (int)poll_fd_.size(); i++)
-	// {
-	// 	std::cout << i << ": " << poll_fd_.at(i).fd << std::endl;
-	// }
-	//	std::cout << "-- listener --" << std::endl;
-	//	std::cout << event_listeners_.size() << std::endl;
-	//////
 	if (pollResult < 0)
 		throw (EventHandlerException(kPollErrMsg));
 	if (pollResult == 0) {
-		//debug
 		std::cout << "no event in 1000ms" << std::endl;
 		return;
 	}
@@ -78,7 +68,7 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 		//receive用のbufferを作成し、null埋めする
 		char receive_buffer[kBufferSize + 1];
 		std::memset(receive_buffer, 0, kBufferSize + 1);
-		Receive(entry.fd, receive_buffer);
+		recv(entry.fd, receive_buffer, kBufferSize, 0);
 		std::cout << "[ "<< entry.fd << " ]Message from client: " << receive_buffer << std::endl;
 		Execute(entry, receive_buffer);
 	}
@@ -87,8 +77,10 @@ void	EventHandler::HandlePollInEvent(pollfd entry) {
 void	EventHandler::HandlePollOutEvent(pollfd entry) {
 	if (entry.revents & POLLOUT) {
 		int target_fd = entry.fd;
-	for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
-			it != response_map_[target_fd].end();) {
+		if (response_map_[target_fd].empty())
+			return ;
+		for (std::vector<std::string>::iterator it = response_map_[target_fd].begin();
+				it != response_map_[target_fd].end();) {
 			const char *res_msg_char = (*it).c_str();
 			int	res_msg_length = (*it).length();
 			int sent_msg_length = send(target_fd, res_msg_char, res_msg_length, 0);
@@ -109,17 +101,19 @@ void	EventHandler::HandlePollOutEvent(pollfd entry) {
 			it = response_map_[target_fd].erase(it);
 		}
 		//対象ソケットへの、メッセージを送信し切った場合
-		if (response_map_[target_fd].empty()) {
-			std::cout << "erase from Database::response_map_" << std::endl;
-			response_map_.erase(target_fd);
-		}
+		if (response_map_[target_fd].empty())
+			std::cout << "all send from Database::response_map_" << std::endl;
 	}
 	return ;
 }
 
 void	EventHandler::HandlePollHupEvent(pollfd entry) {
-	if (entry.revents& (POLLHUP)) {
+	if (entry.revents & (POLLHUP)) {
 		std::cout << entry.fd << ">> disconnected" << std::endl;
+		Event* event = new Event(entry.fd, POLLHUP);
+		event->set_command(Command::kQuit);
+		ExecuteCommand(event);
+		delete event;
 	}
 }
 
@@ -164,13 +158,6 @@ void	EventHandler::Accept() {
 	database_.CreateUser(connected_socket_);
 	return;
 }
-
-void	EventHandler::Receive(int fd, char* buffer) {
-	//receive the message from the socket
-	recv(fd, buffer, kBufferSize, 0);
-	std::cout << "<Receive> " << buffer << std::endl;
-}
-
 
 void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 	//EOFの場合
@@ -225,7 +212,12 @@ void	EventHandler::Execute(const pollfd& entry, const std::string& msg) {
 			this->ExecuteCommand(event);
 			break ;
 		}
+		bool ret_flag = false;
+		if (!event->HasErrorOccurred() && event->get_command() == Command::kQuit)
+			ret_flag = true;
 		delete event;
+		if (ret_flag)
+			return ;
 		request_buffer = remain_msg;
 	}
 	if (!request_buffer.empty())
