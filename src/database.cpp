@@ -28,14 +28,9 @@ const Channel& Database::CreateChannel(const User& op, const std::string& name) 
 
 void Database::CheckEvent(Event*& event) const {
 	Database::CheckCommandAndParams(*event);
-	if (event->HasErrorOccurred())
-		return ;
 	std::size_t vector_length = check_element_.size();
-	for (std::size_t i = 0; i < vector_length; i++) {
+	for (std::size_t i = 0; i < vector_length; i++)
 		check_element_[i] -> CheckCommand(event);
-		if (event->HasErrorOccurred())
-			return ;
-	}
 	if (event->HasErrorOccurred())
 			return ;
 	this->AfterCheck(*event);
@@ -63,8 +58,18 @@ void Database::DeleteFinishedElements() {
 
 	Database::EraseAndAdd(check_element_, ptr_set);
 	Database::EraseAndAdd(execute_element_, ptr_set);
-	for (std::set<Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it)
+	for (std::set<Finishable*>::iterator it = ptr_set.begin(); it != ptr_set.end(); ++it) {
+		const Channel* channel_ptr = dynamic_cast<const Channel*>(*it);
+		if (channel_ptr != NULL) {
+			for (std::vector<EventListener*>::iterator it2 = this->execute_element_.begin();
+					it2 != this->execute_element_.end(); ++it2) {
+				User* target = dynamic_cast<User*>(*it2);
+				if (target != NULL)
+					target->DeleteChannelFromList(*channel_ptr);
+			}
+		}
 		delete *it;
+	}
 }
 
 void Database::CheckCommandAndParams(Event& event) const {
@@ -93,6 +98,30 @@ void Database::CheckCommandAndParams(Event& event) const {
 
 }
 
+static bool CheckNoSuchChannel(const Event& event) {
+	if (event.get_command() == Command::kInvite
+			&& event.get_command_params().size() >= 2)
+		return !event.IsChannelEvent();
+	else if (event.get_command() == Command::kMode)
+		return !event.IsChannelEvent();
+	return false;
+}
+
+static bool CheckNoSuchNick(const Event& event) {
+	if (event.get_command() == Command::kInvite
+			&& event.get_command_params().size() >= 2)
+		return (event.get_user_count() == 0);
+	else if (event.get_command() == Command::kMode) {
+		const std::vector<std::string>& params = event.get_command_params();
+		if (params.size() >= 3) {
+			const Mode mode = Mode::Analyze(params[1]);
+			if (mode.get_mode() == 'o')
+				return (event.get_user_count() == 0);
+		}
+	}
+	return false;
+}
+
 void Database::AfterCheck(Event& event) const {
 	if (event.get_command() == Command::kTopic) {
 		if (!event.IsChannelEvent()) {
@@ -111,16 +140,23 @@ void Database::AfterCheck(Event& event) const {
 		}
 		return ;
 	}
-	if (event.get_command() == Command::kMode) {
-		if (!event.IsChannelEvent()) {
-			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
-			return ;
-		}
-		const std::vector<std::string>& params = event.get_command_params();
-		if (params.size() >= 3) {
-			const Mode mode = Mode::Analyze(params[1]);
-			if (mode.get_mode() == 'o' && event.get_user_count() == 0) {
-				event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
+	// ERR_NOSUCHCHANNEL
+	if (CheckNoSuchChannel(event)) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+		return ;
+	}
+	// ERR_NOSUCHNICK
+	if (CheckNoSuchNick(event)) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
+		return ;
+	}
+	if (event.get_command() == Command::kJoin) {
+		if (event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (channel.IsMode('i')
+					&& !channel.ContainsUser(event.get_executer())
+					&& !event.get_executer().IsInvitedChannel(channel)) {
+				event.set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
 				return ;
 			}
 		}
@@ -200,9 +236,8 @@ void Database::CkJoinCommand(Event& event) const {
 }
 
 void Database::CkInviteCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check vite called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	(void) event;
+	return ;
 }
 
 void Database::CkKickCommand(Event& event) const {
