@@ -77,7 +77,6 @@ namespace utils {
 	//NewLine in IRC server
 	static const std::string kNewLine = "\r\n";
 	static std::string kHostName = "localhost";
-
 };
 
 #endif

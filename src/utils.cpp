@@ -129,9 +129,10 @@ std::string GetWelcomeString(const ResponseStatus& res_status, const User& user)
 	ss << " :";
 	//add message from motd file
 	for (std::string line; std::getline(s, line); ) {
-		ss << line << kNewLine;
+		ss << line;
 	}
 	//add nick!user@host
+	ss << " ";
 	ss << user.CreateNameWithHost() << kNewLine;
 	return ss.str();
 }
