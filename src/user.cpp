@@ -16,8 +16,8 @@ User::~User() {
 std::string User::CreateCommonMessage(const Command& command, const std::vector<std::string>& messages) const {
 	std::stringstream ss;
 
-	ss << this->CreateNameWithHost() << " ";
-	ss << command.get_name();
+	ss << this->CreateNameWithHost();
+	ss << " " << command.get_name();
 	if (!messages.empty()) {
 		if (messages.size() > 1)
 			ss << " " << utils::Join(messages.begin(), messages.end() - 1, " ");
@@ -207,35 +207,32 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 
 std::string User::CreateJoinDetailMessage(const Channel& channel) const {
 	std::stringstream ss;
+	std::vector<std::string> messages;
 	// topic
-	if (!channel.get_topic().empty())
-		ss << ":" << utils::kHostName << " "
-			<< 332 << " "
-			<< this->get_nick_name() << " "
-			<< channel.get_name() << " :"
-			<< channel.get_topic() << utils::kNewLine;
+	if (!channel.get_topic().empty()) {
+		messages.push_back(channel.get_name());
+		messages.push_back(channel.get_topic());
+		ss << this->CreateReplyMessage(ResponseStatus::RPL_TOPIC.get_code(), messages);
+	}
 	// メンバーリスト
-	ss << ":" << utils::kHostName << " ";
-	ss << 353 << " "
-		<< this->get_nick_name() << " = "
-		<< channel.get_name() << " :"
-		<< channel.GenerateMemberListWithNewUser(*this) << utils::kNewLine;
+	messages.clear();
+	messages.push_back(channel.get_name());
+	messages.push_back(channel.GenerateMemberListWithNewUser(*this));
+	ss << this->CreateReplyMessage(ResponseStatus::RPL_NAMREPLY.get_code(), messages);
 	// End of NAMES list
-	ss << ":" << utils::kHostName << " ";
-	ss << 366 << " "
-		<< this->get_nick_name() << " "
-		<< channel.get_name() << " :"
-		<< "End of /NAMES list." << utils::kNewLine;
+	messages.clear();
+	messages.push_back(channel.get_name());
+	messages.push_back(ResponseStatus::RPL_ENDOFNAMES.get_message());
+	ss << this->CreateReplyMessage(ResponseStatus::RPL_ENDOFNAMES.get_code(), messages);
 	return ss.str();
 }
 
 OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
-		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
-			return OptionalMessage::Create(this->get_fd(), message);
-		} else
-			return OptionalMessage::Empty();
+		if (event.get_fd() == this->get_fd())
+			return OptionalMessage::Create(this->get_fd(),
+					User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+		return OptionalMessage::Empty();
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
@@ -249,8 +246,7 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	}
 	if (this->joining_channels_.Contains(&channel))
 		return OptionalMessage::Create(this->get_fd(), common_message);
-	else
-		return OptionalMessage::Empty();
+	return OptionalMessage::Empty();
 }
 
 OptionalMessage User::ExInviteCommand(const Event& event){

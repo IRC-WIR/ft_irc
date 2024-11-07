@@ -93,23 +93,7 @@ void Database::CheckCommandAndParams(Event& event) const {
 
 }
 
-static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
-	return (status == ErrorStatus::ERR_INVITEONLYCHAN
-			|| status == ErrorStatus::ERR_BADCHANNELKEY
-			|| status == ErrorStatus::ERR_CHANNELISFULL);
-}
-
 void Database::AfterCheck(Event& event) const {
-	if (event.get_command() == Command::kJoin) {
-		if (event.IsChannelEvent()) {
-			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-			if (channel.ContainsUser(event.get_executer())
-					&& (!event.HasErrorOccurred() || IsIgnoringErrorOnJoin(event.get_error_status()))) {
-						event.set_do_nothing(true);
-					}
-		}
-		return ;
-	}
 	if (event.get_command() == Command::kTopic) {
 		if (!event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
