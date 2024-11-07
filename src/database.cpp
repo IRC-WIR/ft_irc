@@ -101,6 +101,20 @@ static bool IsIgnoringErrorOnJoin(const ErrorStatus& status) {
 			|| status == ErrorStatus::ERR_CHANNELISFULL);
 }
 
+static bool CheckNoSuchNick(const Event& event) {
+	if (event.get_command() == Command::kInvite && event.get_user_count() == 0)
+		return true;
+	if (event.get_command() == Command::kMode) {
+		const std::vector<std::string>& params = event.get_command_params();
+		if (params.size() >= 3) {
+			const Mode mode = Mode::Analyze(params[1]);
+			if (mode.get_mode() == 'o' && event.get_user_count() == 0)
+				return true;
+		}
+	}
+	return false;
+}
+
 void Database::AfterCheck(Event& event) const {
 	if (event.get_command() == Command::kJoin) {
 		if (event.IsChannelEvent()) {
@@ -120,17 +134,9 @@ void Database::AfterCheck(Event& event) const {
 		}
 	}
 	// ERR_NOSUCHNICK
-	if (event.get_command() == Command::kInvite) {
-	}
-	if (event.get_command() == Command::kMode) {
-		const std::vector<std::string>& params = event.get_command_params();
-		if (params.size() >= 3) {
-			const Mode mode = Mode::Analyze(params[1]);
-			if (mode.get_mode() == 'o' && event.get_user_count() == 0) {
-				event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
-				return ;
-			}
-		}
+	if (CheckNoSuchNick(event)) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
+		return ;
 	}
 }
 

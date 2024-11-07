@@ -399,8 +399,8 @@ void User::CkJoinCommand(Event& event) const {
 }
 
 void User::CkInviteCommand(Event& event) const {
-	(void)event;
-	// ERR_NOSUCHNICK の処理の一部をここに書く 
+	if (event.get_command_params()[0] == this->get_nick_name())
+		event.IncreaseUserCount();
 	return ;
 }
 
@@ -430,7 +430,7 @@ void User::CkModeCommand(Event& event) const {
 	if (params.size() <= 1)
 		return ;
 	const Mode mode = Mode::Analyze(params[1]);
-	if (mode.get_mode() == 'o' && params[2] == this->nick_name_)
+	if (mode.get_mode() == 'o' && params[2] == this->get_nick_name())
 		event.IncreaseUserCount();
 }
 
