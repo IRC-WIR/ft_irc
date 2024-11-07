@@ -249,6 +249,22 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
+std::string User::CreateInviteDetailMessage() const {
+	std::stringstream ss;
+	std::vector<std::string> messages;
+	// 招待を受けたチャンネルリスト
+	for (std::vector<const Channel*>::const_iterator it = this->invited_channels_.begin();
+			it != this->invited_channels_.end(); ++it) {
+		messages.push_back((*it)->get_name());
+		ss << this->CreateReplyMessage(ResponseStatus::RPL_INVITELIST.get_code(), messages);
+	}
+	// End of INVITE list
+	messages.clear();
+	messages.push_back(ResponseStatus::RPL_ENDOFINVITELIST.get_message());
+	ss << this->CreateReplyMessage(ResponseStatus::RPL_ENDOFINVITELIST.get_code(), messages);
+	return ss.str();
+}
+
 OptionalMessage User::ExInviteCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd())
@@ -260,18 +276,25 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 	if (params.size() < 2) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
-		// INVITE情報の表示
-		return OptionalMessage::Empty(); // 未実装, RPL_INVITELIST RPL_ENDOFINVITELIST を使う
+		return OptionalMessage::Create(this->get_fd(), this->CreateInviteDetailMessage());
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
-	if (event.get_fd() == this->get_fd())
-		return OptionalMessage::Create(this->get_fd(), ""); // 未実装, RPL_INVITING を使う
-	else if (this->get_nick_name() == params[2]) {
+	if (event.get_fd() == this->get_fd()) {
+		std::vector<std::string> messages;
+		messages.push_back(params[2]);
+		messages.push_back(channel.get_name());
+		return OptionalMessage::Create(this->get_fd(),
+				this->CreateReplyMessage(ResponseStatus::RPL_INVITING.get_code(), messages));
+	} else if (utils::StrToLower(this->get_nick_name()) == utils::StrToLower(params[2])) {
 		if (!this->invited_channels_.Contains(&channel))
 			this->invited_channels_.push_back(&channel);
-		return OptionalMessage::Create(this->get_fd(), ""); // 未実装
+		std::vector<std::string> messages;
+		messages.push_back(this->get_nick_name());
+		messages.push_back(channel.get_name());
+		return OptionalMessage::Create(this->get_fd(),
+				event.get_executer().CreateCommonMessage(event.get_command(), messages));
 	}
 	return OptionalMessage::Empty();
 }
@@ -493,9 +516,9 @@ void User::CkJoinCommand(Event& event) const {
 }
 
 void User::CkInviteCommand(Event& event) const {
-	if (event.get_command_params()[0] == this->get_nick_name())
-		event.IncreaseUserCount();
-	return ;
+	if (utils::StrToLower(event.get_command_params()[0]) != utils::StrToLower(this->get_nick_name()))
+		return ;
+	event.IncreaseUserCount();
 }
 
 void User::CkKickCommand(Event& event) const
