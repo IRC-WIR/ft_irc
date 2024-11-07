@@ -437,7 +437,7 @@ void Channel::CkTopicCommand(Event*& event) const {
 }
 
 void Channel::CkPrivmsgCommand(Event*& event) const {
-	if (event->get_command_params()[0] != this->get_name())
+	if (utils::StrToLower(event->get_command_params()[0]) != utils::StrToLower(this->get_name()))
 		return ;
 	//チャンネルイベントを作成する
 	ChannelEvent* channel_event = new ChannelEvent(*event, *this);

@@ -102,7 +102,14 @@ static bool CheckNoSuchChannel(const Event& event) {
 	if (event.get_command() == Command::kInvite
 			&& event.get_command_params().size() >= 2)
 		return !event.IsChannelEvent();
+	else if (event.get_command() == Command::kPrivmsg
+			&& event.get_command_params()[0][0] == '#')
+		return !event.IsChannelEvent();
 	else if (event.get_command() == Command::kMode)
+		return !event.IsChannelEvent();
+	else if (event.get_command() == Command::kTopic)
+		return !event.IsChannelEvent();
+	else if (event.get_command() == Command::kKick)
 		return !event.IsChannelEvent();
 	return false;
 }
@@ -110,6 +117,9 @@ static bool CheckNoSuchChannel(const Event& event) {
 static bool CheckNoSuchNick(const Event& event) {
 	if (event.get_command() == Command::kInvite
 			&& event.get_command_params().size() >= 2)
+		return (event.get_user_count() == 0);
+	else if (event.get_command() == Command::kPrivmsg
+			&& event.get_command_params()[0][0] != '#')
 		return (event.get_user_count() == 0);
 	else if (event.get_command() == Command::kMode) {
 		const std::vector<std::string>& params = event.get_command_params();
@@ -123,23 +133,6 @@ static bool CheckNoSuchNick(const Event& event) {
 }
 
 void Database::AfterCheck(Event& event) const {
-	if (event.get_command() == Command::kTopic) {
-		if (!event.IsChannelEvent()) {
-			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
-			return ;
-		}
-		return ;
-	}
-	if (event.get_command() == Command::kPrivmsg) {
-		if (event.get_user_count() == 0 && !event.IsChannelEvent()) {
-			if (event.get_command_params()[0].at(0) == '#') {
-				event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
-				return ;
-			}
-			event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
-		}
-		return ;
-	}
 	// ERR_NOSUCHCHANNEL
 	if (CheckNoSuchChannel(event)) {
 		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
@@ -184,7 +177,7 @@ void Database::CkNickCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NONICKNAMEGIVEN);
 		return ;
 	}
-	const std::string& new_nickname = event.get_command_params().at(0);
+	const std::string& new_nickname = event.get_command_params()[0];
 	if (new_nickname.length() > 9) {
 		event.set_error_status(ErrorStatus::ERR_ERRONEUSNICKNAME);
 		return ;

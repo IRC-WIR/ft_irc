@@ -316,13 +316,6 @@ OptionalMessage User::ExKickCommand(const Event& event){
 		}
 		return OptionalMessage::Empty();
 	}
-	if (!event.IsChannelEvent()) {
-		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command(), ErrorStatus::ERR_NOSUCHCHANNEL);
-			return OptionalMessage::Create(this->get_fd(), message);
-		}
-		return OptionalMessage::Empty();
-	}
 	//成功
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	const std::string& target_name = event.get_command_params()[1];
@@ -340,7 +333,7 @@ OptionalMessage User::ExKickCommand(const Event& event){
 		std::string optional_message = "";
 		if (params.size() > 2)
 			optional_message = " using \"" + utils::Join(params.begin() + 2, params.end(), " ") + "\" as the reason(comment)";
-		return OptionalMessage::Create(this->get_fd(), base_message + optional_message + "\r\n");
+		return OptionalMessage::Create(this->get_fd(), base_message + optional_message + utils::kNewLine);
 	}
 	if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
 		this->joining_channels_.Remove(&channel);
@@ -563,6 +556,8 @@ void User::CkInviteCommand(Event& event) const {
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.empty())
 		return ;
+	if (!this->IsVerified())
+		return ;
 	if (utils::StrToLower(params[0]) != utils::StrToLower(this->get_nick_name()))
 		return ;
 	event.IncreaseUserCount();
@@ -579,9 +574,10 @@ void User::CkTopicCommand(Event& event) const
 	(void) event;
 }
 
-void User::CkPrivmsgCommand(Event& event) const
-{
-	if (event.get_command_params()[0] != this->get_nick_name())
+void User::CkPrivmsgCommand(Event& event) const {
+	if (!this->IsVerified())
+		return ;
+	if (utils::StrToLower(event.get_command_params()[0]) != utils::StrToLower(this->get_nick_name()))
 		return ;
 	event.IncreaseUserCount();
 }
@@ -590,8 +586,10 @@ void User::CkModeCommand(Event& event) const {
 	const std::vector<std::string>& params = event.get_command_params();
 	if (params.size() <= 1)
 		return ;
+	if (!this->IsVerified())
+		return ;
 	const Mode mode = Mode::Analyze(params[1]);
-	if (mode.get_mode() == 'o' && params[2] == this->get_nick_name())
+	if (mode.get_mode() == 'o' && utils::StrToLower(params[2]) == utils::StrToLower(this->get_nick_name()))
 		event.IncreaseUserCount();
 }
 
@@ -662,7 +660,7 @@ bool User::IsInvitedChannel(const Channel& channel) const {
 
 bool User::IsTarget(const std::string& target, const Event& event) const
 {
-	if (target == this->get_nick_name())
+	if (utils::StrToLower(target) == utils::StrToLower(this->get_nick_name()))
 		return true;
 	if (event.IsChannelEvent()) {
 		if (event.get_fd() == this->get_fd())
