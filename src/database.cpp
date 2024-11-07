@@ -145,6 +145,17 @@ void Database::AfterCheck(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
 		return ;
 	}
+	if (event.get_command() == Command::kJoin) {
+		if (event.IsChannelEvent()) {
+			const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+			if (channel.IsMode('i')
+					&& !channel.ContainsUser(event.get_executer())
+					&& !event.get_executer().IsInvitedChannel(channel)) {
+				event.set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
+				return ;
+			}
+		}
+	}
 }
 
 //Check

@@ -103,7 +103,7 @@ bool Channel::IsOperator(const User& user) const {
 	return this->operators_.Contains(&user);
 }
 
-bool Channel::IsMode(const char& c) const{
+bool Channel::IsMode(char c) const {
 	return mode_map_(c);
 }
 
@@ -359,8 +359,6 @@ void Channel::CkJoinCommand(Event*& event) const {
 	const std::string key = params.size() >= 2 ? params[1] : "";
 	if (this->mode_map_('k') && this->key_ != key)
 		event->set_error_status(ErrorStatus::ERR_BADCHANNELKEY);
-	else if (this->mode_map_('i'))
-		event->set_error_status(ErrorStatus::ERR_INVITEONLYCHAN);
 	else if (this->mode_map_('l') && this->operators_.size() + this->members_.size() >= this->max_member_num_)
 		event->set_error_status(ErrorStatus::ERR_CHANNELISFULL);
 }

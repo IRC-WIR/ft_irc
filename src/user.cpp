@@ -241,6 +241,7 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	messages.push_back(channel.get_name());
 	const std::string common_message = event.get_executer().CreateCommonMessage(event.get_command(), messages);
 	if (event.get_fd() == this->get_fd()) {
+		this->invited_channels_.Remove(&channel);
 		this->joining_channels_.push_back(&channel);
 		return OptionalMessage::Create(this->get_fd(), common_message + this->CreateJoinDetailMessage(channel));
 	}
@@ -613,6 +614,9 @@ bool	User::IsVerified() const {
 	return true;
 }
 
+bool User::IsInvitedChannel(const Channel& channel) const {
+	return this->invited_channels_.Contains(&channel);
+}
 
 bool User::IsTarget(const std::string& target, const Event& event) const
 {

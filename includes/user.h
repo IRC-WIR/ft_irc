@@ -19,6 +19,7 @@ class User : public EventListener, public EventConfigurator {
 		OptionalMessage ExecuteCommand(const Event& event);
 		bool IsFinished(void) const;
 		bool IsVerified(void) const;
+		bool IsInvitedChannel(const Channel&) const;
 		void set_is_password_authenticated(bool is_pw_authenticated);
 		bool get_is_password_authenticated(void) const;
 		void set_displayed_welcome(bool is_verified);
