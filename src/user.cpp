@@ -516,7 +516,10 @@ void User::CkJoinCommand(Event& event) const {
 }
 
 void User::CkInviteCommand(Event& event) const {
-	if (utils::StrToLower(event.get_command_params()[0]) != utils::StrToLower(this->get_nick_name()))
+	const std::vector<std::string>& params = event.get_command_params();
+	if (params.empty())
+		return ;
+	if (utils::StrToLower(params[0]) != utils::StrToLower(this->get_nick_name()))
 		return ;
 	event.IncreaseUserCount();
 }

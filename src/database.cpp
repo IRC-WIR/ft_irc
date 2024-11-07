@@ -93,15 +93,26 @@ void Database::CheckCommandAndParams(Event& event) const {
 
 }
 
+static bool CheckNoSuchChannel(const Event& event) {
+	if (event.get_command() == Command::kInvite
+			&& event.get_command_params().size() >= 2)
+		return !event.IsChannelEvent();
+	else if (event.get_command() == Command::kMode)
+		return !event.IsChannelEvent();
+}
+
 static bool CheckNoSuchNick(const Event& event) {
-	if (event.get_command() == Command::kInvite && event.get_user_count() == 0)
-		return true;
-	if (event.get_command() == Command::kMode) {
+	if (event.get_command() == Command::kJoin)
+		return (event.get_user_count() == 0);
+	else if (event.get_command() == Command::kInvite
+			&& event.get_command_params().size() >= 2)
+		return (event.get_user_count() == 0);
+	else if (event.get_command() == Command::kMode) {
 		const std::vector<std::string>& params = event.get_command_params();
 		if (params.size() >= 3) {
 			const Mode mode = Mode::Analyze(params[1]);
-			if (mode.get_mode() == 'o' && event.get_user_count() == 0)
-				return true;
+			if (mode.get_mode() == 'o')
+				return (event.get_user_count() == 0);
 		}
 	}
 	return false;
@@ -126,12 +137,9 @@ void Database::AfterCheck(Event& event) const {
 		return ;
 	}
 	// ERR_NOSUCHCHANNEL
-	if (event.get_command() == Command::kInvite
-			|| event.get_command() == Command::kMode) {
-		if (!event.IsChannelEvent()) {
-			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
-			return ;
-		}
+	if (CheckNoSuchChannel(event)) {
+		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
+		return ;
 	}
 	// ERR_NOSUCHNICK
 	if (CheckNoSuchNick(event)) {
