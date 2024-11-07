@@ -102,9 +102,7 @@ static bool CheckNoSuchChannel(const Event& event) {
 }
 
 static bool CheckNoSuchNick(const Event& event) {
-	if (event.get_command() == Command::kJoin)
-		return (event.get_user_count() == 0);
-	else if (event.get_command() == Command::kInvite
+	if (event.get_command() == Command::kInvite
 			&& event.get_command_params().size() >= 2)
 		return (event.get_user_count() == 0);
 	else if (event.get_command() == Command::kMode) {
