@@ -315,7 +315,7 @@ void	EventHandler::AddEventSocket(int new_fd) {
 	poll_fd_.push_back(new_pollfd);
 }
 
-void	EventHandler::AddResponseMap(std::map<int, std::string> new_response){
+void	EventHandler::AddResponseMap(std::map<int, std::string> new_response) {
 
 	for (std::map<int, std::string>::iterator new_map_iterator =
 		new_response.begin();

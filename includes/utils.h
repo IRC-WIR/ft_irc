@@ -15,6 +15,7 @@
 #include "response_status.h"
 #include <ostream> // for std::ostringstream
 #include <iterator> // for std::ostream_iterator
+#include <iomanip> // for setfill(c)
 
 class User;
 
@@ -32,7 +33,7 @@ namespace utils {
 	bool HasNewlines(const std::string& str);
 	std::string GetWelcomeString(const ResponseStatus& res_status, const User& user);
 	std::string StrToLower(const std::string& str);
-
+	std::string FillZero(int src, int digits);
 	template <typename InputIterator>
 	std::string Join(InputIterator begin, InputIterator end, const std::string& delim) {
 		std::ostringstream os;
@@ -76,7 +77,6 @@ namespace utils {
 	//NewLine in IRC server
 	static const std::string kNewLine = "\r\n";
 	static std::string kHostName = "localhost";
-
 };
 
 #endif

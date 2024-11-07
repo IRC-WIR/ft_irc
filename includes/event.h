@@ -46,7 +46,6 @@ class Event {
 		class AlreadySetException : public std::runtime_error {
 			public:
 				AlreadySetException(void);
-
 			private:
 				static const std::string kMessage;
 		};
