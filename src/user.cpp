@@ -15,6 +15,7 @@ User::~User() {
 
 void User::DeleteChannelFromList(const Channel& channel) {
 	this->joining_channels_.Remove(&channel);
+	this->invited_channels_.Remove(&channel);
 }
 
 std::string User::CreateCommonMessage(const Command& command, const std::vector<std::string>& messages) const {
