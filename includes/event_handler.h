@@ -6,7 +6,6 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <fcntl.h>
-#include <cerrno>
 #include <cstdlib>
 #include <unistd.h>
 #include "message_parser.h"

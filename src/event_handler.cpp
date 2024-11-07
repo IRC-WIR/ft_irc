@@ -2,7 +2,6 @@
 #include "command.h"
 #include "channel.h"
 #include "channel_event.h"
-#include <errno.h>
 
 const	int	EventHandler::kQueueLimit = 10;
 const	int EventHandler::kBufferSize = 512;
@@ -15,19 +14,13 @@ EventHandler::~EventHandler() {
 EventHandler::EventHandler(Database& database,int port_no)
 	: database_(database) {
 	listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-	if (listening_socket_ < 0) {
-		std::cout << strerror(errno) << std::endl;
+	if (listening_socket_ < 0)
 		std::exit(EXIT_FAILURE);
-	}
-	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0) {
-		std::cout << strerror(errno) << std::endl;
+	if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK) < 0)
 		std::exit(EXIT_FAILURE);
-	}
 	int option_available = 1;
-	if (setsockopt(listening_socket_, SOL_SOCKET, SO_REUSEADDR, &option_available, sizeof(option_available)) < 0) {
-		std::cout << strerror(errno) << std::endl;
+	if (setsockopt(listening_socket_, SOL_SOCKET, SO_REUSEADDR, &option_available, sizeof(option_available)) < 0)
 		std::exit(EXIT_FAILURE);
-	}	
 	struct pollfd listening_pollfd;
 	listening_pollfd.fd = listening_socket_;
 	listening_pollfd.events = POLLIN;
@@ -59,13 +52,8 @@ void	EventHandler::ExecutePoll() {
 	//	std::cout << event_listeners_.size() << std::endl;
 	//////
 	if (pollResult < 0)
-	{
-		//bebug
-		std::cerr << strerror(errno) << std::endl;
 		throw (EventHandlerException(kPollErrMsg));
-	}
-	if (pollResult == 0)
-	{
+	if (pollResult == 0) {
 		//debug
 		std::cout << "no event in 1000ms" << std::endl;
 		return;
