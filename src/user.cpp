@@ -45,6 +45,8 @@ std::string User::CreateReplyMessage(int code, const std::vector<std::string>& m
 void User::CheckCommand(Event*& event) const {
 	if (event->get_fd() == this->get_fd())
 		event->set_executer(*this);
+	if (event->HasErrorOccurred())
+		return ;
 
 	const Command& command = event->get_command();
 
