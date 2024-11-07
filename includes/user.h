@@ -43,8 +43,11 @@ class User : public EventListener, public EventConfigurator {
 		bool is_delete_;
 		utils::MyVector<const Channel*> joining_channels_;
 		utils::MyVector<const Channel*> invited_channels_;
-		std::string GenerateJoinDetailMessage(const Channel&) const;
 		bool is_displayed_welcome_;
+
+		std::string CreateJoinDetailMessage(const Channel&) const;
+		std::string CreateCommonMessage(const Command&, const std::vector<std::string>&) const;
+		std::string CreateReplyMessage(int, const std::vector<std::string>&) const;
 
 		//check command
 		void CkPassCommand(Event& event) const;

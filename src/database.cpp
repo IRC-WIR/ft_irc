@@ -2,6 +2,7 @@
 #include "command.h"
 #include "channel.h"
 #include "channel_event.h"
+#include "mode.h"
 
 Database::Database(const std::string& password):server_password_(password){};
 Database::~Database(){};
@@ -110,12 +111,26 @@ void Database::AfterCheck(Event& event) const {
 		}
 		return ;
 	}
-	if (event.get_command() == Command::kInvite) {
+	// ERR_NOSUCHCHANNEL
+	if (event.get_command() == Command::kInvite
+			|| event.get_command() == Command::kMode) {
 		if (!event.IsChannelEvent()) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
 		}
-		// ERR_NOSUCHNICK は未対応
+	}
+	// ERR_NOSUCHNICK
+	if (event.get_command() == Command::kInvite) {
+	}
+	if (event.get_command() == Command::kMode) {
+		const std::vector<std::string>& params = event.get_command_params();
+		if (params.size() >= 3) {
+			const Mode mode = Mode::Analyze(params[1]);
+			if (mode.get_mode() == 'o' && event.get_user_count() == 0) {
+				event.set_error_status(ErrorStatus::ERR_NOSUCHNICK);
+				return ;
+			}
+		}
 	}
 }
 
@@ -183,7 +198,7 @@ void Database::CkJoinCommand(Event& event) const {
 		event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 		return ;
 	}
-	for (std::size_t i = 0; i < kMustNotContain.length(); i++) {
+	for (std::string::size_type i = 0; i < kMustNotContain.length(); i++) {
 		if (channel_name.find(kMustNotContain[i]) != std::string::npos) {
 			event.set_error_status(ErrorStatus::ERR_NOSUCHCHANNEL);
 			return ;
@@ -215,9 +230,54 @@ void Database::CkPrivmsgCommand(Event& event) const {
 }
 
 void Database::CkModeCommand(Event& event) const {
-	(void)event;
-	std::cout << "Check Mode called!" << std::endl;
-	utils::PrintStringVector(event.get_command_params());
+	const std::string kKeyMustNotContain = ": ";
+
+	const std::vector<std::string>& params = event.get_command_params();
+	switch (params.size()) {
+	case 0:
+		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+		return ;
+	case 1:
+		return ;
+	default:
+		const Mode mode = Mode::Analyze(params[1]);
+		if (mode.get_mode() == '\0') {
+			event.set_do_nothing(true);
+			return ;
+		}
+		if (Channel::kHandlingModes.find(mode.get_mode()) == std::string::npos) {
+			event.set_error_status(ErrorStatus::ERR_UNKNOWNMODE);
+			return ;
+		}
+		if (mode.get_mode() == 'k' || mode.get_mode() == 'o'
+				|| (mode.is_plus() && mode.get_mode() == 'l')) {
+			if (params.size() < 3) {
+				event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
+				return ;
+			}
+			if (params[2].empty()) {
+				event.set_error_status(ErrorStatus::ERR_WRONGMODEPARAMS);
+				return ;
+			}
+			if (mode.is_plus() && mode.get_mode() == 'k') {
+				const std::string& key = params[2];
+				for (std::string::size_type j = 0; j < kKeyMustNotContain.length(); j++) {
+					if (key.find(kKeyMustNotContain[j]) != std::string::npos) {
+						event.set_error_status(ErrorStatus::ERR_WRONGMODEPARAMS);
+						return ;
+					}
+				}
+			}
+			if (mode.get_mode() == 'l') {
+				int limit = utils::Stoi(params[2]);
+				if (limit < 0) {
+					event.set_error_status(ErrorStatus::ERR_WRONGMODEPARAMS);
+					return ;
+				}
+			}
+		}
+		return ;
+	}
 }
 
 void Database::CkQuitCommand(Event& event) const {

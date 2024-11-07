@@ -7,6 +7,7 @@ class ResponseStatus {
     public:
         static const ResponseStatus
             RPL_WELCOME,
+            RPL_CHANNELMODEIS,
 			RPL_INVITELIST,
 			RPL_ENDOFINVITELIST,
 			RPL_INVITING
