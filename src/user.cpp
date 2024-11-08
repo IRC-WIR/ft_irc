@@ -173,10 +173,8 @@ OptionalMessage User::ExNickCommand(const Event& event){
 OptionalMessage User::ExUserCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
-	if (event.HasErrorOccurred()) {
-		return OptionalMessage::Create(this->get_fd(),
-				User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
-	}
+	if (event.HasErrorOccurred())
+		return OptionalMessage::Create(this->get_fd(), event.CreateErrorMessage(*this));
 
 	const std::vector<std::string>& params = event.get_command_params();
 	// 今回は1,2番目の要素(= 2, 3番目の引数)は無視する
