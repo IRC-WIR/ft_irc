@@ -205,8 +205,7 @@ void Database::CkNickCommand(Event& event) const {
 void Database::CkUserCommand(Event& event) const {
 	const int kParamsSize = 4;
 
-	const std::vector<std::string>& params = event.get_command_params();
-	if (params.size() < kParamsSize || params[kParamsSize - 1].empty())
+	if (event.get_command_params().size() < kParamsSize)
 		event.set_error_status(ErrorStatus::ERR_NEEDMOREPARAMS);
 }
 
