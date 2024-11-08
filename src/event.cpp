@@ -109,7 +109,7 @@ bool Event::is_do_nothing() const {
 }
 
 // ERR_NOSUCHNICK, ERR_NOSUCHCHANNEL, 
-std::string Event::CreateErrorMessage(const User& user, const std::string& target = "") const {
+std::string Event::CreateErrorMessage(const User& user, const std::string& target) const {
 	const ErrorStatus& error_status = this->get_error_status();
 	std::stringstream ss;
 	//add hostname
@@ -131,7 +131,7 @@ std::string Event::CreateErrorMessage(const User& user, const std::string& targe
 	return ss.str();
 }
 
-std::string Event::CreateTargetStr(const std::string& target = "") const {
+std::string Event::CreateTargetStr(const std::string& target) const {
 	const ErrorStatus& error_status = this->get_error_status();
 
 	if (error_status == ErrorStatus::ERR_NOSUCHNICK
