@@ -333,12 +333,12 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	if (channel.ContainsUser(*this)
 		|| utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
 		std::string message;
-		message = CreateKickMessage(event, channel.get_name(), this->get_nick_name());
+		message = CreateKickMessage(event, channel.get_name(), target_name);
+		if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_))
+			this->joining_channels_.Remove(&channel);
 		return OptionalMessage::Create(this->get_fd(), message);
 	}
-	if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
-		this->joining_channels_.Remove(&channel);
-	}
+
 	return OptionalMessage::Empty();
 }
 
