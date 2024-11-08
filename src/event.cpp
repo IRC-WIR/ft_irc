@@ -136,13 +136,13 @@ std::string Event::CreateTargetStr(const std::string& target) const {
 
 	if (error_status == ErrorStatus::ERR_NOSUCHNICK
 			|| error_status == ErrorStatus::ERR_NOSUCHCHANNEL
+			|| error_status == ErrorStatus::ERR_TOOMANYCHANNELS
 			|| error_status == ErrorStatus::ERR_ERRONEUSNICKNAME
 			|| error_status == ErrorStatus::ERR_NICKNAMEINUSE
 			|| error_status == ErrorStatus::ERR_UNKNOWNMODE
 			|| error_status == ErrorStatus::ERR_WRONGMODEPARAMS)
 		return (target + " "); // targetを設定してもらう
 	else if (error_status == ErrorStatus::ERR_CANNOTSENDTOCHAN
-			|| error_status == ErrorStatus::ERR_TOOMANYCHANNELS
 			|| error_status == ErrorStatus::ERR_NOTONCHANNEL
 			|| error_status == ErrorStatus::ERR_KEYSET
 			|| error_status == ErrorStatus::ERR_CHANNELISFULL
