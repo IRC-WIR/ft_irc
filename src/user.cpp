@@ -390,7 +390,7 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& error_msg = CreateErrorMessage(*this, event.get_command_params()[1]);
+			const std::string& error_msg = CreateErrorMessage(*this, event.get_command_params()[0]);
 			return OptionalMessage::Create(event.get_fd(), error_msg);
 		}
 		return OptionalMessage::Empty();
@@ -418,7 +418,7 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
-		const std::string& err_msg = CreateErrorMessage(*this, event.get_command_params()[1]);
+		const std::string& err_msg = CreateErrorMessage(*this, event.get_command_params()[0]);
 		return OptionalMessage::Create(this->get_fd(), err_msg);
 	}
 	//成功
