@@ -285,10 +285,12 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
-std::string User::CreateKickMessage(const User& from, const Command& cmd, const std::vector<std::string>& params) const {
+std::string User::CreateKickMessage(const Event& event, const std::string& channel_target, const std::string& user_target) const {
+	const User& from = event.get_executer();
+	const Command& cmd = event.get_command();
+	const std::vector<std::string>& params = event.get_command_params();
+
 	std::stringstream ss;
-	std::string channel_target = params[0];
-	std::string user_target = params[1];
 
 	ss << ":";
 	// "Nickname@Hostname"
@@ -331,7 +333,7 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	if (channel.ContainsUser(*this)
 		|| utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
 		std::string message;
-		message = CreateKickMessage(event.get_executer(), event.get_command(), event.get_command_params());
+		message = CreateKickMessage(event, channel.get_name(), this->get_nick_name());
 		return OptionalMessage::Create(this->get_fd(), message);
 	}
 	if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
