@@ -319,9 +319,9 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	//成功
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
 	const std::string& target_name = event.get_command_params()[1];
-	
+
 	//対象チャンネルに所属している場合
-	if (channel.ContainsUser(*this) 
+	if (channel.ContainsUser(*this)
 		|| utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
 		std::string base_message;
 		if (event.get_fd() == this->get_fd()) {
@@ -372,9 +372,6 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 	std::stringstream ss;
 	ss << ":" << user.get_nick_name() << "!" << user.get_user_name() <<  "@"
 		<< utils::kHostName << " ";
-	// nick name
-	ss << user.get_nick_name();
-	ss << " ";
 	// command
 	ss << Command::kTopic.get_name();
 	ss << " ";
@@ -504,7 +501,7 @@ OptionalMessage User::ExQuitCommand(const Event& event){
 				context_message = "client quit";
 			else {
 				std::vector<std::string> params = event.get_command_params();
-				context_message = utils::Join(params.begin(), params.end(), " "); 
+				context_message = utils::Join(params.begin(), params.end(), " ");
 			}
 			return OptionalMessage::Create(this->fd_, prefix_message + context_message + utils::kNewLine);
 		}
