@@ -49,7 +49,7 @@ class User : public EventListener, public EventConfigurator {
 		std::string CreateMessage(const User& from, const std::string& target, const Command& cmd, const std::vector<std::string>& params) const;
 		std::string CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const;
 		std::string CreateTopicRplMessage(const Channel& channel) const;
-		std::string User::CreateTopicErrorMessage(const Command& cmd, const ErrorStatus& error_status, std::string target) const
+		std::string CreateTopicErrorMessage(const std::string& target, const ErrorStatus& error_status) const;
 		std::string CreateJoinDetailMessage(const Channel&) const;
 		std::string CreateInviteDetailMessage(void) const;
 		std::string CreateCommonMessage(const Command&, const std::vector<std::string>&) const;

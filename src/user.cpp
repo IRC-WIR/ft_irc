@@ -386,7 +386,7 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 	return ss.str();
 }
 
-std::string User::CreateTopicErrorMessage(const Command& cmd, const ErrorStatus& error_status, std::string target) const {
+std::string User::CreateTopicErrorMessage(const std::string& target, const ErrorStatus& error_status) const {
 	std::stringstream ss;
 	//add hostname
 	ss << ":";
@@ -411,7 +411,7 @@ std::string User::CreateTopicErrorMessage(const Command& cmd, const ErrorStatus&
 OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& error_msg = CreateTopicErrorMessage(event.get_command(), event.get_error_status(), event.get_command_params()[0]);
+			const std::string& error_msg = CreateTopicErrorMessage(event.get_command_params()[0], event.get_error_status());
 			return OptionalMessage::Create(event.get_fd(), error_msg);
 		}
 		return OptionalMessage::Empty();
