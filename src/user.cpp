@@ -211,12 +211,21 @@ std::string User::CreateJoinDetailMessage(const Channel& channel) const {
 }
 
 OptionalMessage User::ExJoinCommand(const Event& event) {
+	const std::vector<std::string> params = event.get_command_params();
+
 	if (event.HasErrorOccurred()) {
-		if (event.get_fd() == this->get_fd())
-			return OptionalMessage::Create(this->get_fd(),
-					User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
+		if (event.get_fd() == this->get_fd()) {
+			const ErrorStatus& error = event.get_error_status();
+			if (error == ErrorStatus::ERR_NOSUCHCHANNEL
+					|| error == ErrorStatus::ERR_TOOMANYCHANNELS)
+				return OptionalMessage::Create(this->get_fd(),
+						event.CreateErrorMessage(*this, event.get_command_params()[0]));
+			else
+				return OptionalMessage::Create(this->get_fd(), event.CreateErrorMessage(*this));
+		}
 		return OptionalMessage::Empty();
 	}
+
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
 	const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
