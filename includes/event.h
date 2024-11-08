@@ -28,6 +28,7 @@ class Event {
 		bool is_do_nothing(void) const;
 		void IncreaseUserCount(void);
 		int get_user_count(void) const;
+		std::string CreateErrorMessage(const User&, const std::string&) const;
 
 		class NoErrorException : public std::runtime_error {
 			public:
@@ -52,6 +53,7 @@ class Event {
 
 	protected:
 		Event(const Event&);
+		virtual std::string CreateTargetStr(const std::string&) const;
 
 	private:
 		const int	fd_;

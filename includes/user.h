@@ -47,7 +47,6 @@ class User : public EventListener, public EventConfigurator {
 
 		bool IsTarget(const std::string& target, const Event& event) const;
 		std::string CreateMessage(const User& from, const std::string& target, const Command& cmd, const std::vector<std::string>& params) const;
-		std::string CreateErrorMessage(const std::string& target, const ErrorStatus& error_status) const;
 		std::string CreateTopicRplMessage(const Channel& channel) const;
 		std::string CreateJoinDetailMessage(const Channel&) const;
 		std::string CreateInviteDetailMessage(void) const;
