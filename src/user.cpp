@@ -295,7 +295,7 @@ OptionalMessage User::ExKickCommand(const Event& event){
 			if (error_status == ErrorStatus::ERR_NOSUCHCHANNEL)
 				target = event.get_command_params()[0];
 			if (error_status == ErrorStatus::ERR_USERNOTINCHANNEL)
-				target = event.get_command_params()[2];
+				target = event.get_command_params()[1];
 			const std::string& message = event.CreateErrorMessage(*this, target);
 			return OptionalMessage::Create(this->get_fd(), message);
 		}
