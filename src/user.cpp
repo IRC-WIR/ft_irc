@@ -307,11 +307,40 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 	return OptionalMessage::Empty();
 }
 
+std::string User::CreateKickMessage(const User& from, const Command& cmd, const std::vector<std::string>& params) const {
+	std::stringstream ss;
+	std::string channel_target = params[0];
+	std::string user_target = params[1];
+
+	ss << ":";
+	// "Nickname@Hostname"
+	ss << from.CreateNameWithHost() << " ";
+	// command
+	ss << cmd.get_name();
+	ss << " ";
+	// class target name
+	ss << channel_target;
+	ss << " ";
+	// user target name
+	ss << user_target;
+	ss << " ";
+	//add message
+	ss << ":";
+	//パラメータの2個目を飛ばして最後まで表示する
+	if (params.size() > 2)
+		ss << utils::Join(params.begin() + 2, params.end(), " ");
+	else
+		ss << from.get_nick_name();
+	ss << utils::kNewLine;
+	return ss.str();
+}
+
+
 OptionalMessage User::ExKickCommand(const Event& event){
 	//失敗
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			const std::string& message = User::CreateChannelErrorMessage(event.get_command_params()[0], event.get_error_status());
 			return OptionalMessage::Create(this->get_fd(), message);
 		}
 		return OptionalMessage::Empty();
@@ -323,17 +352,9 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	//対象チャンネルに所属している場合
 	if (channel.ContainsUser(*this)
 		|| utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
-		std::string base_message;
-		if (event.get_fd() == this->get_fd()) {
-			base_message = "Kick " + target_name + " from " + channel.get_name();
-		} else {
-			base_message = "Kick message from " + event.get_executer().get_nick_name() + " to remove " + target_name + " from channel " + channel.get_name();
-		}
-		const std::vector<std::string>& params = event.get_command_params();
-		std::string optional_message = "";
-		if (params.size() > 2)
-			optional_message = " using \"" + utils::Join(params.begin() + 2, params.end(), " ") + "\" as the reason(comment)";
-		return OptionalMessage::Create(this->get_fd(), base_message + optional_message + utils::kNewLine);
+		std::string message;
+		message = CreateKickMessage(event.get_executer(), event.get_command(), event.get_command_params());
+		return OptionalMessage::Create(this->get_fd(), message);
 	}
 	if (utils::StrToLower(target_name) == utils::StrToLower(this->nick_name_)) {
 		this->joining_channels_.Remove(&channel);
@@ -386,7 +407,7 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 	return ss.str();
 }
 
-std::string User::CreateTopicErrorMessage(const std::string& target, const ErrorStatus& error_status) const {
+std::string User::CreateChannelErrorMessage(const std::string& target, const ErrorStatus& error_status) const {
 	std::stringstream ss;
 	//add hostname
 	ss << ":";
@@ -411,7 +432,7 @@ std::string User::CreateTopicErrorMessage(const std::string& target, const Error
 OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& error_msg = CreateTopicErrorMessage(event.get_command_params()[0], event.get_error_status());
+			const std::string& error_msg = CreateChannelErrorMessage(event.get_command_params()[0], event.get_error_status());
 			return OptionalMessage::Create(event.get_fd(), error_msg);
 		}
 		return OptionalMessage::Empty();
