@@ -418,7 +418,10 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
-		const std::string& err_msg = event.CreateErrorMessage(*this, event.get_command_params()[0]);
+		std::string target = "";
+		if (event.get_error_status() == ErrorStatus::ERR_NOSUCHNICK)
+			target = event.get_command_params()[0];
+		const std::string& err_msg = event.CreateErrorMessage(*this, target);
 		return OptionalMessage::Create(this->get_fd(), err_msg);
 	}
 	//成功
