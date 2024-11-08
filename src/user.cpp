@@ -149,8 +149,9 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 OptionalMessage User::ExNickCommand(const Event& event){
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
+	const std::string target = event.get_command_params().empty() ? "" : event.get_command_params()[0]; 
 	if (event.HasErrorOccurred()) {
-		return OptionalMessage::Create(this->get_fd(), event.CreateErrorMessage(*this, event.get_command().get_name()));
+		return OptionalMessage::Create(this->get_fd(), event.CreateErrorMessage(*this, target));
 	}
 	const std::string& new_nickname = event.get_command_params()[0];
 	std::string ret_message;
