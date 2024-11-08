@@ -150,7 +150,8 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
+		const std::string target = event.get_command_params().empty() ? "" : event.get_command_params()[0]; 
+		return OptionalMessage::Create(this->get_fd(), event.CreateErrorMessage(*this, target));
 	}
 	const std::string& new_nickname = event.get_command_params()[0];
 	std::string ret_message;
@@ -334,7 +335,13 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	//失敗
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status());
+			std::string target = "";
+			const ErrorStatus& error_status = event.get_error_status();
+			if (error_status == ErrorStatus::ERR_NOSUCHCHANNEL)
+				target = event.get_command_params()[0];
+			if (error_status == ErrorStatus::ERR_USERNOTINCHANNEL)
+				target = event.get_command_params()[1];
+			const std::string& message = event.CreateErrorMessage(*this, target);
 			return OptionalMessage::Create(this->get_fd(), message);
 		}
 		return OptionalMessage::Empty();
