@@ -198,13 +198,8 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		const ErrorStatus& error = event.get_error_status();
-		if (error == ErrorStatus::ERR_NEEDMOREPARAMS)
-			return OptionalMessage::Create(this->get_fd(),
-					User::CreateErrorMessage(event.get_command().get_name(), error));
-		else // ERR_ALREADYREGISTRED
-			return OptionalMessage::Create(this->get_fd(),
-					User::CreateErrorMessage("", error));
+		return OptionalMessage::Create(this->get_fd(),
+				User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
 	}
 
 	const std::vector<std::string>& params = event.get_command_params();
