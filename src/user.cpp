@@ -288,9 +288,27 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 
 OptionalMessage User::ExKickCommand(const Event& event){
 	//失敗
+	//NEEDMOREPARAMS: コマンド名
+	//NOSUCHCHANNEL: channelname(param)
+	//ERR_CHANOPRIVSNEEDED: <channel>
+	//ERR_NOTONCHANNEL: <channel>
+	//ERR_USERNOTINCHANNEL: <nick> <channel> 
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status());
+			std::string target = "";
+			const ErrorStatus& error_status = event.get_error_status();
+			if (error_status == ErrorStatus::ERR_NEEDMOREPARAMS)
+				target = event.get_command().get_name();
+			if (error_status == ErrorStatus::ERR_NOSUCHCHANNEL)
+				target = event.get_command_params()[0];
+			if (error_status == ErrorStatus::ERR_CHANOPRIVSNEEDED
+				|| error_status == ErrorStatus::ERR_NOTONCHANNEL){
+				const Channel& channel = dynamic_cast<const ChannelEvent&>(event).get_channel();
+				target = channel.get_name();
+			}
+			if (error_status == ErrorStatus::ERR_USERNOTINCHANNEL)
+				target = this->nick_name_;
+			const std::string& message = event.CreateErrorMessage(*this, target);
 			return OptionalMessage::Create(this->get_fd(), message);
 		}
 		return OptionalMessage::Empty();
