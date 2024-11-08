@@ -386,10 +386,32 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 	return ss.str();
 }
 
+std::string User::CreateTopicErrorMessage(const Command& cmd, const ErrorStatus& error_status, std::string target) const {
+	std::stringstream ss;
+	//add hostname
+	ss << ":";
+	ss << utils::kHostName;
+	ss << " ";
+	//add error no
+	ss << utils::FillZero(error_status.get_code(), 3);
+	ss << " ";
+	//add nick name
+	ss << (nick_name_.empty()? "*" : nick_name_) ;
+	ss << " ";
+	//add target name
+	ss << target;
+	ss << " ";
+	//add Error Message
+	ss << ":";
+	ss << error_status.get_message();
+	ss << utils::kNewLine;
+	return ss.str();
+}
+
 OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+			const std::string& error_msg = CreateTopicErrorMessage(event.get_command(), event.get_error_status(), event.get_command_params()[0]);
 			return OptionalMessage::Create(event.get_fd(), error_msg);
 		}
 		return OptionalMessage::Empty();
