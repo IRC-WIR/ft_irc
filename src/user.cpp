@@ -106,30 +106,6 @@ OptionalMessage User::ExecuteCommand(const Event& event) {
 
 }
 
-std::string User::CreateErrorMessage(const std::string& target, const ErrorStatus& error_status) const {
-	std::stringstream ss;
-	//add hostname
-	ss << ":";
-	ss << utils::kHostName;
-	ss << " ";
-	//add error no
-	ss << utils::FillZero(error_status.get_code(), 3);
-	ss << " ";
-	//add nick name
-	ss << (nick_name_.empty()? "*" : nick_name_) ;
-	ss << " ";
-	//add target
-	if (!target.empty()) {
-		ss << target;
-		ss << " ";
-	}
-	//add Error Message
-	ss << ":";
-	ss << error_status.get_message();
-	ss << utils::kNewLine;
-	return ss.str();
-}
-
 std::string User::CreateMessage(const User& from, const std::string& target, const Command& cmd, const std::vector<std::string>& params) const {
 	std::stringstream ss;
 	ss << ":";
