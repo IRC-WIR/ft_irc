@@ -13,6 +13,7 @@ class ChannelEvent : public Event {
 
 	private:
 		const Channel& channel_;
+		std::string CreateTargetStr(const std::string&) const;
 };
 
 #endif

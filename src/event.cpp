@@ -108,6 +108,64 @@ bool Event::is_do_nothing() const {
 	return !this->HasErrorOccurred() && this->is_do_nothing_;
 }
 
+// ERR_NOSUCHNICK, ERR_NOSUCHCHANNEL, 
+std::string Event::CreateErrorMessage(const User& user, const std::string& target = "") const {
+	const ErrorStatus& error_status = this->get_error_status();
+	std::stringstream ss;
+	//add hostname
+	ss << ":";
+	ss << utils::kHostName;
+	ss << " ";
+	//add error no
+	ss << utils::FillZero(error_status.get_code(), 3);
+	ss << " ";
+	//add nick name
+	ss << (user.get_nick_name().empty()? "*" : user.get_nick_name()) ;
+	ss << " ";
+	//add target
+	ss << this->CreateTargetStr(target);
+	//add Error Message
+	ss << ":";
+	ss << error_status.get_message();
+	ss << utils::kNewLine;
+	return ss.str();
+}
+
+std::string Event::CreateTargetStr(const std::string& target = "") const {
+	const ErrorStatus& error_status = this->get_error_status();
+
+	if (error_status == ErrorStatus::ERR_NOSUCHNICK
+			|| error_status == ErrorStatus::ERR_NOSUCHCHANNEL
+			|| error_status == ErrorStatus::ERR_ERRONEUSNICKNAME
+			|| error_status == ErrorStatus::ERR_NICKNAMEINUSE
+			|| error_status == ErrorStatus::ERR_UNKNOWNMODE
+			|| error_status == ErrorStatus::ERR_WRONGMODEPARAMS)
+		return (target + " "); // targetを設定してもらう
+	else if (error_status == ErrorStatus::ERR_CANNOTSENDTOCHAN
+			|| error_status == ErrorStatus::ERR_TOOMANYCHANNELS
+			|| error_status == ErrorStatus::ERR_NOTONCHANNEL
+			|| error_status == ErrorStatus::ERR_KEYSET
+			|| error_status == ErrorStatus::ERR_CHANNELISFULL
+			|| error_status == ErrorStatus::ERR_INVITEONLYCHAN
+			|| error_status == ErrorStatus::ERR_BADCHANNELKEY
+			|| error_status == ErrorStatus::ERR_CHANOPRIVSNEEDED)
+		return (target + " "); // しっかりChannelEventにしておけばtarget不要
+	else if (error_status == ErrorStatus::ERR_USERNOTINCHANNEL
+			|| error_status == ErrorStatus::ERR_USERONCHANNEL)
+		return (target + " "); // しっかりChannelEventにしたうえでtaretも設定する
+	else if (error_status == ErrorStatus::ERR_NEEDMOREPARAMS)
+		return (this->get_command().get_name() + " ");
+	else
+		return "";
+	/*
+	else に当たるもの
+	ERR_NOTEXTTOSEND
+	ERR_NONICKNAMEGIVEN
+	ERR_ALREADYREGISTRED
+	ERR_PASSWDMISMATCH
+	*/
+}
+
 Event::NoErrorException::NoErrorException()
 		: std::runtime_error(Event::NoErrorException::kMessage) {
 	return ;
