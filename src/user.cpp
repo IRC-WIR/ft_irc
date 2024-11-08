@@ -419,8 +419,19 @@ OptionalMessage User::ExModeCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
-		return OptionalMessage::Create(this->get_fd(),
-				User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
+		const ErrorStatus& error = event.get_error_status();
+		if (error == ErrorStatus::ERR_NOSUCHCHANNEL)
+			return OptionalMessage::Create(this->get_fd(),
+					event.CreateErrorMessage(*this, params[0]));
+		else if (error == ErrorStatus::ERR_UNKNOWNMODE)
+			return OptionalMessage::Create(this->get_fd(),
+					event.CreateErrorMessage(*this, params[1]));
+		else if (error == ErrorStatus::ERR_NOSUCHNICK
+				|| error == ErrorStatus::ERR_WRONGMODEPARAMS)
+			return OptionalMessage::Create(this->get_fd(),
+					event.CreateErrorMessage(*this, params[2]));
+		else
+			return OptionalMessage::Create(this->get_fd(), event.CreateErrorMessage(*this));
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
