@@ -106,7 +106,7 @@ OptionalMessage User::ExecuteCommand(const Event& event) {
 
 }
 
-std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& error_status) const {
+std::string User::CreateErrorMessage(const std::string& target, const ErrorStatus& error_status) const {
 	std::stringstream ss;
 	//add hostname
 	ss << ":";
@@ -118,9 +118,11 @@ std::string User::CreateErrorMessage(const Command& cmd, const ErrorStatus& erro
 	//add nick name
 	ss << (nick_name_.empty()? "*" : nick_name_) ;
 	ss << " ";
-	//add command
-	ss << cmd.get_name();
-	ss << " ";
+	//add target
+	if (!target.empty()) {
+		ss << target;
+		ss << " ";
+	}
 	//add Error Message
 	ss << ":";
 	ss << error_status.get_message();
@@ -157,7 +159,7 @@ OptionalMessage User::ExPassCommand(const Event& event) {
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		const std::string& err_msg = CreateErrorMessage(event.get_command().get_name(), event.get_error_status());
 		return OptionalMessage::Create(event.get_fd(), err_msg);
 	}
 	set_is_password_authenticated(true);
@@ -172,7 +174,7 @@ OptionalMessage User::ExNickCommand(const Event& event){
 	if (event.get_fd() != this->get_fd())
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
-		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command(), event.get_error_status()));
+		return OptionalMessage::Create(this->get_fd(), CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
 	}
 	const std::string& new_nickname = event.get_command_params()[0];
 	std::string ret_message;
@@ -197,7 +199,7 @@ OptionalMessage User::ExUserCommand(const Event& event) {
 		return OptionalMessage::Empty();
 	if (event.HasErrorOccurred()) {
 		return OptionalMessage::Create(this->get_fd(),
-				User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+				User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
 	}
 
 	const std::vector<std::string>& params = event.get_command_params();
@@ -238,7 +240,7 @@ OptionalMessage User::ExJoinCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd())
 			return OptionalMessage::Create(this->get_fd(),
-					User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+					User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
 		return OptionalMessage::Empty();
 	}
 	if (!event.IsChannelEvent())
@@ -277,7 +279,7 @@ OptionalMessage User::ExInviteCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd())
 			return OptionalMessage::Create(this->get_fd(),
-					User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+					User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
 		return OptionalMessage::Empty();
 	}
 	const std::vector<std::string>& params = event.get_command_params();
@@ -311,7 +313,7 @@ OptionalMessage User::ExKickCommand(const Event& event){
 	//失敗
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& message = User::CreateErrorMessage(event.get_command(), event.get_error_status());
+			const std::string& message = User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status());
 			return OptionalMessage::Create(this->get_fd(), message);
 		}
 		return OptionalMessage::Empty();
@@ -392,7 +394,7 @@ static std::string GenerateTopicMessage(const User& user, const Channel& channel
 OptionalMessage User::ExTopicCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() == this->get_fd()) {
-			const std::string& error_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+			const std::string& error_msg = CreateErrorMessage(event.get_command().get_name(), event.get_error_status());
 			return OptionalMessage::Create(event.get_fd(), error_msg);
 		}
 		return OptionalMessage::Empty();
@@ -420,7 +422,7 @@ OptionalMessage User::ExPrivmsgCommand(const Event& event) {
 	if (event.HasErrorOccurred()) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
-		const std::string& err_msg = CreateErrorMessage(event.get_command(), event.get_error_status());
+		const std::string& err_msg = CreateErrorMessage(event.get_command().get_name(), event.get_error_status());
 		return OptionalMessage::Create(this->get_fd(), err_msg);
 	}
 	//成功
@@ -442,7 +444,7 @@ OptionalMessage User::ExModeCommand(const Event& event) {
 		if (event.get_fd() != this->get_fd())
 			return OptionalMessage::Empty();
 		return OptionalMessage::Create(this->get_fd(),
-				User::CreateErrorMessage(event.get_command(), event.get_error_status()));
+				User::CreateErrorMessage(event.get_command().get_name(), event.get_error_status()));
 	}
 	if (!event.IsChannelEvent())
 		return OptionalMessage::Empty();
