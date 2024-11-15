@@ -120,6 +120,7 @@ void	EventHandler::HandlePollHupEvent(pollfd entry) {
 void	EventHandler::Detach(int fd) {
 	std::cout << "connection hang up " << fd << std::endl;
 	response_map_.erase(fd);
+	request_map_.erase(fd);
 	for (std::vector<struct pollfd>::iterator it = poll_fd_.begin(); it != poll_fd_.end(); ++it) {
 		if (it->fd == fd) {
 			close(it->fd);

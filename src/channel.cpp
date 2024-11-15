@@ -429,7 +429,7 @@ void Channel::CkTopicCommand(Event*& event) const {
 		event->set_error_status(ErrorStatus::ERR_NOTONCHANNEL);
 		return ;
 	}
-	if (this->mode_map_('t') && SearchByFD(operators_, event->get_fd()) == NULL) {
+	if (params.size() >= 2 && this->mode_map_('t') && SearchByFD(operators_, event->get_fd()) == NULL) {
 		event->set_error_status(ErrorStatus::ERR_CHANOPRIVSNEEDED);
 		return ;
 	}
