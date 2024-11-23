@@ -24,8 +24,17 @@ git clone git@github.com:IRC-WIR/ft_irc.git
 You can use an actual IRC client or `nc` command to connect to the server.
 
 ### commands
-
+ - KICK - Eject a client from the channel
+ - INVITE - Invite a client to a channel
+ - TOPIC - Change or view the channel topic
+ - MODE - Change the channel’s mode:
+   - i: Set/remove Invite-only channel
+   - t: Set/remove the restrictions of the TOPIC command to channel operators
+   - k: Set/remove the channel key (password)
+   - o: Give/take channel operator privilege
+   - l: Set/remove the user limit to channel
 ## Architecture
+ - Oberserver pattern
 
 ## Document
 ### [UNIT TEST](https://github.com/IRC-WIR/ft_irc/wiki/UNIT-TEST)
