@@ -1,9 +1,13 @@
-# About
+# ft_irc
 
-## Feature
+## Abstract
 
-## Supported platform
+## How to Use
+### installation
+### commands
 
-## External Links
+## Architecture
+
+## Test
 
 ## Reference
